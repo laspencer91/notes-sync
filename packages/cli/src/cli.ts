@@ -13,6 +13,9 @@ import { archiveCommand } from "./commands/archive";
 import { formatCommand } from "./commands/format";
 import { dailyCommand } from "./commands/daily";
 import { aiQueryCommand } from "./commands/ai-query";
+import { viewCommand } from "./commands/view";
+import { stopCommand } from "./commands/stop";
+import { upgradeCommand } from "./commands/upgrade";
 
 const program = new Command();
 
@@ -96,6 +99,15 @@ program
   .action(dailyCommand);
 
 program
+  .command("view")
+  .description("View your notes")
+  .option("--today", "View today's notes")
+  .option("--recent", "View recent notes")
+  .option("--all", "View all notes")
+  .option("-d, --days <number>", "Number of days for recent view (default: 7)")
+  .action(viewCommand);
+
+program
   .command("ai")
   .description("AI-powered analysis and insights")
   .addCommand(
@@ -111,5 +123,12 @@ program
       .option("--next", "What should I do next?")
       .action(aiQueryCommand),
   );
+
+program
+  .command("upgrade")
+  .description("Upgrade CLI and service packages")
+  .action(upgradeCommand);
+
+program.command("stop").description("Stop the service").action(stopCommand);
 
 program.parse();

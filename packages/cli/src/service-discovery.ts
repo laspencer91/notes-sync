@@ -162,9 +162,9 @@ export class ServiceDiscovery {
     }
   }
 
-  async ensureService(): Promise<ApiClient> {
+  async ensureService(promptForInstall: boolean = true): Promise<ApiClient> {
     let attempts = 0;
-    const maxAttempts = 3;
+    const maxAttempts = promptForInstall ? 3 : 1;
 
     while (attempts < maxAttempts) {
       const serviceInfo = await this.discoverService();
@@ -173,12 +173,16 @@ export class ServiceDiscovery {
         return new ApiClient(`http://${serviceInfo.host}:${serviceInfo.port}`);
       }
 
-      if (serviceInfo.isInstalled) {
-        // Service is installed but not running
-        await this.promptStartService(serviceInfo);
+      if (promptForInstall) {
+        if (serviceInfo.isInstalled) {
+          // Service is installed but not running
+          await this.promptStartService(serviceInfo);
+        } else {
+          // Service is not installed
+          await this.promptInstallService();
+        }
       } else {
-        // Service is not installed
-        await this.promptInstallService();
+        throw new Error("Service is not running and auto-installation is disabled");
       }
 
       attempts++;

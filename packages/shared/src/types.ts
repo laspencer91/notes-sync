@@ -131,3 +131,21 @@ export interface CreateDailyResponse {
   created: boolean;
   reason: string;
 }
+
+export interface ViewNotesRequest {
+  type: "today" | "recent" | "all";
+  days?: number; // for recent
+}
+
+export interface ViewNotesResponse {
+  content: string;
+  metadata: {
+    type: "today" | "recent" | "all";
+    daysCovered?: number;
+    totalLines: number;
+    dateRange?: {
+      start: string;
+      end: string;
+    };
+  };
+}

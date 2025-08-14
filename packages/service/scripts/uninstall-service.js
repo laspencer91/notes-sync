@@ -23,11 +23,13 @@ function uninstall() {
     if (result.status === 0) {
       fs.unlinkSync(plistPath);
       console.log("✅ Service uninstalled successfully");
-      
+
       // Ask if user wants to remove config
       if (fs.existsSync(configDir)) {
         console.log(`📁 Config directory still exists: ${configDir}`);
-        console.log("💡 To remove config files, run: rm -rf ~/.config/notes-sync");
+        console.log(
+          "💡 To remove config files, run: rm -rf ~/.config/notes-sync",
+        );
       }
     } else {
       console.error("❌ Failed to uninstall service");

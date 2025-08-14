@@ -3,7 +3,12 @@ import path from "path";
 import fs from "fs";
 import { Logger } from "./logger";
 import { AIService } from "./ai/ai-service";
-import { AIQueryRequest, AIQueryResponse } from "@notes-sync/shared";
+import {
+  AIQueryRequest,
+  AIQueryResponse,
+  ViewNotesRequest,
+  ViewNotesResponse,
+} from "@notes-sync/shared";
 
 // Section constants for parsing
 const TODAY_SECTION = `**Today's Focus**`;
@@ -1239,5 +1244,93 @@ Error details: ${(error as Error).message}`,
     }
 
     return actionItems.slice(0, 5); // Max 5 suggestions
+  }
+
+  async viewNotes(request: ViewNotesRequest): Promise<ViewNotesResponse> {
+    try {
+      const content = this.readNotesFile();
+
+      switch (request.type) {
+        case "today": {
+          const today = new Date();
+          const todaySection = this.getDate(today);
+
+          if (!todaySection) {
+            return {
+              content: `No notes found for today (${today.toLocaleDateString()})`,
+              metadata: {
+                type: "today",
+                totalLines: 1,
+              },
+            };
+          }
+
+          return {
+            content: todaySection,
+            metadata: {
+              type: "today",
+              totalLines: todaySection.split("\n").length,
+              dateRange: {
+                start: today.toLocaleDateString(),
+                end: today.toLocaleDateString(),
+              },
+            },
+          };
+        }
+
+        case "recent": {
+          const days = request.days || 7;
+          const dayMap = this.parseDays(content);
+          const sortedDates = Array.from(dayMap.keys())
+            .sort((a, b) => new Date(b).getTime() - new Date(a).getTime())
+            .slice(0, days);
+
+          if (sortedDates.length === 0) {
+            return {
+              content: `No notes found in the last ${days} days`,
+              metadata: {
+                type: "recent",
+                daysCovered: 0,
+                totalLines: 1,
+              },
+            };
+          }
+
+          const recentContent = sortedDates
+            .map((date) => dayMap.get(date))
+            .filter(Boolean)
+            .join("\n\n");
+
+          return {
+            content: recentContent,
+            metadata: {
+              type: "recent",
+              daysCovered: sortedDates.length,
+              totalLines: recentContent.split("\n").length,
+              dateRange: {
+                start: sortedDates[sortedDates.length - 1],
+                end: sortedDates[0],
+              },
+            },
+          };
+        }
+
+        case "all": {
+          return {
+            content: content,
+            metadata: {
+              type: "all",
+              totalLines: content.split("\n").length,
+            },
+          };
+        }
+
+        default:
+          throw new Error(`Unknown view type: ${request.type}`);
+      }
+    } catch (error) {
+      Logger.error(`Failed to view notes: ${(error as Error).message}`);
+      throw error;
+    }
   }
 }

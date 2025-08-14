@@ -12,16 +12,22 @@ export async function installCommand() {
 
     if (!serviceInfo.isInstalled) {
       console.log("📦 Service not installed. Installing it now...");
-      
+
       // Install the service globally
       const { spawnSync } = require("child_process");
-      const installResult = spawnSync("npm", ["install", "-g", "@notes-sync/service"], {
-        stdio: "inherit",
-      });
+      const installResult = spawnSync(
+        "npm",
+        ["install", "-g", "@notes-sync/service"],
+        {
+          stdio: "inherit",
+        },
+      );
 
       if (installResult.status !== 0) {
         console.error("❌ Failed to install service");
-        console.log("💡 Try running manually: npm install -g @notes-sync/service");
+        console.log(
+          "💡 Try running manually: npm install -g @notes-sync/service",
+        );
         process.exit(1);
       }
 

@@ -21,6 +21,8 @@ import {
   CreateDailyResponse,
   AIQueryRequest,
   AIQueryResponse,
+  ViewNotesRequest,
+  ViewNotesResponse,
 } from "./types";
 
 export class ApiClient {
@@ -31,6 +33,17 @@ export class ApiClient {
     const response = await fetch(`${this.baseUrl}/status`);
     if (!response.ok) {
       throw new Error(`Failed to get status: ${response.statusText}`);
+    }
+    return response.json();
+  }
+
+  async shutdown(): Promise<void> {
+    console.log("Shutting down service...");
+    const response = await fetch(`${this.baseUrl}/shutdown`, {
+      method: "POST",
+    });
+    if (!response.ok) {
+      throw new Error(`Failed to shutdown service: ${response.statusText}`);
     }
     return response.json();
   }
@@ -69,15 +82,6 @@ export class ApiClient {
       throw new Error(`Failed to get logs: ${response.statusText}`);
     }
     return response.json();
-  }
-
-  async shutdown(): Promise<void> {
-    const response = await fetch(`${this.baseUrl}/shutdown`, {
-      method: "POST",
-    });
-    if (!response.ok) {
-      throw new Error(`Shutdown failed: ${response.statusText}`);
-    }
   }
 
   async addTodo(request: AddTodoRequest): Promise<void> {
@@ -241,6 +245,21 @@ export class ApiClient {
     });
     if (!response.ok) {
       throw new Error(`AI query failed: ${response.statusText}`);
+    }
+    return response.json();
+  }
+
+  async viewNotes(request: ViewNotesRequest): Promise<ViewNotesResponse> {
+    console.log(`Viewing Notes: ${request.type}...`);
+    const response = await fetch(`${this.baseUrl}/view-notes`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(request),
+    });
+    if (!response.ok) {
+      throw new Error(`Failed to view notes: ${response.statusText}`);
     }
     return response.json();
   }

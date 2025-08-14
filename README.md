@@ -117,6 +117,9 @@ notes-sync install
 
 # Start the service
 notes-sync-service start
+
+# Stop the service when needed
+notes-sync stop
 ```
 
 #### **Option B: Manual Setup**
@@ -130,6 +133,18 @@ notes-sync-service
 
 # Or start in background
 notes-sync-service &
+```
+
+#### **Upgrading**
+
+```bash
+# Upgrade both CLI and service packages
+notes-sync upgrade
+
+# Complete upgrade workflow
+notes-sync stop      # Stop the service
+notes-sync upgrade   # Upgrade packages
+notes-sync install   # Reinstall and start the service
 ```
 
 ### ✅ **Verify Installation**
@@ -150,6 +165,7 @@ ls ~/Documents/DailyNotes/Daily.md
 The service uses a configuration file at `~/.config/notes-sync/config.json`. You can create this file manually or let the service create it with defaults.
 
 **💡 Tip**: You can copy the example configuration file as a starting point:
+
 ```bash
 cp packages/service/config.example.json ~/.config/notes-sync/config.json
 ```
@@ -177,7 +193,8 @@ cp packages/service/config.example.json ~/.config/notes-sync/config.json
 ```
 
 **🔒 Security Note**: Never commit your actual API key to Git. The `config.json` file is already added to `.gitignore` to prevent accidental commits.
-```
+
+````
 
 ### 🔧 **Troubleshooting**
 
@@ -187,7 +204,7 @@ cp packages/service/config.example.json ~/.config/notes-sync/config.json
 # If you get "Service not found" error:
 npm install -g @notes-sync/service
 notes-sync status
-```
+````
 
 #### **Service Not Starting**
 
@@ -224,9 +241,12 @@ sudo npm install -g @notes-sync/service
 
 ### 🗑️ **Uninstalling**
 
-#### **Remove Background Service**
+#### **Stop and Remove Background Service**
 
 ```bash
+# Stop the running service first
+notes-sync stop
+
 # Uninstall the background service
 notes-sync-service uninstall
 ```
@@ -260,8 +280,38 @@ notes-sync sync
 # Force sync even without changes
 notes-sync sync --force
 
+# Stop the running service
+notes-sync stop
+
+# Upgrade CLI and service packages
+notes-sync upgrade
+
 # View service logs
 notes-sync logs
+```
+
+#### **Service Lifecycle Management**
+
+The `stop` and `upgrade` commands help you manage the service lifecycle:
+
+##### **Stopping the Service**
+```bash
+# Stop the running service gracefully
+notes-sync stop
+```
+This command sends a shutdown signal to the service, allowing it to complete any pending operations before exiting. Use this before upgrading or when you want to temporarily stop the service.
+
+##### **Upgrading Packages**
+```bash
+# Upgrade both CLI and service packages
+notes-sync upgrade
+```
+This command updates both the CLI and service packages to their latest versions. After upgrading, you'll need to restart the service:
+```bash
+# Full upgrade workflow
+notes-sync stop      # Stop the service
+notes-sync upgrade   # Upgrade packages
+notes-sync install   # Reinstall and start the service
 ```
 
 ### Content Management

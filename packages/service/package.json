@@ -1,6 +1,6 @@
 {
   "name": "@notes-sync/service",
-  "version": "1.0.2",
+  "version": "1.0.6",
   "description": "Background service for AI-powered note synchronization",
   "main": "dist/main.js",
   "bin": {
@@ -34,7 +34,7 @@
   ],
   "author": "Logan Spencer",
   "license": "MIT",
-  "repository": "gitlab:laspencer91/notes-sync",
+  "repository": "github:laspencer91/notes-sync",
   "engines": {
     "node": ">=18.0.0"
   }

@@ -10,7 +10,6 @@ import {
   DeleteTodoResponse,
   SearchNotesRequest,
   SearchNotesResponse,
-  GetIncompleteTodosRequest,
   GetIncompleteTodosResponse,
   ArchiveCompletedTodosResponse,
   FormatDocumentResponse,
@@ -22,6 +21,8 @@ import {
   CreateDailyResponse,
   AIQueryRequest,
   AIQueryResponse,
+  ViewNotesRequest,
+  ViewNotesResponse,
 } from "@notes-sync/shared";
 import { ServiceConfig } from "./config";
 import { Logger } from "./logger";
@@ -210,6 +211,28 @@ export function createServer(
       }
 
       return result;
+    },
+  );
+
+  server.post<{ Body: ViewNotesRequest; Reply: ViewNotesResponse }>(
+    "/view-notes",
+    async (request, reply) => {
+      Logger.log(`View notes requested: ${request.body.type}`);
+
+      try {
+        const content = await noteInteractor.viewNotes(request.body);
+        return content;
+      } catch (error) {
+        Logger.error(`View notes failed: ${(error as Error).message}`);
+        reply.code(500);
+        return {
+          content: "Error: Could not retrieve notes",
+          metadata: {
+            type: request.body.type,
+            totalLines: 0,
+          },
+        };
+      }
     },
   );
 

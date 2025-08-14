@@ -9,7 +9,7 @@
 - [x] Main: dist/index.js
 - [x] Types: dist/index.d.ts
 - [x] License: MIT
-- [x] Repository: gitlab:laspencer91/notes-sync
+- [x] Repository: github:laspencer91/notes-sync
 - [x] Builds successfully
 - [x] No dependencies
 
@@ -21,7 +21,7 @@
 - [x] Bin: notes-sync-service -> ./dist/main.js
 - [x] Shebang: #!/usr/bin/env node
 - [x] License: MIT
-- [x] Repository: gitlab:laspencer91/notes-sync
+- [x] Repository: github:laspencer91/notes-sync
 - [x] Builds successfully
 - [x] Dependencies: @notes-sync/shared, @google/genai, chokidar, fastify, simple-git
 
@@ -32,7 +32,7 @@
 - [x] Bin: notes-sync -> ./dist/cli.js
 - [x] Shebang: #!/usr/bin/env node
 - [x] License: MIT
-- [x] Repository: gitlab:laspencer91/notes-sync
+- [x] Repository: github:laspencer91/notes-sync
 - [x] Builds successfully
 - [x] Dependencies: @notes-sync/shared, axios, commander, inquirer
 - [x] Service discovery integrated
