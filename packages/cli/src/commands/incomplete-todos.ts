@@ -1,7 +1,8 @@
-import { ApiClient } from "@notes-sync/shared";
+import { ServiceDiscovery } from "../service-discovery";
 
 export async function incompleteTodosCommand(options: { days?: string }) {
-  const client = new ApiClient("http://localhost:3000");
+  const serviceDiscovery = new ServiceDiscovery();
+  const client = await serviceDiscovery.ensureService();
 
   try {
     const daysBack = options.days ? parseInt(options.days) : undefined;

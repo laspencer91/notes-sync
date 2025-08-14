@@ -11,6 +11,10 @@ function createPlist() {
   const serviceMain = path.resolve(__dirname, "..", "dist", "main.js");
   const logsDir = path.resolve(__dirname, "..", "logs");
 
+  const packageJsonPath = path.resolve(__dirname, "..", "package.json");
+  const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, "utf8"));
+  const version = packageJson.version;
+
   if (!fs.existsSync(logsDir)) {
     fs.mkdirSync(logsDir, { recursive: true });
   }
@@ -34,6 +38,18 @@ function createPlist() {
   <string>${path.join(logsDir, "out.log")}</string>
   <key>StandardErrorPath</key>
   <string>${path.join(logsDir, "err.log")}</string>
+  <key>ProcessType</key>
+  <string>Background</string>
+  <key>CFBundleName</key>
+  <string>Notes Sync Service</string>
+  <key>CFBundleDisplayName</key>
+  <string>Notes Sync Service</string>
+  <key>CFBundleIdentifier</key>
+  <string>com.notesync.service</string>
+  <key>CFBundleVersion</key>
+  <string>${version ?? "1.0.3"}</string>
+  <key>CFBundleShortVersionString</key>
+  <string>${version ?? "1.0.3"}</string>
 </dict>
 </plist>`;
 }
@@ -41,7 +57,11 @@ function createPlist() {
 function setupConfig() {
   const configDir = path.join(os.homedir(), ".config", "notes-sync");
   const configPath = path.join(configDir, "config.json");
-  const exampleConfigPath = path.resolve(__dirname, "..", "config.example.json");
+  const exampleConfigPath = path.resolve(
+    __dirname,
+    "..",
+    "config.example.json",
+  );
 
   // Create config directory if it doesn't exist
   if (!fs.existsSync(configDir)) {
@@ -53,11 +73,15 @@ function setupConfig() {
   if (!fs.existsSync(configPath) && fs.existsSync(exampleConfigPath)) {
     fs.copyFileSync(exampleConfigPath, configPath);
     console.log(`📄 Created config file from example: ${configPath}`);
-    console.log(`⚠️  Please edit ${configPath} with your settings before starting the service`);
+    console.log(
+      `⚠️  Please edit ${configPath} with your settings before starting the service`,
+    );
   } else if (fs.existsSync(configPath)) {
     console.log(`📄 Config file already exists: ${configPath}`);
   } else {
-    console.log(`⚠️  No example config found. Please create ${configPath} manually`);
+    console.log(
+      `⚠️  No example config found. Please create ${configPath} manually`,
+    );
   }
 }
 
@@ -81,7 +105,9 @@ function install() {
 
   if (result.status === 0) {
     console.log(`✅ Service installed: ${plistPath}`);
-    console.log(`💡 Edit your config at: ${path.join(os.homedir(), ".config", "notes-sync", "config.json")}`);
+    console.log(
+      `💡 Edit your config at: ${path.join(os.homedir(), ".config", "notes-sync", "config.json")}`,
+    );
   } else {
     console.error("❌ Failed to install service");
     process.exit(1);

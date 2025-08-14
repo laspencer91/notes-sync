@@ -1,8 +1,10 @@
 import inquirer from "inquirer";
 import { ApiClient } from "@notes-sync/shared";
+import { ServiceDiscovery } from "../service-discovery";
 
 export async function deleteCommand() {
-  const client = new ApiClient("http://localhost:3000");
+  const serviceDiscovery = new ServiceDiscovery();
+  const client = await serviceDiscovery.ensureService();
 
   try {
     // Get all incomplete todos

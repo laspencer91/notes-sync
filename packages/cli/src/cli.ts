@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import { Command } from "commander";
+import { version } from "../package.json";
 import { statusCommand } from "./commands/status";
 import { installCommand } from "./commands/install";
 import { syncCommand } from "./commands/sync";
@@ -18,7 +19,7 @@ const program = new Command();
 program
   .name("notes-sync")
   .description("CLI for Notes Sync Service")
-  .version("1.0.0");
+  .version(version);
 
 program
   .command("status")

@@ -270,41 +270,58 @@ export class ServiceDiscovery {
   }
 
   private async promptInstallService(): Promise<void> {
-    const { action } = await inquirer.prompt([
-      {
-        type: "list",
-        name: "action",
-        message:
-          "notes-sync service is not installed. What would you like to do?",
-        choices: [
-          { name: "Install the service", value: "install" },
-          { name: "Exit", value: "exit" },
-        ],
-      },
-    ]);
+    const isDevelopment = this.isDevelopmentMode();
 
-    if (action === "exit") {
-      process.exit(0);
+    if (isDevelopment) {
+      console.log(
+        "\nIn development mode, the service should be available locally.",
+      );
+      console.log("Make sure you're running from the workspace root and try:");
+      console.log("1. yarn dev:service");
+      console.log("2. Or cd packages/service && yarn dev");
+      return;
     }
 
-    if (action === "install") {
-      const isDevelopment = this.isDevelopmentMode();
+    console.log("📦 Service not installed. Installing it now...");
 
-      if (isDevelopment) {
+    try {
+      const { spawnSync } = require("child_process");
+      const installResult = spawnSync(
+        "npm",
+        ["install", "-g", "@notes-sync/service"],
+        {
+          stdio: "inherit",
+        },
+      );
+
+      if (installResult.status !== 0) {
+        console.error("❌ Failed to install service automatically");
         console.log(
-          "\nIn development mode, the service should be available locally.",
+          "💡 Try running manually: npm install -g @notes-sync/service",
         );
-        console.log(
-          "Make sure you're running from the workspace root and try:",
-        );
-        console.log("1. yarn dev:service");
-        console.log("2. Or cd packages/service && yarn dev");
-      } else {
-        console.log("\nTo install the service, run:");
-        console.log("npm install -g @notes-sync/service");
-        console.log("\nThen start it with:");
-        console.log("notes-sync-service start");
+        return;
       }
+
+      console.log("✅ Service installed successfully!");
+
+      // Try to run the service install script
+      const serviceInstallResult = spawnSync(
+        "notes-sync-service",
+        ["install"],
+        {
+          stdio: "inherit",
+        },
+      );
+
+      if (serviceInstallResult.status === 0) {
+        console.log("✅ Service configured successfully!");
+      } else {
+        console.log(
+          "⚠️  Service installed but not configured. Run 'notes-sync-service install' manually.",
+        );
+      }
+    } catch (error) {
+      console.error("❌ Failed to install service:", error);
     }
   }
 }

@@ -731,7 +731,7 @@ The Notes Sync system follows a **distributed architecture** with clear separati
 │  User Terminal  │    │  Network Layer   │    │ Markdown Files  │
 │                 │    │                  │    │                 │
 │  • Interactive  │    │  • HTTP/JSON     │    │  • Daily.md     │
-│    Selection    │    │  • localhost:3000│    │  • Git History  │
+│    Selection    │    │  • localhost:3127│    │  • Git History  │
 │  • Fast Input   │    │  • Type Safety   │    │  • Auto-sync    │
 │                 │    │                  │    │                 │
 └─────────────────┘    └──────────────────┘    └─────────────────┘

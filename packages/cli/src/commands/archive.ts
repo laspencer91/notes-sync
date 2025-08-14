@@ -1,7 +1,8 @@
-import { ApiClient } from "@notes-sync/shared";
+import { ServiceDiscovery } from "../service-discovery";
 
 export async function archiveCommand() {
-  const client = new ApiClient("http://localhost:3000");
+  const serviceDiscovery = new ServiceDiscovery();
+  const client = await serviceDiscovery.ensureService();
 
   try {
     const result = await client.archiveCompletedTodos();

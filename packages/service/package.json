@@ -1,6 +1,6 @@
 {
   "name": "@notes-sync/service",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Background service for AI-powered note synchronization",
   "main": "dist/main.js",
   "bin": {

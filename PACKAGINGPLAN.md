@@ -208,7 +208,7 @@ notes-sync service diagnose   # Debug connection issues
 ```bash
 notes-sync service health
 # ✅ Service running (PID: 12345)
-# ✅ HTTP server responding (http://localhost:3000)
+# ✅ HTTP server responding (http://localhost:3217)
 # ✅ Notes directory accessible (/Users/logan/Documents/Notes)
 # ✅ Git repository healthy
 # ⚠️  AI service: API key not configured

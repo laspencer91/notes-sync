@@ -24,7 +24,7 @@ import {
 } from "./types";
 
 export class ApiClient {
-  constructor(private baseUrl: string = "http://localhost:3000") {}
+  constructor(private baseUrl: string = "http://localhost:3127") {}
 
   async getStatus(): Promise<ServiceStatus> {
     console.log("Getting Status....");
