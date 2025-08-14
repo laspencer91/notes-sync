@@ -6,6 +6,12 @@ export interface ServiceConfig {
   debounceMs: number;
   glob: string;
   ignore: string[];
+  autoCreateDaily?: boolean;
+  wakeDetection?: {
+    enabled: boolean;
+    intervalMs: number;
+    thresholdMs: number;
+  };
   server: {
     port: number;
     host: string;

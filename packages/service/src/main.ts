@@ -4,7 +4,8 @@ import { loadConfig } from "./config";
 import { createGit, isGitRepo, hasOriginRemote, safeSync } from "./git";
 import { Logger } from "./logger";
 import { NoteInteractor } from "./note-interactor";
-import { SystemEvents } from "./system-events";
+
+import { WakeDetector } from "./wake-detect";
 
 async function main() {
   Logger.log("Notes Sync Service starting...");
@@ -54,12 +55,50 @@ async function main() {
   //////////////////////////
   const noteInteractor = new NoteInteractor(config.notesDir, "Daily.md");
 
-  SystemEvents.onAddNote((text) => noteInteractor.writeNewDay());
+  // Auto-create today's section on startup (if enabled)
+  if (config.autoCreateDaily !== false) { // Default to true
+    Logger.log("Checking for missing daily sections...");
+    const result = noteInteractor.autoCreateDailySection();
+    if (result.created) {
+      Logger.log(`Daily section auto-created: ${result.reason}`);
+      scheduleSync("auto-daily-startup");
+    } else {
+      Logger.log(`Daily section check: ${result.reason}`);
+    }
+  }
+
+  ///////////////////////////
+  // SETUP WAKE DETECTION
+  //////////////////////////
+  if (config.wakeDetection?.enabled !== false) { // Default to true
+    const wakeConfig = config.wakeDetection || { enabled: true, intervalMs: 20000, thresholdMs: 20000 };
+    const intervalMs = wakeConfig.intervalMs || 20000;
+    const thresholdMs = wakeConfig.thresholdMs || 20000;
+
+    Logger.log(`Starting wake detection (interval: ${intervalMs}ms, threshold: ${thresholdMs}ms)`);
+    
+    WakeDetector.onWake(() => {
+      Logger.log("Wake detected! Checking for new daily section...");
+      
+      // Auto-create daily section on wake
+      const result = noteInteractor.autoCreateDailySection();
+      if (result.created) {
+        Logger.log(`Daily section created on wake: ${result.reason}`);
+        scheduleSync("auto-daily-wake");
+      } else {
+        Logger.log(`No daily section needed: ${result.reason}`);
+      }
+    });
+
+    WakeDetector.start(intervalMs);
+  }
+
+
 
   ///////////////////////////
   // START HTTP SERVER
   //////////////////////////
-  const server = createServer(config, scheduleSync);
+  const server = createServer(config, scheduleSync, noteInteractor);
 
   try {
     await server.listen({ port: config.server.port, host: config.server.host });
@@ -85,6 +124,7 @@ async function main() {
   const shutdown = async (signal: string) => {
     Logger.log(`${signal} received, shutting down gracefully...`);
     watcher.stop();
+    WakeDetector.stop();
     await server.close();
     process.exit(0);
   };

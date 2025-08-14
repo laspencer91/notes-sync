@@ -1,0 +1,16 @@
+{
+  "notesDir": "/path/to/your/notes",
+  "debounceMs": 3000,
+  "glob": "**/*.md",
+  "ignore": ["node_modules/**", ".git/**"],
+  "autoCreateDaily": true,
+  "wakeDetection": {
+    "enabled": true,
+    "intervalMs": 20000,
+    "thresholdMs": 20000
+  },
+  "server": {
+    "port": 3000,
+    "host": "127.0.0.1"
+  }
+}

@@ -3,7 +3,14 @@ import { Command } from "commander";
 import { statusCommand } from "./commands/status";
 import { installCommand } from "./commands/install";
 import { syncCommand } from "./commands/sync";
-import { addNoteCommand } from "./commands/add-note";
+import { addCommand } from "./commands/add";
+import { markCompleteCommand } from "./commands/mark-complete";
+import { deleteCommand } from "./commands/delete";
+import { searchCommand } from "./commands/search";
+import { incompleteTodosCommand } from "./commands/incomplete-todos";
+import { archiveCommand } from "./commands/archive";
+import { formatCommand } from "./commands/format";
+import { dailyCommand } from "./commands/daily";
 
 const program = new Command();
 
@@ -23,10 +30,12 @@ program
   .action(installCommand);
 
 program
-  .command("add-note")
-  .description("Add a note to file")
-  .argument("<text...>", "Text to add")
-  .action(addNoteCommand);
+  .command("add")
+  .description("Add content to your notes")
+  .option("-n, --note", "Add as a note")
+  .option("-t, --todo", "Add as a todo item")
+  .argument("<text...>", "Text content to add")
+  .action(addCommand);
 
 program
   .command("sync")
@@ -40,5 +49,48 @@ program
   .action(() => {
     console.log("📋 Logs command - TODO: Implement");
   });
+
+program
+  .command("complete")
+  .description("Mark a todo as completed (interactive)")
+  .action(markCompleteCommand);
+
+program
+  .command("delete")
+  .description("Delete a todo (interactive)")
+  .action(deleteCommand);
+
+program
+  .command("search")
+  .description("Search through notes")
+  .argument("<query>", "Search query")
+  .option("-d, --days <number>", "Number of days to search back (default: 30)")
+  .action(searchCommand);
+
+program
+  .command("incomplete-todos")
+  .description("Show incomplete todos")
+  .option("-d, --days <number>", "Number of days to look back (default: 7)")
+  .action(incompleteTodosCommand);
+
+program
+  .command("archive")
+  .description("Archive completed todos to Done section")
+  .action(archiveCommand);
+
+program
+  .command("format")
+  .description("Format and clean up the notes document")
+  .option("-s, --section <section>", "Format specific section (todos, notes)")
+  .option("-v, --validate", "Validate formatting without making changes")
+  .action(formatCommand);
+
+program
+  .command("daily")
+  .description("Manage daily sections")
+  .option("--status", "Show daily section status")
+  .option("-c, --create", "Create today's daily section")
+  .option("-f, --force", "Force create even if exists")
+  .action(dailyCommand);
 
 program.parse();

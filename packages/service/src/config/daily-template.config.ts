@@ -1,4 +1,4 @@
-const TODAY_SECTION = `**Today's Focus**`;
+const TODO_SECTION = `**Today's Focus**`;
 const NOTE_SECTION = `**Notes**`;
 const DONE_SECTION = `**Done**`;
 const TOMORROW_SECTION = `**Tomorrow**`;
@@ -8,7 +8,7 @@ export const DAILY_TEMPLATE = `# {date}
 _{quote} - {name}_
 
 
-${TODAY_SECTION}
+${TODO_SECTION}
 
 - [ ] Task 1
 

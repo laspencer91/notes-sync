@@ -3,6 +3,22 @@ import {
   SyncRequest,
   LogsResponse,
   AddNoteRequest,
+  AddTodoRequest,
+  MarkTodoCompleteRequest,
+  MarkTodoCompleteResponse,
+  DeleteTodoRequest,
+  DeleteTodoResponse,
+  SearchNotesRequest,
+  SearchNotesResponse,
+  GetIncompleteTodosResponse,
+  ArchiveCompletedTodosResponse,
+  FormatDocumentResponse,
+  FormatSectionRequest,
+  FormatSectionResponse,
+  ValidateFormattingResponse,
+  DailyStatusResponse,
+  CreateDailyRequest,
+  CreateDailyResponse,
 } from "./types";
 
 export class ApiClient {
@@ -60,5 +76,145 @@ export class ApiClient {
     if (!response.ok) {
       throw new Error(`Shutdown failed: ${response.statusText}`);
     }
+  }
+
+  async addTodo(request: AddTodoRequest): Promise<void> {
+    console.log("Adding Todo....");
+    const response = await fetch(`${this.baseUrl}/add-todo`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(request),
+    });
+    if (!response.ok) {
+      throw new Error(`Failed to add todo: ${response.statusText}`);
+    }
+    return response.json();
+  }
+
+  async markTodoComplete(request: MarkTodoCompleteRequest): Promise<MarkTodoCompleteResponse> {
+    console.log("Marking Todo Complete....");
+    const response = await fetch(`${this.baseUrl}/mark-todo-complete`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(request),
+    });
+    if (!response.ok) {
+      throw new Error(`Failed to mark todo complete: ${response.statusText}`);
+    }
+    return response.json();
+  }
+
+  async deleteTodo(request: DeleteTodoRequest): Promise<DeleteTodoResponse> {
+    console.log("Deleting Todo....");
+    const response = await fetch(`${this.baseUrl}/delete-todo`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(request),
+    });
+    if (!response.ok) {
+      throw new Error(`Failed to delete todo: ${response.statusText}`);
+    }
+    return response.json();
+  }
+
+  async searchNotes(request: SearchNotesRequest): Promise<SearchNotesResponse> {
+    console.log("Searching Notes....");
+    const response = await fetch(`${this.baseUrl}/search-notes`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(request),
+    });
+    if (!response.ok) {
+      throw new Error(`Failed to search notes: ${response.statusText}`);
+    }
+    return response.json();
+  }
+
+  async getIncompleteTodos(daysBack?: number): Promise<GetIncompleteTodosResponse> {
+    console.log("Getting Incomplete Todos....");
+    const queryParam = daysBack ? `?daysBack=${daysBack}` : '';
+    const response = await fetch(`${this.baseUrl}/incomplete-todos${queryParam}`);
+    if (!response.ok) {
+      throw new Error(`Failed to get incomplete todos: ${response.statusText}`);
+    }
+    return response.json();
+  }
+
+  async archiveCompletedTodos(): Promise<ArchiveCompletedTodosResponse> {
+    console.log("Archiving Completed Todos....");
+    const response = await fetch(`${this.baseUrl}/archive-completed-todos`, {
+      method: "POST",
+    });
+    if (!response.ok) {
+      throw new Error(`Failed to archive completed todos: ${response.statusText}`);
+    }
+    return response.json();
+  }
+
+  async formatDocument(): Promise<FormatDocumentResponse> {
+    console.log("Formatting Document....");
+    const response = await fetch(`${this.baseUrl}/format-document`, {
+      method: "POST",
+    });
+    if (!response.ok) {
+      throw new Error(`Failed to format document: ${response.statusText}`);
+    }
+    return response.json();
+  }
+
+  async formatSection(request: FormatSectionRequest): Promise<FormatSectionResponse> {
+    console.log(`Formatting Section: ${request.sectionName}...`);
+    const response = await fetch(`${this.baseUrl}/format-section`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(request),
+    });
+    if (!response.ok) {
+      throw new Error(`Failed to format section: ${response.statusText}`);
+    }
+    return response.json();
+  }
+
+  async validateFormatting(): Promise<ValidateFormattingResponse> {
+    console.log("Validating Formatting....");
+    const response = await fetch(`${this.baseUrl}/validate-formatting`);
+    if (!response.ok) {
+      throw new Error(`Failed to validate formatting: ${response.statusText}`);
+    }
+    return response.json();
+  }
+
+  async getDailyStatus(): Promise<DailyStatusResponse> {
+    console.log("Getting Daily Status....");
+    const response = await fetch(`${this.baseUrl}/daily-status`);
+    if (!response.ok) {
+      throw new Error(`Failed to get daily status: ${response.statusText}`);
+    }
+    return response.json();
+  }
+
+  async createDaily(request: CreateDailyRequest): Promise<CreateDailyResponse> {
+    console.log("Creating Daily Section....");
+    const response = await fetch(`${this.baseUrl}/create-daily`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(request),
+    });
+    if (!response.ok) {
+      throw new Error(`Failed to create daily section: ${response.statusText}`);
+    }
+    return response.json();
   }
 }

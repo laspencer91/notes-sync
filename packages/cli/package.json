@@ -12,9 +12,11 @@
   "dependencies": {
     "@notes-sync/shared": "*",
     "axios": "^1.6.0",
-    "commander": "^11.1.0"
+    "commander": "^11.1.0",
+    "inquirer": "^9.2.15"
   },
   "devDependencies": {
+    "@types/inquirer": "^9.0.7",
     "@types/node": "^20.11.30",
     "ts-node": "^10.9.2",
     "typescript": "^5.4.5"
