@@ -1,6 +1,24 @@
 # Notes Sync
 
-A powerful TypeScript monorepo for automated note-taking, task management, and GitHub synchronization. Features a background service that watches your markdown notes and automatically syncs them to GitHub, plus a CLI tool for rapid note capture and productivity workflows.
+----
+
+**Automatically sync your markdown notes to Git while you work.**
+
+This tool runs quietly in the background, watching your notes folder. Every time you save a note, it automatically commits and pushes to GitHub - no manual git commands needed.
+
+## What it does
+
+- **Auto-sync** - Saves and pushes your notes to Git automatically
+- **Daily sections** - Creates new date sections in your notes each day
+- **Terminal commands** - Add notes and check status from anywhere in your terminal
+- **Simple setup** - One markdown file, automatic organization
+
+## Perfect for
+
+- Daily work journals and task tracking
+- Meeting notes that sync across devices
+- Code snippets and quick references
+- Any markdown notes you want automatically backed up
 
 ## ✨ Features
 
