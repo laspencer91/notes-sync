@@ -85,7 +85,7 @@ export function loadConfig(): ServiceConfig {
   return {
     ...cfg,
     server: {
-      port: server.port || 3000,
+      port: server.port || 3127,
       host: server.host || "127.0.0.1",
     },
     ai: defaultAIConfig,

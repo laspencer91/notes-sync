@@ -1,7 +1,9 @@
 import { ApiClient } from "@notes-sync/shared";
+import { ServiceDiscovery } from "../service-discovery";
 
 export async function statusCommand() {
-  const client = new ApiClient("http://localhost:3000");
+  const serviceDiscovery = new ServiceDiscovery();
+  const client = await serviceDiscovery.ensureService();
 
   try {
     const status = await client.getStatus();
@@ -12,6 +14,5 @@ export async function statusCommand() {
     console.log(`  Uptime: ${Math.floor(status.uptime)}s`);
   } catch (error) {
     console.error("❌ Failed to get status:", error as Error);
-    console.log("💡 Is the service running? Try: notes-sync install");
   }
 }

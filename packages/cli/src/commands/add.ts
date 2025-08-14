@@ -1,10 +1,12 @@
 import { ApiClient } from "@notes-sync/shared";
+import { ServiceDiscovery } from "../service-discovery";
 
 export async function addCommand(
   text: string[],
   options: { note?: boolean; todo?: boolean },
 ) {
-  const client = new ApiClient("http://localhost:3000");
+  const serviceDiscovery = new ServiceDiscovery();
+  const client = await serviceDiscovery.ensureService();
 
   const content = text.join(" ");
 

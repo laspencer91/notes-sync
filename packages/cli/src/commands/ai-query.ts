@@ -1,4 +1,5 @@
 import { ApiClient, AIQueryRequest } from "@notes-sync/shared";
+import { ServiceDiscovery } from "../service-discovery";
 import inquirer from "inquirer";
 
 export async function aiQueryCommand(
@@ -13,7 +14,8 @@ export async function aiQueryCommand(
     next?: boolean;
   },
 ) {
-  const client = new ApiClient("http://localhost:3000");
+  const serviceDiscovery = new ServiceDiscovery();
+  const client = await serviceDiscovery.ensureService();
 
   // Determine query text
   let query = queryWords.join(" ");

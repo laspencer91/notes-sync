@@ -18,7 +18,7 @@ const program = new Command();
 program
   .name("notes-sync")
   .description("CLI for Notes Sync Service")
-  .version("0.1.0");
+  .version("1.0.0");
 
 program
   .command("status")

@@ -1,13 +1,27 @@
 {
   "name": "@notes-sync/shared",
-  "version": "0.1.0",
+  "version": "1.0.0",
+  "description": "Shared types and utilities for notes-sync",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
     "build": "tsc",
-    "dev": "tsc --watch"
+    "dev": "tsc --watch",
+    "prepublishOnly": "yarn run build"
   },
   "devDependencies": {
     "typescript": "^5.4.5"
+  },
+  "keywords": [
+    "notes",
+    "sync",
+    "types",
+    "shared"
+  ],
+  "author": "Logan Spencer",
+  "license": "MIT",
+  "repository": "gitlab:laspencer91/notes-sync",
+  "engines": {
+    "node": ">=18.0.0"
   }
 }

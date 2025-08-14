@@ -1,7 +1,9 @@
 import { ApiClient } from "@notes-sync/shared";
+import { ServiceDiscovery } from "../service-discovery";
 
 export async function syncCommand(options: { force?: boolean }) {
-  const client = new ApiClient();
+  const serviceDiscovery = new ServiceDiscovery();
+  const client = await serviceDiscovery.ensureService();
 
   try {
     console.log("🔄 Triggering sync...");

@@ -1,8 +1,11 @@
 {
   "name": "@notes-sync/service",
-  "version": "0.1.0",
-  "private": true,
+  "version": "1.0.0",
+  "description": "Background service for AI-powered note synchronization",
   "main": "dist/main.js",
+  "bin": {
+    "notes-sync-service": "./dist/main.js"
+  },
   "scripts": {
     "build": "tsc",
     "dev": "ts-node src/main.ts",
@@ -12,7 +15,7 @@
   },
   "dependencies": {
     "@google/genai": "^1.14.0",
-    "@notes-sync/shared": "workspace:*",
+    "@notes-sync/shared": "^1.0.0",
     "chokidar": "^3.6.0",
     "fastify": "^4.24.3",
     "simple-git": "^3.24.0"
@@ -21,5 +24,18 @@
     "@types/node": "^20.11.30",
     "ts-node": "^10.9.2",
     "typescript": "^5.4.5"
+  },
+  "keywords": [
+    "notes",
+    "sync",
+    "service",
+    "background",
+    "productivity"
+  ],
+  "author": "Logan Spencer",
+  "license": "MIT",
+  "repository": "gitlab:laspencer91/notes-sync",
+  "engines": {
+    "node": ">=18.0.0"
   }
 }

@@ -24,6 +24,7 @@ This tool runs quietly in the background, watching your notes folder. Every time
 ## 📖 Quick Navigation
 
 **Essential Sections:**
+
 - [🚀 Quick Start](#-quick-start) - Get up and running in minutes
 - [🤖 AI-Powered Analysis](#ai-powered-analysis) - Ask questions about your notes
 - [📖 CLI Commands](#-cli-commands) - Complete command reference
@@ -31,6 +32,7 @@ This tool runs quietly in the background, watching your notes folder. Every time
 - [📝 Configuration](#-configuration) - Customize your setup
 
 **Daily Workflow:**
+
 - [Content Management](#content-management) - Add notes and todos
 - [Todo Management](#todo-management) - Interactive task management
 - [🎨 Document Formatting](#-document-formatting) - Keep notes clean
@@ -48,35 +50,192 @@ This tool runs quietly in the background, watching your notes folder. Every time
 - 🌅 **Auto-Daily Creation** - Automatically creates today's section on wake-up and startup
 - 🤖 **AI Integration** - Context-aware daily quotes, intelligent note analysis, and conversational insights via `ai query` commands
 
-## 📁 Structure
+## 📦 Package Structure
 
-- `packages/shared/` - Shared TypeScript types and API client
-- `packages/service/` - Background HTTP server + file watcher daemon
-- `packages/cli/` - Global CLI tool for note management
+This project is published as three separate npm packages:
+
+- **`@notes-sync/cli`** - Global CLI tool for note management
+- **`@notes-sync/service`** - Background HTTP server + file watcher daemon
+- **`@notes-sync/shared`** - Shared TypeScript types and API client
+
+### Smart Service Discovery
+
+The CLI automatically discovers and connects to the service:
+
+- **Development Mode**: Detects workspace and uses local service
+- **Production Mode**: Checks for globally installed service
+- **Auto-Setup**: Guides you through installation and startup
+- **Fallback Prompts**: Clear instructions if service isn't found
 
 ## 🚀 Quick Start
 
-### Installation
+### 📦 Installation
+
+#### **Step 1: Install the CLI**
 
 ```bash
-# Install dependencies for all packages
-npm install
-
-# Build all packages
-npm run build
-
-# Install CLI globally
-npm run install:cli
+# Install CLI globally (this is all you need to start!)
+npm install -g @notes-sync/cli
 ```
 
-### Setup Service
+#### **Step 2: Set Up Your Notes Directory**
 
 ```bash
-# Install service as system daemon
+# Create a Git repository for your notes (if you don't have one)
+mkdir ~/Documents/DailyNotes
+cd ~/Documents/DailyNotes
+git init
+git remote add origin https://github.com/yourusername/your-notes-repo.git
+
+# Or use an existing Git repository
+cd /path/to/your/existing/notes/repo
+```
+
+#### **Step 3: Configure the Service**
+
+```bash
+# Check service status (this will guide you through setup)
+notes-sync status
+
+# The CLI will automatically:
+# 1. Detect if service is installed
+# 2. Prompt to install if missing
+# 3. Guide you to start the service
+# 4. Connect to the service automatically
+```
+
+### 🔧 **Service Setup Options**
+
+#### **Option A: Automatic Setup (Recommended)**
+
+```bash
+# Install service globally
+npm install -g @notes-sync/service
+
+# Install as background service (runs on startup)
 notes-sync install
 
-# Check service status
+# Start the service
+notes-sync-service start
+```
+
+#### **Option B: Manual Setup**
+
+```bash
+# Install service globally
+npm install -g @notes-sync/service
+
+# Start service manually (runs in foreground)
+notes-sync-service
+
+# Or start in background
+notes-sync-service &
+```
+
+### ✅ **Verify Installation**
+
+```bash
+# Check if everything is working
 notes-sync status
+
+# Add your first note
+notes-sync add -n "Hello, Notes Sync!"
+
+# Check if it was saved and synced
+ls ~/Documents/DailyNotes/Daily.md
+```
+
+### ⚙️ **Configuration**
+
+The service uses a configuration file at `~/.config/notes-sync/config.json`. You can create this file manually or let the service create it with defaults:
+
+```json
+{
+  "notesDir": "/Users/yourusername/Documents/DailyNotes",
+  "server": {
+    "host": "127.0.0.1",
+    "port": 3127
+  },
+  "autoCreateDaily": true,
+  "wakeDetection": {
+    "enabled": true,
+    "intervalMs": 20000,
+    "thresholdMs": 20000
+  },
+  "debounceMs": 2000,
+  "ai": {
+    "enabled": true,
+    "provider": "gemini",
+    "apiKey": "your-gemini-api-key"
+  }
+}
+```
+
+### 🔧 **Troubleshooting**
+
+#### **Service Not Found**
+
+```bash
+# If you get "Service not found" error:
+npm install -g @notes-sync/service
+notes-sync status
+```
+
+#### **Service Not Starting**
+
+```bash
+# Check if service is running
+notes-sync status
+
+# Start service manually
+notes-sync-service
+
+# Check logs
+notes-sync logs
+```
+
+#### **Git Repository Issues**
+
+```bash
+# Make sure your notes directory is a Git repo
+cd ~/Documents/DailyNotes
+git status
+
+# If not a repo, initialize it
+git init
+git remote add origin https://github.com/yourusername/your-notes-repo.git
+```
+
+#### **Permission Issues**
+
+```bash
+# If you get permission errors, try:
+sudo npm install -g @notes-sync/cli
+sudo npm install -g @notes-sync/service
+```
+
+### 🗑️ **Uninstalling**
+
+#### **Remove Background Service**
+
+```bash
+# Uninstall the background service
+notes-sync-service uninstall
+```
+
+#### **Remove Packages**
+
+```bash
+# Remove CLI and service packages
+npm uninstall -g @notes-sync/cli
+npm uninstall -g @notes-sync/service
+```
+
+#### **Clean Up Configuration**
+
+```bash
+# Remove configuration files
+rm -rf ~/.config/notes-sync
 ```
 
 ## 📖 CLI Commands
@@ -84,11 +243,8 @@ notes-sync status
 ### Service Management
 
 ```bash
-# Check if service is running
+# Check if service is running (auto-detects and guides setup)
 notes-sync status
-
-# Install service as daemon
-notes-sync install
 
 # Trigger manual sync
 notes-sync sync
@@ -158,6 +314,16 @@ notes-sync ai query -d 7 "What's been my biggest challenge this week?"
 ```
 
 > **💡 Getting Started Tip**: If you get a message about missing notes, create some content first with `notes-sync daily --create` and `notes-sync add -n "your note"`, then try your AI query again!
+
+### 🔧 **Service Discovery**
+
+The CLI automatically handles service setup and connection:
+
+- **First Run**: CLI detects missing service and guides you through installation
+- **Development Mode**: Automatically uses local service when running from workspace
+- **Production Mode**: Connects to globally installed service
+- **Smart Retry**: Attempts connection up to 3 times with helpful error messages
+- **Config Detection**: Reads service configuration from `~/.config/notes-sync/config.json`
 
 ### Search & Discovery
 
@@ -644,10 +810,29 @@ Service configuration via `packages/service/config.json`:
     }
   },
   "server": {
-    "port": 3000,
+    "port": 3127,
     "host": "127.0.0.1"
   }
 }
+```
+
+## 🛠️ Development
+
+For local development, see [DEVELOPMENT.md](./DEVELOPMENT.md) for detailed setup instructions.
+
+### Quick Development Commands
+
+```bash
+# Clone and setup
+git clone <repository>
+yarn install
+yarn build
+
+# Start service in development mode
+yarn dev:service
+
+# Test CLI in development mode
+yarn dev:cli status
 ```
 
 ## 🤝 Contributing

@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 import { createServer } from "./server";
 import { FileWatcher } from "./watcher";
 import { loadConfig } from "./config";
@@ -5,8 +6,19 @@ import { createGit, isGitRepo, hasOriginRemote, safeSync } from "./git";
 import { Logger } from "./logger";
 import { NoteInteractor } from "./note-interactor";
 import { AIService } from "./ai/ai-service";
-
 import { WakeDetector } from "./wake-detect";
+import path from "path";
+
+// Handle install/uninstall commands
+if (process.argv.includes("install")) {
+  require(path.join(__dirname, "..", "scripts", "install-service.js"));
+  process.exit(0);
+}
+
+if (process.argv.includes("uninstall")) {
+  require(path.join(__dirname, "..", "scripts", "uninstall-service.js"));
+  process.exit(0);
+}
 
 async function main() {
   Logger.log("Notes Sync Service starting...");

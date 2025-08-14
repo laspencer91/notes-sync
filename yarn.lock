@@ -157,7 +157,7 @@ __metadata:
   resolution: "@notes-sync/service@workspace:packages/service"
   dependencies:
     "@google/genai": "npm:^1.14.0"
-    "@notes-sync/shared": "workspace:*"
+    "@notes-sync/shared": "npm:*"
     "@types/node": "npm:^20.11.30"
     chokidar: "npm:^3.6.0"
     fastify: "npm:^4.24.3"
@@ -167,7 +167,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@notes-sync/shared@npm:*, @notes-sync/shared@workspace:*, @notes-sync/shared@workspace:packages/shared":
+"@notes-sync/shared@npm:*, @notes-sync/shared@workspace:packages/shared":
   version: 0.0.0-use.local
   resolution: "@notes-sync/shared@workspace:packages/shared"
   dependencies:

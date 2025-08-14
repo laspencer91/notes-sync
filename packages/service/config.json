@@ -12,7 +12,7 @@
     "**/.fseventsd/**"
   ],
   "server": {
-    "port": 3000,
+    "port": 3127,
     "host": "localhost"
   },
   "autoCreateDaily": true,
