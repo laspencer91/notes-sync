@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+    <dict>
+        <key>Label</key>
+        <string>com.yourname.notes-sync</string>
+
+        <key>ProgramArguments</key>
+        <array>
+            <string>/usr/local/bin/node</string>
+            <string>/path/to/your/notes-sync.js</string>
+        </array>
+
+        <key>RunAtLoad</key>
+        <true/>
+
+        <key>KeepAlive</key>
+        <true/>
+
+        <key>StandardOutPath</key>
+        <string>/Users/yourusername/Library/Logs/notes-sync/stdout.log</string>
+
+        <key>StandardErrorPath</key>
+        <string>/Users/yourusername/Library/Logs/notes-sync/stderr.log</string>
+
+        <key>WorkingDirectory</key>
+        <string>/Users/yourusername/notes</string>
+    </dict>
+</plist>

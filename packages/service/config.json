@@ -1,0 +1,18 @@
+{
+  "notesDir": "/Users/loganspencer/Documents/DailyNotes",
+  "debounceMs": 20000,
+  "glob": "**/*.md",
+  "ignore": [
+    "**/.git/**",
+    "**/.git",
+    "**/node_modules/**",
+    "**/.DS_Store",
+    "**/.Trash/**",
+    "**/.Spotlight-V100/**",
+    "**/.fseventsd/**"
+  ],
+  "server": {
+    "port": 3000,
+    "host": "localhost"
+  }
+}

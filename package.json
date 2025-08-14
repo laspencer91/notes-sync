@@ -1,0 +1,19 @@
+{
+  "name": "notes-sync",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "yarn workspaces foreach -At run build",
+    "dev:service": "yarn workspace @notes-sync/service run dev",
+    "install:cli": "yarn global add ./packages/cli",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
+  },
+  "devDependencies": {
+    "prettier": "^3.6.2",
+    "typescript": "^5.4.5"
+  },
+  "packageManager": "yarn@4.9.2"
+}
