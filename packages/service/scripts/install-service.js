@@ -1,16 +1,16 @@
 #!/usr/bin/env node
-const fs = require('fs');
-const os = require('os');
-const path = require('path');
-const { spawnSync } = require('child_process');
+const fs = require("fs");
+const os = require("os");
+const path = require("path");
+const { spawnSync } = require("child_process");
 
-const AGENT_LABEL = 'com.notesync.service';
+const AGENT_LABEL = "com.notesync.service";
 
 function createPlist() {
   const nodeBin = process.execPath;
-  const serviceMain = path.resolve(__dirname, '..', 'dist', 'main.js');
-  const logsDir = path.resolve(__dirname, '..', 'logs');
-  
+  const serviceMain = path.resolve(__dirname, "..", "dist", "main.js");
+  const logsDir = path.resolve(__dirname, "..", "logs");
+
   if (!fs.existsSync(logsDir)) {
     fs.mkdirSync(logsDir, { recursive: true });
   }
@@ -31,28 +31,34 @@ function createPlist() {
   <key>KeepAlive</key>
   <true/>
   <key>StandardOutPath</key>
-  <string>${path.join(logsDir, 'out.log')}</string>
+  <string>${path.join(logsDir, "out.log")}</string>
   <key>StandardErrorPath</key>
-  <string>${path.join(logsDir, 'err.log')}</string>
+  <string>${path.join(logsDir, "err.log")}</string>
 </dict>
 </plist>`;
 }
 
 function install() {
-  const plistPath = path.join(os.homedir(), 'Library', 'LaunchAgents', `${AGENT_LABEL}.plist`);
+  const plistPath = path.join(
+    os.homedir(),
+    "Library",
+    "LaunchAgents",
+    `${AGENT_LABEL}.plist`,
+  );
   const plistContent = createPlist();
-  
+
   fs.writeFileSync(plistPath, plistContent);
-  
-  const result = spawnSync('launchctl', ['load', '-w', plistPath], { stdio: 'inherit' });
-  
+
+  const result = spawnSync("launchctl", ["load", "-w", plistPath], {
+    stdio: "inherit",
+  });
+
   if (result.status === 0) {
     console.log(`✅ Service installed: ${plistPath}`);
   } else {
-    console.error('❌ Failed to install service');
+    console.error("❌ Failed to install service");
     process.exit(1);
   }
 }
 
 install();
-

@@ -1,6 +1,6 @@
 # Notes Sync
 
-----
+---
 
 **Automatically sync your markdown notes to Git while you work, enhanced with AI-powered daily insights.**
 
@@ -21,6 +21,20 @@ This tool runs quietly in the background, watching your notes folder. Every time
 - Code snippets and quick references
 - Any markdown notes you want automatically backed up
 
+## 📖 Quick Navigation
+
+**Essential Sections:**
+- [🚀 Quick Start](#-quick-start) - Get up and running in minutes
+- [🤖 AI-Powered Analysis](#ai-powered-analysis) - Ask questions about your notes
+- [📖 CLI Commands](#-cli-commands) - Complete command reference
+- [🤖 AI Integration](#-ai-integration) - Configure AI features and quotes
+- [📝 Configuration](#-configuration) - Customize your setup
+
+**Daily Workflow:**
+- [Content Management](#content-management) - Add notes and todos
+- [Todo Management](#todo-management) - Interactive task management
+- [🎨 Document Formatting](#-document-formatting) - Keep notes clean
+
 ## ✨ Features
 
 - 📝 **Automated Daily Templates** - Structured daily notes with Focus/Notes/Done/Tomorrow sections
@@ -32,12 +46,12 @@ This tool runs quietly in the background, watching your notes folder. Every time
 - 🛡️ **Git Safety** - Robust conflict resolution with rebase and autostash
 - 🎨 **Document Formatting** - Automatic cleanup of whitespace, spacing, and markdown consistency
 - 🌅 **Auto-Daily Creation** - Automatically creates today's section on wake-up and startup
-- 🤖 **AI Integration** - Context-aware daily quotes and intelligent content generation with Gemini API
+- 🤖 **AI Integration** - Context-aware daily quotes, intelligent note analysis, and conversational insights via `ai query` commands
 
 ## 📁 Structure
 
 - `packages/shared/` - Shared TypeScript types and API client
-- `packages/service/` - Background HTTP server + file watcher daemon  
+- `packages/service/` - Background HTTP server + file watcher daemon
 - `packages/cli/` - Global CLI tool for note management
 
 ## 🚀 Quick Start
@@ -104,7 +118,7 @@ notes-sync add -t Call client about proposal
 # Interactive todo completion (select from list)
 notes-sync mark-complete
 
-# Interactive todo deletion (select from list) 
+# Interactive todo deletion (select from list)
 notes-sync delete
 
 # See all incomplete todos from last 7 days
@@ -116,6 +130,34 @@ notes-sync incomplete-todos --days 14
 # Archive completed todos to Done section
 notes-sync archive
 ```
+
+### AI-Powered Analysis
+
+```bash
+# Ask AI questions about your notes (uses today by default)
+notes-sync ai query "What should I focus on next?"
+notes-sync ai query "What did I accomplish today?"
+
+# Analyze different time ranges
+notes-sync ai query --week "How productive was I this week?"
+notes-sync ai query -d 5 "What themes keep coming up?"
+notes-sync ai query --month "What should I improve?"
+
+# Quick analysis shortcuts
+notes-sync ai query --focus    # What should I focus on next?
+notes-sync ai query --review   # Summarize my recent progress
+notes-sync ai query --next     # What should I work on next?
+
+# Interactive mode (prompts for question)
+notes-sync ai query
+
+# Custom analysis examples
+notes-sync ai query "What am I procrastinating on?"
+notes-sync ai query "What patterns do you see in my work?"
+notes-sync ai query -d 7 "What's been my biggest challenge this week?"
+```
+
+> **💡 Getting Started Tip**: If you get a message about missing notes, create some content first with `notes-sync daily --create` and `notes-sync add -n "your note"`, then try your AI query again!
 
 ### Search & Discovery
 
@@ -155,13 +197,81 @@ notes-sync daily --create
 notes-sync daily --create --force
 ```
 
+## 🤖 AI Integration
+
+Enhance your note-taking experience with intelligent AI analysis powered by Google's Gemini API.
+
+### ✨ **Smart Daily Quotes**
+
+Every time a new daily section is created, the AI analyzes your recent notes and generates personalized, motivational quotes:
+
+```markdown
+# 1/15/2025
+
+_Focus on progress over perfection in your current projects_ - AI Generated
+
+**Today's Focus**
+
+- [ ] Your tasks here
+```
+
+### 🧠 **Conversational Note Analysis**
+
+Ask questions about your notes and get insightful, concise responses:
+
+- **"What should I focus on next?"** - Get prioritized recommendations
+- **"How productive was I this week?"** - Weekly progress summary
+- **"What patterns do you see?"** - Identify trends and themes
+- **"What am I procrastinating on?"** - Spot avoided tasks
+
+### 🔧 **How It Works:**
+
+- **Context Analysis**: Reviews your recent daily notes for themes and patterns
+- **Personalized Generation**: Creates quotes and insights relevant to your work
+- **Smart Limiting**: Analyzes up to 15k characters (2 weeks) for comprehensive context
+- **Graceful Fallback**: Uses curated quotes if AI is unavailable
+- **Privacy Focused**: Only sends note content for analysis, no personal data
+- **Robust Error Handling**: Provides helpful guidance when notes are empty or missing
+
+### ⚙️ **Configuration:**
+
+```json
+{
+  "ai": {
+    "enabled": true,
+    "provider": "gemini",
+    "apiKey": "your-gemini-api-key",
+    "model": "gemini-2.5-flash-lite",
+    "features": {
+      "dailyQuotes": {
+        "maxLength": 30,
+        "focus": ["productivity", "personal growth"],
+        "adjectives": ["actionable", "motivational"],
+        "additionalRules": ["Prefer wisdom that applies to daily work and life"]
+      }
+    },
+    "rateLimiting": {
+      "requestsPerMinute": 10,
+      "requestsPerDay": 100
+    }
+  }
+}
+```
+
+### 🔑 **Getting Started with AI:**
+
+1. **Get API Key**: Visit [Google AI Studio](https://aistudio.google.com/) (free tier available)
+2. **Set Environment Variable**: `export GEMINI_API_KEY="your-key"`
+3. **Or Add to Config**: Include in your `config.json` file
+4. **Start Analyzing**: Use `notes-sync ai query` commands immediately
+
 ## 🎨 Document Formatting
 
 The `format` command intelligently cleans up your notes with these improvements:
 
 - **Whitespace Cleanup**: Removes trailing spaces and normalizes blank lines
 - **Header Spacing**: Ensures consistent spacing around date headers (protects against breaking dates)
-- **Todo Formatting**: Standardizes checkbox formatting (`- [ ]` vs `- []`)  
+- **Todo Formatting**: Standardizes checkbox formatting (`- [ ]` vs `- []`)
 - **Bullet Points**: Consistent spacing for all bullet points
 - **Section Spacing**: Proper spacing between Today's Focus, Notes, Done, Tomorrow
 - **Quote Formatting**: Clean spacing around daily quotes (preserves quote integrity)
@@ -178,45 +288,43 @@ Perfect for cleaning up after manual edits or copy-paste operations! The formatt
 The service automatically creates today's daily section when needed, ensuring you always have a fresh workspace ready:
 
 ### 🚀 **When It Triggers:**
+
 - **Service Startup**: Checks if today's section exists when the service starts
 - **Wake Detection**: Automatically creates today's section when your computer wakes from sleep
 - **Adding Notes/Todos**: Creates today's section before adding content if it doesn't exist
 
 ### 📋 **What It Creates:**
+
 - **Today Only**: Only creates today's date section - never backfills missing days
-- **Clean Slate**: Fresh daily template with Today's Focus, Notes, Done, and Tomorrow sections  
+- **Clean Slate**: Fresh daily template with Today's Focus, Notes, Done, and Tomorrow sections
 - **Smart Detection**: Only creates when truly needed - won't duplicate existing sections
 
 ### ⚙️ **Configuration:**
+
 ```json
 {
-  "autoCreateDaily": true,          // Enable/disable auto-creation (default: true)
+  "autoCreateDaily": true, // Enable/disable auto-creation (default: true)
   "wakeDetection": {
-    "enabled": true,                // Enable wake detection (default: true)
-    "intervalMs": 20000,            // Check interval (default: 20s)
-    "thresholdMs": 20000            // Sleep threshold (default: 20s)
+    "enabled": true, // Enable wake detection (default: true)
+    "intervalMs": 20000, // Check interval (default: 20s)
+    "thresholdMs": 20000 // Sleep threshold (default: 20s)
   }
 }
 ```
 
 ### 🎯 **Philosophy: Today-Focused Workflow**
+
 - **No Backfilling**: Deliberately doesn't create sections for missed days
 - **Fresh Start**: Each day gets a clean slate when you're ready to work
 - **Intentional Gaps**: Missing days indicate intentional breaks (weekends, vacations, etc.)
 - **Wake & Work**: Open your laptop, and today's section is ready to capture your thoughts
 
 ### 💡 **Example Workflow:**
+
 1. **Friday**: Last entry in notes
-2. **Monday Morning**: Wake laptop → today's section auto-created  
+2. **Monday Morning**: Wake laptop → today's section auto-created
 3. **Gap Preserved**: No sections for Sat/Sun (intentional weekend break)
 4. **Ready to Go**: Fresh Monday template with Today's Focus ready for planning
-
-## 🤖 AI Integration
-
-Transform your daily note-taking with intelligent, context-aware enhancements powered by Google's Gemini API.
-
-### ✨ **Smart Daily Quotes**
-Every time a new daily section is created, the AI analyzes your recent notes and generates personalized, motivational quotes:
 
 ```markdown
 # 1/15/2025
@@ -224,28 +332,31 @@ Every time a new daily section is created, the AI analyzes your recent notes and
 _Focus on progress over perfection in your current projects_ - AI Generated
 
 **Today's Focus**
+
 - [ ] Your tasks here
 ```
 
 ### 🧠 **How It Works:**
+
 - **Context Analysis**: Reviews your last 3 days of notes for themes and patterns
 - **Personalized Generation**: Creates quotes relevant to your work and mindset
 - **Graceful Fallback**: Uses curated quotes if AI is unavailable
 - **Privacy Focused**: Only sends note content (not personal data) for context
 
 ### ⚙️ **Configuration:**
+
 ```json
 {
   "ai": {
-    "enabled": true,                    // Enable AI features
-    "provider": "gemini",               // Currently supports Gemini
-    "apiKey": "your-gemini-api-key",    // Get free key from Google AI Studio
-    "model": "gemini-1.5-flash",        // Model version
+    "enabled": true, // Enable AI features
+    "provider": "gemini", // Currently supports Gemini
+    "apiKey": "your-gemini-api-key", // Get free key from Google AI Studio
+    "model": "gemini-1.5-flash", // Model version
     "features": {
-      "dailyQuotes": true               // Enable contextual daily quotes
+      "dailyQuotes": true // Enable contextual daily quotes
     },
     "rateLimiting": {
-      "requestsPerMinute": 10,          // API rate limiting
+      "requestsPerMinute": 10, // API rate limiting
       "requestsPerDay": 100
     }
   }
@@ -253,12 +364,14 @@ _Focus on progress over perfection in your current projects_ - AI Generated
 ```
 
 ### 🔑 **Getting Started with AI:**
+
 1. **Get API Key**: Visit [Google AI Studio](https://aistudio.google.com/) (free tier available)
 2. **Set Environment Variable**: `export GEMINI_API_KEY="your-key"`
 3. **Or Add to Config**: Include in your `config.json` file
 4. **Automatic Enhancement**: AI quotes appear in new daily sections
 
 ### 💻 **CLI Commands That Trigger AI:**
+
 ```bash
 # Manual daily creation (with AI quote generation)
 notes-sync daily --create
@@ -270,17 +383,20 @@ notes-sync add -n "Meeting notes"
 ```
 
 **Automatic Triggers:**
+
 - **System wake-up**: AI quotes generated when daily sections auto-create
 - **Service startup**: AI quotes generated if missing daily section is created
 - **Adding content**: AI quotes generated when daily section is auto-created before adding notes/todos
 
 ### 🛡️ **Privacy & Safety:**
+
 - **No Personal Data**: Only note content is analyzed for context
 - **Rate Limited**: Respects API limits with built-in cooldowns
 - **Failure Safe**: Never breaks daily creation if AI is unavailable
 - **Local First**: All your notes stay on your machine, only context sent for quotes
 
 ### 🔮 **Future AI Features:**
+
 - **Weekly Summaries**: AI-generated insights from your week's notes
 - **Action Item Extraction**: Automatically find tasks in meeting notes
 - **Smart Suggestions**: Content recommendations based on your patterns
@@ -298,7 +414,7 @@ notes-sync incomplete-todos
 
 # Add today's focus items (auto-creates today's section if needed)
 notes-sync add -t "Finish presentation"
-notes-sync add -t "Review code changes" 
+notes-sync add -t "Review code changes"
 notes-sync add -t "Call client"
 ```
 
@@ -311,7 +427,7 @@ notes-sync add -n "Great idea from the standup: implement feature flags"
 # Mark tasks complete interactively (select from list)
 notes-sync mark-complete
 
-# Delete unwanted todos interactively  
+# Delete unwanted todos interactively
 notes-sync delete
 ```
 
@@ -360,16 +476,13 @@ _Progress over perfection leads to consistent growth_ - AI Generated
 
 **Notes**
 
-
 **Done**
 
-
 **Tomorrow**
-
-
 ```
 
 **Quote Sources:**
+
 - **AI-Generated**: Context-aware quotes based on your recent notes (when AI is enabled)
 - **Curated Fallbacks**: Hand-selected motivational quotes when AI is unavailable
 - **Personalized**: Quotes reflect your work patterns and themes
@@ -379,12 +492,14 @@ _Progress over perfection leads to consistent growth_ - AI Generated
 The service exposes these HTTP endpoints:
 
 ### Service Status
+
 - `GET /status` - Service health and info
 - `POST /sync` - Trigger manual sync
 - `GET /logs` - Service logs
 - `POST /shutdown` - Graceful shutdown
 
-### Content Management  
+### Content Management
+
 - `POST /add-note` - Add note to today's Notes section
 - `POST /add-todo` - Add todo to Today's Focus
 - `POST /mark-todo-complete` - Mark specific todo as done
@@ -397,6 +512,7 @@ The service exposes these HTTP endpoints:
 - `GET /validate-formatting` - Check document for formatting issues
 
 ### Daily Management
+
 - `GET /daily-status` - Check if today's section exists and get timing info
 - `POST /create-daily` - Manually create today's section (with force option)
 
@@ -450,27 +566,30 @@ The Notes Sync system follows a **distributed architecture** with clear separati
 ### **Core Components:**
 
 #### **1. Background Service** (`packages/service/`)
+
 - **HTTP Server**: Fastify-based REST API on port 3000
-- **File Watcher**: Chokidar monitoring for markdown changes  
+- **File Watcher**: Chokidar monitoring for markdown changes
 - **Git Integration**: Smart sync with conflict resolution and meaningful commits
 - **NoteInteractor**: Core markdown parsing and manipulation logic
 - **Wake Detection**: Auto-creates daily sections on system wake-up
 
 #### **2. CLI Tool** (`packages/cli/`)
+
 - **Commander.js**: Structured command-line interface
 - **Inquirer.js**: Interactive selection for todos (mark-complete, delete)
 - **API Client**: HTTP requests to background service
 - **User Experience**: Fast input, clear feedback, error handling
 
 #### **3. Shared Package** (`packages/shared/`)
+
 - **TypeScript Types**: Full type safety across packages
-- **API Client**: Centralized HTTP request logic  
+- **API Client**: Centralized HTTP request logic
 - **Request/Response Interfaces**: Consistent data contracts
 
 ### **Data Flow:**
 
 ```
-User Command → CLI Parser → API Client → HTTP Request 
+User Command → CLI Parser → API Client → HTTP Request
      ↓              ↓           ↓            ↓
 Type Safety → Validation → JSON Payload → Service Endpoint
      ↓              ↓           ↓            ↓
@@ -490,7 +609,7 @@ User Feedback ← Format Result ← File Operations ← Git Sync
 ### **Development Philosophy:**
 
 - **Fast Feedback**: CLI commands execute quickly with clear responses
-- **Interactive UX**: Inquirer selection menus for complex operations  
+- **Interactive UX**: Inquirer selection menus for complex operations
 - **Git Safety**: Rebase with autostash, conflict resolution, meaningful commits
 - **Content Integrity**: Smart formatting that preserves user content
 - **Today-Focused**: Auto-creation philosophy that respects intentional gaps
@@ -536,7 +655,7 @@ Service configuration via `packages/service/config.json`:
 This system follows a clear integration pattern for adding new functionality:
 
 1. **Add Types** (`packages/shared/src/types.ts`)
-2. **Add API Client Method** (`packages/shared/src/api-client.ts`)  
+2. **Add API Client Method** (`packages/shared/src/api-client.ts`)
 3. **Add Server Endpoint** (`packages/service/src/server.ts`)
 4. **Add NoteInteractor Method** (`packages/service/src/note-interactor.ts`)
 5. **Add CLI Command** (`packages/cli/src/commands/*.ts` + `cli.ts`)
@@ -549,4 +668,4 @@ MIT License - see LICENSE file for details.
 
 ---
 
-*Built for developers who want powerful, automated note-taking with the reliability of Git and the speed of CLI workflows.* 🚀
+_Built for developers who want powerful, automated note-taking with the reliability of Git and the speed of CLI workflows._ 🚀

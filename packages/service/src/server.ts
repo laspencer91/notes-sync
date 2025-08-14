@@ -1,7 +1,7 @@
 import fastify from "fastify";
-import { 
-  ServiceStatus, 
-  SyncRequest, 
+import {
+  ServiceStatus,
+  SyncRequest,
   LogsResponse,
   AddTodoRequest,
   MarkTodoCompleteRequest,
@@ -19,7 +19,9 @@ import {
   ValidateFormattingResponse,
   DailyStatusResponse,
   CreateDailyRequest,
-  CreateDailyResponse
+  CreateDailyResponse,
+  AIQueryRequest,
+  AIQueryResponse,
 } from "@notes-sync/shared";
 import { ServiceConfig } from "./config";
 import { Logger } from "./logger";
@@ -86,58 +88,60 @@ export function createServer(
   });
 
   // POST /add-todo - Add a new todo to today's focus
-  server.post<{ Body: AddTodoRequest }>(
-    "/add-todo",
-    async (request, reply) => {
-      Logger.log("Add todo requested via API");
-      await noteInteractor.addTodo(request.body.text);
-      return { message: "Todo added" };
-    }
-  );
+  server.post<{ Body: AddTodoRequest }>("/add-todo", async (request, reply) => {
+    Logger.log("Add todo requested via API");
+    await noteInteractor.addTodo(request.body.text);
+    return { message: "Todo added" };
+  });
 
   // POST /mark-todo-complete - Mark a todo as completed
-  server.post<{ Body: MarkTodoCompleteRequest, Reply: MarkTodoCompleteResponse }>(
-    "/mark-todo-complete",
-    async (request, reply) => {
-      Logger.log(`Mark todo complete requested: ${request.body.todoText}`);
-      const success = noteInteractor.markTodoComplete(request.body.todoText);
-      return { success };
-    }
-  );
+  server.post<{
+    Body: MarkTodoCompleteRequest;
+    Reply: MarkTodoCompleteResponse;
+  }>("/mark-todo-complete", async (request, reply) => {
+    Logger.log(`Mark todo complete requested: ${request.body.todoText}`);
+    const success = noteInteractor.markTodoComplete(request.body.todoText);
+    return { success };
+  });
 
   // POST /delete-todo - Delete a todo entirely
-  server.post<{ Body: DeleteTodoRequest, Reply: DeleteTodoResponse }>(
+  server.post<{ Body: DeleteTodoRequest; Reply: DeleteTodoResponse }>(
     "/delete-todo",
     async (request, reply) => {
       Logger.log(`Delete todo requested: ${request.body.todoText}`);
       const success = noteInteractor.deleteTodo(request.body.todoText);
-      return { 
-        success, 
-        message: success ? "Todo deleted successfully" : "Todo not found" 
+      return {
+        success,
+        message: success ? "Todo deleted successfully" : "Todo not found",
       };
-    }
+    },
   );
 
   // POST /search-notes - Search through notes
-  server.post<{ Body: SearchNotesRequest, Reply: SearchNotesResponse }>(
+  server.post<{ Body: SearchNotesRequest; Reply: SearchNotesResponse }>(
     "/search-notes",
     async (request, reply) => {
       Logger.log(`Search notes requested: ${request.body.query}`);
-      const results = noteInteractor.searchNotes(request.body.query, request.body.daysBack);
+      const results = noteInteractor.searchNotes(
+        request.body.query,
+        request.body.daysBack,
+      );
       return { results };
-    }
+    },
   );
 
   // GET /incomplete-todos - Get incomplete todos
-  server.get<{ Querystring: { daysBack?: string }, Reply: GetIncompleteTodosResponse }>(
-    "/incomplete-todos",
-    async (request, reply) => {
-      const daysBack = request.query.daysBack ? parseInt(request.query.daysBack) : undefined;
-      Logger.log(`Get incomplete todos requested: ${daysBack || 7} days back`);
-      const todos = noteInteractor.getIncompleteTodos(daysBack);
-      return { todos };
-    }
-  );
+  server.get<{
+    Querystring: { daysBack?: string };
+    Reply: GetIncompleteTodosResponse;
+  }>("/incomplete-todos", async (request, reply) => {
+    const daysBack = request.query.daysBack
+      ? parseInt(request.query.daysBack)
+      : undefined;
+    Logger.log(`Get incomplete todos requested: ${daysBack || 7} days back`);
+    const todos = noteInteractor.getIncompleteTodos(daysBack);
+    return { todos };
+  });
 
   // POST /archive-completed-todos - Archive completed todos
   server.post<{ Reply: ArchiveCompletedTodosResponse }>(
@@ -146,7 +150,7 @@ export function createServer(
       Logger.log("Archive completed todos requested");
       const archivedCount = noteInteractor.archiveCompletedTodos();
       return { archivedCount };
-    }
+    },
   );
 
   // POST /format-document - Format the entire document
@@ -156,17 +160,17 @@ export function createServer(
       Logger.log("Format document requested");
       const result = noteInteractor.formatDocument();
       return result;
-    }
+    },
   );
 
   // POST /format-section - Format a specific section
-  server.post<{ Body: FormatSectionRequest, Reply: FormatSectionResponse }>(
+  server.post<{ Body: FormatSectionRequest; Reply: FormatSectionResponse }>(
     "/format-section",
     async (request, reply) => {
       Logger.log(`Format section requested: ${request.body.sectionName}`);
       const success = noteInteractor.formatSection(request.body.sectionName);
       return { success };
-    }
+    },
   );
 
   // GET /validate-formatting - Check document for formatting issues
@@ -176,7 +180,7 @@ export function createServer(
       Logger.log("Validate formatting requested");
       const result = noteInteractor.validateFormatting();
       return result;
-    }
+    },
   );
 
   // GET /daily-status - Check daily section status
@@ -187,24 +191,48 @@ export function createServer(
       const hasToday = noteInteractor.hasTodaySection();
       const missingDays = noteInteractor.checkForMissingDays();
       const timeSinceLastEntry = noteInteractor.getTimeSinceLastEntry();
-      
+
       return { hasToday, missingDays, timeSinceLastEntry };
-    }
+    },
   );
 
   // POST /create-daily - Force create daily section
-  server.post<{ Body: CreateDailyRequest, Reply: CreateDailyResponse }>(
+  server.post<{ Body: CreateDailyRequest; Reply: CreateDailyResponse }>(
     "/create-daily",
     async (request, reply) => {
       Logger.log("Manual daily section creation requested");
-      const result = await noteInteractor.autoCreateDailySection(request.body?.force);
-      
+      const result = await noteInteractor.autoCreateDailySection(
+        request.body?.force,
+      );
+
       if (result.created) {
         scheduleSync("manual-daily-creation");
       }
-      
+
       return result;
-    }
+    },
+  );
+
+  server.post<{ Body: AIQueryRequest; Reply: AIQueryResponse }>(
+    "/ai/query",
+    async (request, reply) => {
+      Logger.log(
+        `AI Query: "${request.body.query}" (${JSON.stringify(request.body.timeRange)})`,
+      );
+
+      try {
+        const response = await noteInteractor.processAIQuery(request.body);
+        return response;
+      } catch (error) {
+        Logger.error(`AI query failed: ${(error as Error).message}`);
+        reply.code(500);
+        return {
+          response:
+            "Sorry, I encountered an error analyzing your notes. Please try again.",
+          contextUsed: { daysCovered: 0, charactersUsed: 0, truncated: false },
+        };
+      }
+    },
   );
 
   return server;

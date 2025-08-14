@@ -11,6 +11,7 @@ import { incompleteTodosCommand } from "./commands/incomplete-todos";
 import { archiveCommand } from "./commands/archive";
 import { formatCommand } from "./commands/format";
 import { dailyCommand } from "./commands/daily";
+import { aiQueryCommand } from "./commands/ai-query";
 
 const program = new Command();
 
@@ -92,5 +93,22 @@ program
   .option("-c, --create", "Create today's daily section")
   .option("-f, --force", "Force create even if exists")
   .action(dailyCommand);
+
+program
+  .command("ai")
+  .description("AI-powered analysis and insights")
+  .addCommand(
+    new Command("query")
+      .description("Ask AI questions about your notes")
+      .argument("[query...]", "Question to ask about your notes")
+      .option("-d, --days <number>", "Number of days to analyze", parseInt)
+      .option("--today", "Analyze only today")
+      .option("--week", "Analyze past week")
+      .option("--month", "Analyze past month")
+      .option("--focus", "What should I focus on?")
+      .option("--review", "Review my progress")
+      .option("--next", "What should I do next?")
+      .action(aiQueryCommand),
+  );
 
 program.parse();

@@ -19,6 +19,8 @@ import {
   DailyStatusResponse,
   CreateDailyRequest,
   CreateDailyResponse,
+  AIQueryRequest,
+  AIQueryResponse,
 } from "./types";
 
 export class ApiClient {
@@ -93,7 +95,9 @@ export class ApiClient {
     return response.json();
   }
 
-  async markTodoComplete(request: MarkTodoCompleteRequest): Promise<MarkTodoCompleteResponse> {
+  async markTodoComplete(
+    request: MarkTodoCompleteRequest,
+  ): Promise<MarkTodoCompleteResponse> {
     console.log("Marking Todo Complete....");
     const response = await fetch(`${this.baseUrl}/mark-todo-complete`, {
       method: "POST",
@@ -138,10 +142,14 @@ export class ApiClient {
     return response.json();
   }
 
-  async getIncompleteTodos(daysBack?: number): Promise<GetIncompleteTodosResponse> {
+  async getIncompleteTodos(
+    daysBack?: number,
+  ): Promise<GetIncompleteTodosResponse> {
     console.log("Getting Incomplete Todos....");
-    const queryParam = daysBack ? `?daysBack=${daysBack}` : '';
-    const response = await fetch(`${this.baseUrl}/incomplete-todos${queryParam}`);
+    const queryParam = daysBack ? `?daysBack=${daysBack}` : "";
+    const response = await fetch(
+      `${this.baseUrl}/incomplete-todos${queryParam}`,
+    );
     if (!response.ok) {
       throw new Error(`Failed to get incomplete todos: ${response.statusText}`);
     }
@@ -154,7 +162,9 @@ export class ApiClient {
       method: "POST",
     });
     if (!response.ok) {
-      throw new Error(`Failed to archive completed todos: ${response.statusText}`);
+      throw new Error(
+        `Failed to archive completed todos: ${response.statusText}`,
+      );
     }
     return response.json();
   }
@@ -170,7 +180,9 @@ export class ApiClient {
     return response.json();
   }
 
-  async formatSection(request: FormatSectionRequest): Promise<FormatSectionResponse> {
+  async formatSection(
+    request: FormatSectionRequest,
+  ): Promise<FormatSectionResponse> {
     console.log(`Formatting Section: ${request.sectionName}...`);
     const response = await fetch(`${this.baseUrl}/format-section`, {
       method: "POST",
@@ -214,6 +226,21 @@ export class ApiClient {
     });
     if (!response.ok) {
       throw new Error(`Failed to create daily section: ${response.statusText}`);
+    }
+    return response.json();
+  }
+
+  async aiQuery(request: AIQueryRequest): Promise<AIQueryResponse> {
+    console.log("AI Query requested...");
+    const response = await fetch(`${this.baseUrl}/ai/query`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(request),
+    });
+    if (!response.ok) {
+      throw new Error(`AI query failed: ${response.statusText}`);
     }
     return response.json();
   }

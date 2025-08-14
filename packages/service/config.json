@@ -29,10 +29,7 @@
     "features": {
       "dailyQuotes": {
         "maxLength": 50,
-        "focus": [
-          "leadership",
-          "truth"
-        ],
+        "focus": ["leadership", "truth"],
         "adjectives": [
           "by historical figure or biblical text",
           "sobering",

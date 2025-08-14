@@ -52,6 +52,25 @@ export interface DeleteTodoResponse {
   message: string;
 }
 
+export interface AIQueryRequest {
+  query: string;
+  timeRange: {
+    days?: number;
+    type?: "today" | "week" | "month" | "custom";
+  };
+  analysisType?: "focus" | "review" | "next" | "general";
+}
+
+export interface AIQueryResponse {
+  response: string;
+  contextUsed: {
+    daysCovered: number;
+    charactersUsed: number;
+    truncated: boolean;
+  };
+  suggestions?: string[];
+}
+
 export interface SearchNotesRequest {
   query: string;
   daysBack?: number;

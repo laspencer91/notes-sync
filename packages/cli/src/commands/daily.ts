@@ -1,6 +1,9 @@
 import { ApiClient } from "@notes-sync/shared";
 
-export async function dailyCommand(options: { status?: boolean; create?: boolean; force?: boolean }, command?: any) {
+export async function dailyCommand(
+  options: { status?: boolean; create?: boolean; force?: boolean },
+  command?: any,
+) {
   const client = new ApiClient("http://localhost:3000");
 
   // Debug info to see what Commander.js is actually passing

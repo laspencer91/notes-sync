@@ -6,7 +6,7 @@ export async function incompleteTodosCommand(options: { days?: string }) {
   try {
     const daysBack = options.days ? parseInt(options.days) : undefined;
     const result = await client.getIncompleteTodos(daysBack);
-    
+
     if (result.todos.length === 0) {
       console.log("✅ No incomplete todos found");
       return;
@@ -14,7 +14,7 @@ export async function incompleteTodosCommand(options: { days?: string }) {
 
     console.log(`📋 Found ${result.todos.length} incomplete todos:`);
     console.log();
-    
+
     let currentDate = "";
     for (const item of result.todos) {
       if (item.date !== currentDate) {

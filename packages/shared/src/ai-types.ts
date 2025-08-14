@@ -29,9 +29,20 @@ export interface GenerateQuoteResponse {
   author: string;
 }
 
+export interface GenerateQueryRequest {
+  query: string;
+  context: string;
+  maxLength?: number;
+}
+
+export interface GenerateQueryResponse {
+  response: string;
+}
+
 export interface AIProvider {
   name: string;
   generateQuote(request: GenerateQuoteRequest): Promise<GenerateQuoteResponse>;
+  processQuery(request: GenerateQueryRequest): Promise<GenerateQueryResponse>;
 }
 
 // Error types for AI operations

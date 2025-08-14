@@ -6,7 +6,7 @@ export async function searchCommand(query: string, options: { days?: string }) {
   try {
     const daysBack = options.days ? parseInt(options.days) : undefined;
     const result = await client.searchNotes({ query, daysBack });
-    
+
     if (result.results.length === 0) {
       console.log(`🔍 No results found for "${query}"`);
       return;
@@ -14,10 +14,10 @@ export async function searchCommand(query: string, options: { days?: string }) {
 
     console.log(`🔍 Found ${result.results.length} results for "${query}":`);
     console.log();
-    
+
     for (const item of result.results) {
       console.log(`📅 ${item.date}`);
-      console.log(`   ${item.context.split('\n').join('\n   ')}`);
+      console.log(`   ${item.context.split("\n").join("\n   ")}`);
       console.log();
     }
   } catch (error) {

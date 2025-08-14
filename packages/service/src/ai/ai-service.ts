@@ -3,6 +3,7 @@ import {
   AIProvider,
   GenerateQuoteRequest,
   GenerateQuoteResponse,
+  GenerateQueryRequest,
   AIError,
 } from "@notes-sync/shared";
 import { GeminiProvider } from "./providers/gemini-provider";
@@ -114,5 +115,30 @@ export class AIService {
     // Use fallback quote if AI is unavailable
     Logger.log("Using fallback quote - AI unavailable");
     return this.getFallbackQuote();
+  }
+
+  async processQuery(prompt: string): Promise<string> {
+    if (!this.isEnabled()) {
+      throw new Error("AI query processing requires AI to be enabled");
+    }
+
+    try {
+      const request: GenerateQueryRequest = {
+        query: prompt,
+        context: "", // Context is already in the prompt
+        maxLength: 500, // Longer responses for analysis
+      };
+
+      const response = await this.provider!.processQuery(request);
+      this.lastQuoteTime = Date.now(); // Update rate limiting
+
+      return response.response;
+    } catch (error) {
+      Logger.error(`AI query processing failed: ${(error as Error).message}`);
+      throw new AIError(
+        `Failed to process query: ${(error as Error).message}`,
+        this.config.provider,
+      );
+    }
   }
 }

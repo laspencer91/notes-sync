@@ -59,22 +59,31 @@ async function main() {
     try {
       aiService = new AIService(config.ai);
       if (aiService.isEnabled()) {
-        Logger.log(`AI Service initialized with ${config.ai.provider} provider`);
+        Logger.log(
+          `AI Service initialized with ${config.ai.provider} provider`,
+        );
       } else {
         Logger.log("AI Service initialized but disabled (no API key)");
       }
     } catch (error) {
-      Logger.error(`Failed to initialize AI service: ${(error as Error).message}`);
+      Logger.error(
+        `Failed to initialize AI service: ${(error as Error).message}`,
+      );
     }
   }
 
   ///////////////////////////
   // INIT NOTE INTERACTOR
   //////////////////////////
-  const noteInteractor = new NoteInteractor(config.notesDir, "Daily.md", aiService);
+  const noteInteractor = new NoteInteractor(
+    config.notesDir,
+    "Daily.md",
+    aiService,
+  );
 
   // Auto-create today's section on startup (if enabled)
-  if (config.autoCreateDaily !== false) { // Default to true
+  if (config.autoCreateDaily !== false) {
+    // Default to true
     Logger.log("Checking for missing daily sections...");
     const result = await noteInteractor.autoCreateDailySection();
     if (result.created) {
@@ -88,16 +97,23 @@ async function main() {
   ///////////////////////////
   // SETUP WAKE DETECTION
   //////////////////////////
-  if (config.wakeDetection?.enabled !== false) { // Default to true
-    const wakeConfig = config.wakeDetection || { enabled: true, intervalMs: 20000, thresholdMs: 20000 };
+  if (config.wakeDetection?.enabled !== false) {
+    // Default to true
+    const wakeConfig = config.wakeDetection || {
+      enabled: true,
+      intervalMs: 20000,
+      thresholdMs: 20000,
+    };
     const intervalMs = wakeConfig.intervalMs || 20000;
     const thresholdMs = wakeConfig.thresholdMs || 20000;
 
-    Logger.log(`Starting wake detection (interval: ${intervalMs}ms, threshold: ${thresholdMs}ms)`);
-    
+    Logger.log(
+      `Starting wake detection (interval: ${intervalMs}ms, threshold: ${thresholdMs}ms)`,
+    );
+
     WakeDetector.onWake(async () => {
       Logger.log("Wake detected! Checking for new daily section...");
-      
+
       // Auto-create daily section on wake
       const result = await noteInteractor.autoCreateDailySection();
       if (result.created) {
@@ -110,8 +126,6 @@ async function main() {
 
     WakeDetector.start(intervalMs);
   }
-
-
 
   ///////////////////////////
   // START HTTP SERVER

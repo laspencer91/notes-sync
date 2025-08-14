@@ -2,6 +2,8 @@ import {
   AIProvider,
   GenerateQuoteRequest,
   GenerateQuoteResponse,
+  GenerateQueryRequest,
+  GenerateQueryResponse,
   AIError,
   AIRateLimitError,
   AIConfig,
@@ -117,6 +119,50 @@ Examples:
 "Your future self is counting on what you do today" - Unknown
 
 Generate one quote:`;
+  }
+
+  async processQuery(
+    request: GenerateQueryRequest,
+  ): Promise<GenerateQueryResponse> {
+    try {
+      const response = await this.ai.models.generateContent({
+        model: this.model,
+        contents: request.query,
+        config: {
+          temperature: 0.7,
+          topK: 40,
+          topP: 0.9,
+          maxOutputTokens: request.maxLength || 500,
+        },
+      });
+
+      if (!response.text) {
+        throw new AIError("No text content in Gemini API response", this.name);
+      }
+
+      Logger.log(`Processed AI query: ${request.query.substring(0, 50)}...`);
+
+      return {
+        response: response.text.trim(),
+      };
+    } catch (error) {
+      // Handle rate limiting errors
+      if (error instanceof Error && error.message.includes("429")) {
+        throw new AIRateLimitError(this.name);
+      }
+
+      if (error instanceof AIError) {
+        throw error;
+      }
+
+      Logger.error(
+        `Gemini query processing failed: ${(error as Error).message}`,
+      );
+      throw new AIError(
+        `Failed to process query: ${(error as Error).message}`,
+        this.name,
+      );
+    }
   }
 
   private parseQuoteResponse(text: string): GenerateQuoteResponse {
