@@ -139,7 +139,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@notes-sync/cli@workspace:packages/cli"
   dependencies:
-    "@notes-sync/shared": "npm:*"
+    "@notes-sync/shared": "npm:^1.0.0"
     "@types/inquirer": "npm:^9.0.7"
     "@types/node": "npm:^20.11.30"
     axios: "npm:^1.6.0"
@@ -157,17 +157,19 @@ __metadata:
   resolution: "@notes-sync/service@workspace:packages/service"
   dependencies:
     "@google/genai": "npm:^1.14.0"
-    "@notes-sync/shared": "npm:*"
+    "@notes-sync/shared": "npm:^1.0.0"
     "@types/node": "npm:^20.11.30"
     chokidar: "npm:^3.6.0"
     fastify: "npm:^4.24.3"
     simple-git: "npm:^3.24.0"
     ts-node: "npm:^10.9.2"
     typescript: "npm:^5.4.5"
+  bin:
+    notes-sync-service: ./dist/main.js
   languageName: unknown
   linkType: soft
 
-"@notes-sync/shared@npm:*, @notes-sync/shared@workspace:packages/shared":
+"@notes-sync/shared@npm:^1.0.0, @notes-sync/shared@workspace:packages/shared":
   version: 0.0.0-use.local
   resolution: "@notes-sync/shared@workspace:packages/shared"
   dependencies:
@@ -932,14 +934,14 @@ __metadata:
   linkType: hard
 
 "fdir@npm:^6.4.4":
-  version: 6.4.6
-  resolution: "fdir@npm:6.4.6"
+  version: 6.5.0
+  resolution: "fdir@npm:6.5.0"
   peerDependencies:
     picomatch: ^3 || ^4
   peerDependenciesMeta:
     picomatch:
       optional: true
-  checksum: 10c0/45b559cff889934ebb8bc498351e5acba40750ada7e7d6bde197768d2fa67c149be8ae7f8ff34d03f4e1eb20f2764116e56440aaa2f6689e9a4aa7ef06acafe9
+  checksum: 10c0/e345083c4306b3aed6cb8ec551e26c36bab5c511e99ea4576a16750ddc8d3240e63826cc624f5ae17ad4dc82e68a253213b60d556c11bfad064b7607847ed07f
   languageName: node
   linkType: hard
 

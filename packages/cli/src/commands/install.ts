@@ -11,13 +11,24 @@ export async function installCommand() {
     const serviceInfo = await serviceDiscovery.discoverService();
 
     if (!serviceInfo.isInstalled) {
-      console.log("📦 Service not installed. Please install it first:");
-      console.log("npm install -g @notes-sync/service");
-      return;
+      console.log("📦 Service not installed. Installing it now...");
+      
+      // Install the service globally
+      const { spawnSync } = require("child_process");
+      const installResult = spawnSync("npm", ["install", "-g", "@notes-sync/service"], {
+        stdio: "inherit",
+      });
+
+      if (installResult.status !== 0) {
+        console.error("❌ Failed to install service");
+        console.log("💡 Try running manually: npm install -g @notes-sync/service");
+        process.exit(1);
+      }
+
+      console.log("✅ Service installed successfully!");
     }
 
-    // Try to run the service's install script
-    // First try the global command, then fall back to local path
+    // Now run the service's install script
     let child;
 
     // Check if notes-sync-service is available globally
