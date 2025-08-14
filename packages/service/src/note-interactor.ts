@@ -2,6 +2,7 @@ import { getDailyTemplate } from "./config/daily-template.config";
 import path from "path";
 import fs from "fs";
 import { Logger } from "./logger";
+import { AIService } from "./ai/ai-service";
 
 // Section constants for parsing
 const TODAY_SECTION = `**Today's Focus**`;
@@ -13,14 +14,36 @@ export class NoteInteractor {
   constructor(
     private notesDir: string,
     private noteFile: string,
+    private aiService?: AIService,
   ) {}
 
-  writeNewDay() {
+  async writeNewDay(): Promise<void> {
     try {
+      let quote = "Progress over perfection";
+      let author = "Unknown";
+
+      // Try to generate AI quote if available
+      if (this.aiService?.isDailyQuotesEnabled()) {
+        try {
+          // Get context from recent notes for better quote generation
+          const context = this.getRecentNotesContext();
+          const aiQuote = await this.aiService.generateQuoteWithFallback(context);
+          
+          if (aiQuote) {
+            quote = aiQuote.quote;
+            author = aiQuote.author;
+            Logger.log(`Generated AI quote: "${quote}" - ${author}`);
+          }
+        } catch (error) {
+          Logger.error(`Failed to generate AI quote, using fallback: ${(error as Error).message}`);
+          // Continue with default quote - don't let AI failures break daily creation
+        }
+      }
+
       const template = getDailyTemplate(
         new Date().toLocaleDateString(),
-        "And I will be with you until the end",
-        "The Christ",
+        quote,
+        author,
       );
 
       this.append("\n\n" + template);
@@ -32,6 +55,23 @@ export class NoteInteractor {
       Logger.error(
         `Failed to write daily section: ${(error as Error).message}`,
       );
+    }
+  }
+
+  // Get recent notes context for AI quote generation
+  private getRecentNotesContext(): string {
+    try {
+      const recentDays = this.getPreviousDays(3); // Get last 3 days for context
+      const context = recentDays
+        .map(day => this.getNotes(day))
+        .filter(notes => notes.trim().length > 0)
+        .join(' ')
+        .substring(0, 300); // Limit context length
+
+      return context;
+    } catch (error) {
+      Logger.error(`Failed to get recent notes context: ${(error as Error).message}`);
+      return '';
     }
   }
 
@@ -199,12 +239,12 @@ export class NoteInteractor {
     }
   }
 
-  addTodo(text: string): void {
+  async addTodo(text: string): Promise<void> {
     try {
       const todaySection = this.getTodaySection();
       if (!todaySection) {
         Logger.error("Today's section not found. Creating new day first.");
-        this.writeNewDay();
+        await this.writeNewDay();
         return this.addTodo(text);
       }
 
@@ -254,12 +294,12 @@ export class NoteInteractor {
     }
   }
 
-  addNote(text: string): void {
+  async addNote(text: string): Promise<void> {
     try {
       const todaySection = this.getTodaySection();
       if (!todaySection) {
         Logger.error("Today's section not found. Creating new day first.");
-        this.writeNewDay();
+        await this.writeNewDay();
         return this.addNote(text);
       }
 
@@ -833,7 +873,7 @@ export class NoteInteractor {
   }
 
   // Auto-create daily section if needed (enhanced version)
-  autoCreateDailySection(force: boolean = false): { created: boolean; reason: string } {
+  async autoCreateDailySection(force: boolean = false): Promise<{ created: boolean; reason: string }> {
     try {
       // Check if today already exists (unless forced)
       if (!force && this.hasTodaySection()) {
@@ -850,7 +890,7 @@ export class NoteInteractor {
       // Create today's section (or force create)
       const today = new Date().toLocaleDateString();
       if (missingDays.includes(today) || force) {
-        this.writeNewDay();
+        await this.writeNewDay();
         Logger.log(`Auto-created daily section for ${today}`);
         return { created: true, reason: `Created section for ${today}` };
       }

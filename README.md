@@ -2,15 +2,16 @@
 
 ----
 
-**Automatically sync your markdown notes to Git while you work.**
+**Automatically sync your markdown notes to Git while you work, enhanced with AI-powered daily insights.**
 
-This tool runs quietly in the background, watching your notes folder. Every time you save a note, it automatically commits and pushes to GitHub - no manual git commands needed.
+This tool runs quietly in the background, watching your notes folder. Every time you save a note, it automatically commits and pushes to GitHub - no manual git commands needed. Plus, AI integration provides personalized daily quotes and intelligent content enhancement.
 
 ## What it does
 
 - **Auto-sync** - Saves and pushes your notes to Git automatically
-- **Daily sections** - Creates new date sections in your notes each day
+- **Daily sections** - Creates new date sections in your notes each day with AI-generated quotes
 - **Terminal commands** - Add notes and check status from anywhere in your terminal
+- **AI Enhancement** - Contextual daily quotes and intelligent content generation
 - **Simple setup** - One markdown file, automatic organization
 
 ## Perfect for
@@ -31,6 +32,7 @@ This tool runs quietly in the background, watching your notes folder. Every time
 - 🛡️ **Git Safety** - Robust conflict resolution with rebase and autostash
 - 🎨 **Document Formatting** - Automatic cleanup of whitespace, spacing, and markdown consistency
 - 🌅 **Auto-Daily Creation** - Automatically creates today's section on wake-up and startup
+- 🤖 **AI Integration** - Context-aware daily quotes and intelligent content generation with Gemini API
 
 ## 📁 Structure
 
@@ -87,7 +89,7 @@ notes-sync logs
 ### Content Management
 
 ```bash
-# Add content using the unified command
+# Add content using the unified command (auto-creates daily section with AI quote if needed)
 notes-sync add -n "Met with John about the project timeline"
 notes-sync add -t "Review quarterly budget"
 
@@ -146,10 +148,10 @@ notes-sync format --validate
 # Check daily section status
 notes-sync daily --status
 
-# Create today's daily section manually
+# Create today's daily section manually (with AI-generated quote)
 notes-sync daily --create
 
-# Force create today's section (even if exists)
+# Force create today's section (even if exists, with fresh AI quote)
 notes-sync daily --create --force
 ```
 
@@ -208,6 +210,80 @@ The service automatically creates today's daily section when needed, ensuring yo
 2. **Monday Morning**: Wake laptop → today's section auto-created  
 3. **Gap Preserved**: No sections for Sat/Sun (intentional weekend break)
 4. **Ready to Go**: Fresh Monday template with Today's Focus ready for planning
+
+## 🤖 AI Integration
+
+Transform your daily note-taking with intelligent, context-aware enhancements powered by Google's Gemini API.
+
+### ✨ **Smart Daily Quotes**
+Every time a new daily section is created, the AI analyzes your recent notes and generates personalized, motivational quotes:
+
+```markdown
+# 1/15/2025
+
+_Focus on progress over perfection in your current projects_ - AI Generated
+
+**Today's Focus**
+- [ ] Your tasks here
+```
+
+### 🧠 **How It Works:**
+- **Context Analysis**: Reviews your last 3 days of notes for themes and patterns
+- **Personalized Generation**: Creates quotes relevant to your work and mindset
+- **Graceful Fallback**: Uses curated quotes if AI is unavailable
+- **Privacy Focused**: Only sends note content (not personal data) for context
+
+### ⚙️ **Configuration:**
+```json
+{
+  "ai": {
+    "enabled": true,                    // Enable AI features
+    "provider": "gemini",               // Currently supports Gemini
+    "apiKey": "your-gemini-api-key",    // Get free key from Google AI Studio
+    "model": "gemini-1.5-flash",        // Model version
+    "features": {
+      "dailyQuotes": true               // Enable contextual daily quotes
+    },
+    "rateLimiting": {
+      "requestsPerMinute": 10,          // API rate limiting
+      "requestsPerDay": 100
+    }
+  }
+}
+```
+
+### 🔑 **Getting Started with AI:**
+1. **Get API Key**: Visit [Google AI Studio](https://aistudio.google.com/) (free tier available)
+2. **Set Environment Variable**: `export GEMINI_API_KEY="your-key"`
+3. **Or Add to Config**: Include in your `config.json` file
+4. **Automatic Enhancement**: AI quotes appear in new daily sections
+
+### 💻 **CLI Commands That Trigger AI:**
+```bash
+# Manual daily creation (with AI quote generation)
+notes-sync daily --create
+notes-sync daily --create --force
+
+# Adding content (auto-creates daily section with AI quote if needed)
+notes-sync add -t "New task"
+notes-sync add -n "Meeting notes"
+```
+
+**Automatic Triggers:**
+- **System wake-up**: AI quotes generated when daily sections auto-create
+- **Service startup**: AI quotes generated if missing daily section is created
+- **Adding content**: AI quotes generated when daily section is auto-created before adding notes/todos
+
+### 🛡️ **Privacy & Safety:**
+- **No Personal Data**: Only note content is analyzed for context
+- **Rate Limited**: Respects API limits with built-in cooldowns
+- **Failure Safe**: Never breaks daily creation if AI is unavailable
+- **Local First**: All your notes stay on your machine, only context sent for quotes
+
+### 🔮 **Future AI Features:**
+- **Weekly Summaries**: AI-generated insights from your week's notes
+- **Action Item Extraction**: Automatically find tasks in meeting notes
+- **Smart Suggestions**: Content recommendations based on your patterns
 
 ## 🔄 Daily Workflows
 
@@ -271,12 +347,12 @@ notes-sync format
 
 ## 📋 Daily Template Structure
 
-Each day gets automatically structured with:
+Each day gets automatically structured with AI-enhanced quotes:
 
 ```markdown
 # 12/15/2024
 
-_And I will be with you until the end - The Christ_
+_Progress over perfection leads to consistent growth_ - AI Generated
 
 **Today's Focus**
 
@@ -292,6 +368,11 @@ _And I will be with you until the end - The Christ_
 
 
 ```
+
+**Quote Sources:**
+- **AI-Generated**: Context-aware quotes based on your recent notes (when AI is enabled)
+- **Curated Fallbacks**: Hand-selected motivational quotes when AI is unavailable
+- **Personalized**: Quotes reflect your work patterns and themes
 
 ## 🔧 API Endpoints
 
@@ -327,7 +408,7 @@ The service exposes these HTTP endpoints:
 # Run service in development mode
 npm run dev:service
 
-# Run CLI in development mode  
+# Run CLI in development mode
 cd packages/cli && npm run dev -- status
 
 # Test specific commands
@@ -429,6 +510,19 @@ Service configuration via `packages/service/config.json`:
     "enabled": true,
     "intervalMs": 20000,
     "thresholdMs": 20000
+  },
+  "ai": {
+    "enabled": true,
+    "provider": "gemini",
+    "apiKey": "your-gemini-api-key",
+    "model": "gemini-1.5-flash",
+    "features": {
+      "dailyQuotes": true
+    },
+    "rateLimiting": {
+      "requestsPerMinute": 10,
+      "requestsPerDay": 100
+    }
   },
   "server": {
     "port": 3000,

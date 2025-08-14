@@ -11,6 +11,7 @@
     "uninstall-service": "node scripts/uninstall-service.js"
   },
   "dependencies": {
+    "@google/genai": "^1.14.0",
     "@notes-sync/shared": "workspace:*",
     "chokidar": "^3.6.0",
     "fastify": "^4.24.3",

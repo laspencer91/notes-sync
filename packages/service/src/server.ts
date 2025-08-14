@@ -73,7 +73,7 @@ export function createServer(
     "/add-note",
     async (request, reply) => {
       Logger.log("Add note requested via API");
-      noteInteractor.addNote(request.body.text);
+      await noteInteractor.addNote(request.body.text);
       return { message: "Added note" };
     },
   );
@@ -90,7 +90,7 @@ export function createServer(
     "/add-todo",
     async (request, reply) => {
       Logger.log("Add todo requested via API");
-      noteInteractor.addTodo(request.body.text);
+      await noteInteractor.addTodo(request.body.text);
       return { message: "Todo added" };
     }
   );
@@ -197,7 +197,7 @@ export function createServer(
     "/create-daily",
     async (request, reply) => {
       Logger.log("Manual daily section creation requested");
-      const result = noteInteractor.autoCreateDailySection(request.body?.force);
+      const result = await noteInteractor.autoCreateDailySection(request.body?.force);
       
       if (result.created) {
         scheduleSync("manual-daily-creation");

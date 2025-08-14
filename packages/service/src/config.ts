@@ -1,5 +1,6 @@
 import fs from 'fs';
 import path from 'path';
+import { AIConfig } from '@notes-sync/shared';
 
 export interface ServiceConfig {
   notesDir: string;
@@ -12,6 +13,7 @@ export interface ServiceConfig {
     intervalMs: number;
     thresholdMs: number;
   };
+  ai?: AIConfig;
   server: {
     port: number;
     host: string;
@@ -44,11 +46,42 @@ export function loadConfig(): ServiceConfig {
 
   // Set defaults for server config if not provided
   const server = cfg.server || {};
+  
+  // Set defaults for AI config if not provided
+  const ai = cfg.ai || {};
+  const defaultAIConfig: AIConfig = {
+    enabled: false,
+    provider: 'gemini',
+    apiKey: ai.apiKey || process.env.GEMINI_API_KEY,
+    model: ai.model || 'gemini-1.5-flash',
+    features: {
+      dailyQuotes: {
+        maxLength: ai.features?.dailyQuotes?.maxLength || 15,
+        focus: ai.features?.dailyQuotes?.focus || ['productivity', 'personal growth'],
+        adjectives: ai.features?.dailyQuotes?.adjectives || ['actionable', 'motivational'],
+        additionalRules: ai.features?.dailyQuotes?.additionalRules || [
+          'If quoting from spiritual texts, include the book name as author',
+          'Prefer wisdom that applies to daily work and life'
+        ]
+      },
+    },
+    rateLimiting: {
+      requestsPerMinute: ai.rateLimiting?.requestsPerMinute || 10,
+      requestsPerDay: ai.rateLimiting?.requestsPerDay || 100,
+    },
+  };
+
+  // Enable AI if API key is available
+  if (defaultAIConfig.apiKey) {
+    defaultAIConfig.enabled = ai.enabled !== false; // Default to true if API key exists
+  }
+
   return {
     ...cfg,
     server: {
       port: server.port || 3000,
       host: server.host || '127.0.0.1',
     },
+    ai: defaultAIConfig,
   } as ServiceConfig;
 }

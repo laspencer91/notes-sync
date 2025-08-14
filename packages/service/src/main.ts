@@ -4,6 +4,7 @@ import { loadConfig } from "./config";
 import { createGit, isGitRepo, hasOriginRemote, safeSync } from "./git";
 import { Logger } from "./logger";
 import { NoteInteractor } from "./note-interactor";
+import { AIService } from "./ai/ai-service";
 
 import { WakeDetector } from "./wake-detect";
 
@@ -51,14 +52,31 @@ async function main() {
   };
 
   ///////////////////////////
+  // INIT AI SERVICE
+  //////////////////////////
+  let aiService: AIService | undefined;
+  if (config.ai) {
+    try {
+      aiService = new AIService(config.ai);
+      if (aiService.isEnabled()) {
+        Logger.log(`AI Service initialized with ${config.ai.provider} provider`);
+      } else {
+        Logger.log("AI Service initialized but disabled (no API key)");
+      }
+    } catch (error) {
+      Logger.error(`Failed to initialize AI service: ${(error as Error).message}`);
+    }
+  }
+
+  ///////////////////////////
   // INIT NOTE INTERACTOR
   //////////////////////////
-  const noteInteractor = new NoteInteractor(config.notesDir, "Daily.md");
+  const noteInteractor = new NoteInteractor(config.notesDir, "Daily.md", aiService);
 
   // Auto-create today's section on startup (if enabled)
   if (config.autoCreateDaily !== false) { // Default to true
     Logger.log("Checking for missing daily sections...");
-    const result = noteInteractor.autoCreateDailySection();
+    const result = await noteInteractor.autoCreateDailySection();
     if (result.created) {
       Logger.log(`Daily section auto-created: ${result.reason}`);
       scheduleSync("auto-daily-startup");
@@ -77,11 +95,11 @@ async function main() {
 
     Logger.log(`Starting wake detection (interval: ${intervalMs}ms, threshold: ${thresholdMs}ms)`);
     
-    WakeDetector.onWake(() => {
+    WakeDetector.onWake(async () => {
       Logger.log("Wake detected! Checking for new daily section...");
       
       // Auto-create daily section on wake
-      const result = noteInteractor.autoCreateDailySection();
+      const result = await noteInteractor.autoCreateDailySection();
       if (result.created) {
         Logger.log(`Daily section created on wake: ${result.reason}`);
         scheduleSync("auto-daily-wake");
