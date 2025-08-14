@@ -147,7 +147,12 @@ ls ~/Documents/DailyNotes/Daily.md
 
 ### ⚙️ **Configuration**
 
-The service uses a configuration file at `~/.config/notes-sync/config.json`. You can create this file manually or let the service create it with defaults:
+The service uses a configuration file at `~/.config/notes-sync/config.json`. You can create this file manually or let the service create it with defaults.
+
+**💡 Tip**: You can copy the example configuration file as a starting point:
+```bash
+cp packages/service/config.example.json ~/.config/notes-sync/config.json
+```
 
 ```json
 {
@@ -169,6 +174,9 @@ The service uses a configuration file at `~/.config/notes-sync/config.json`. You
     "apiKey": "your-gemini-api-key"
   }
 }
+```
+
+**🔒 Security Note**: Never commit your actual API key to Git. The `config.json` file is already added to `.gitignore` to prevent accidental commits.
 ```
 
 ### 🔧 **Troubleshooting**
