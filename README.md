@@ -78,35 +78,39 @@ The CLI automatically discovers and connects to the service:
 npm install -g @notes-sync/cli
 ```
 
-#### **Step 2: Set Up Your Notes Directory**
+#### **Step 2: Interactive Setup (Recommended)**
 
 ```bash
-# Create a Git repository for your notes (if you don't have one)
-mkdir ~/Documents/DailyNotes
-cd ~/Documents/DailyNotes
-git init
-git remote add origin https://github.com/yourusername/your-notes-repo.git
-
-# Or use an existing Git repository
-cd /path/to/your/existing/notes/repo
+# Run the interactive setup - this will guide you through everything!
+notes-sync install
 ```
 
-#### **Step 3: Configure the Service**
+The interactive setup will:
+- ✅ **Ask for your notes directory** (defaults to `~/Documents/DailyNotes`)
+- ✅ **Create the directory** if it doesn't exist
+- ✅ **Initialize Git repository** for automatic syncing
+- ✅ **Detect existing markdown files** and ask if you want to use them
+- ✅ **Create initial notes file** (or use existing one) with helpful getting started content
+- ✅ **Configure AI features** (optional - you can skip and add later)
+- ✅ **Install as background service** that starts automatically
+- ✅ **Show you next steps** and how to use the system
+
+#### **Step 3: Verify Everything Works**
 
 ```bash
-# Check service status (this will guide you through setup)
+# Check service status
 notes-sync status
 
-# The CLI will automatically:
-# 1. Detect if service is installed
-# 2. Prompt to install if missing
-# 3. Guide you to start the service
-# 4. Connect to the service automatically
+# Add your first note
+notes-sync add -n "Hello, Notes Sync!"
+
+# View today's notes
+notes-sync view --today
 ```
 
-### 🔧 **Service Setup Options**
+### 🔧 **Alternative Setup Options**
 
-#### **Option A: Automatic Setup (Recommended)**
+#### **Option A: Manual Service Installation**
 
 ```bash
 # Install service globally
@@ -157,44 +161,123 @@ notes-sync status
 notes-sync add -n "Hello, Notes Sync!"
 
 # Check if it was saved and synced
-ls ~/Documents/DailyNotes/Daily.md
+ls ~/Documents/DailyNotes/Notes.md  # or whatever filename you chose
+```
+
+### 📄 **Configurable Notes File**
+
+During installation, Notes Sync will:
+
+1. **Detect Existing Files**: Look for any `.md` files in your notes directory
+2. **Ask Your Preference**: 
+   - If one file found: "Do you want to use Notes.md? (Y/n)" (default: yes)
+   - If multiple files: Show list and let you choose
+   - If no files: Create new "Daily.md"
+3. **Store Your Choice**: Save the filename in your config
+4. **Use Consistently**: All operations use your chosen filename
+
+**Example Installation Flow:**
+```
+📄 Found existing markdown files:
+  - Notes.md
+  - daily.md
+  - journal.md
+
+Do you want to use one of these files for Notes Sync? (Y/n): [Enter]
+
+Which file would you like to use?
+  1. Notes.md
+  2. daily.md
+  3. journal.md
+
+Enter number (1-3): 1
+✅ Will use: Notes.md
 ```
 
 ### ⚙️ **Configuration**
 
-The service uses a configuration file at `~/.config/notes-sync/config.json`. You can create this file manually or let the service create it with defaults.
+The service uses a configuration file at `~/.config/notes-sync/config.json`. This file is automatically created during the interactive setup process.
 
-**💡 Tip**: You can copy the example configuration file as a starting point:
+#### **Interactive Configuration (Recommended)**
+
+The easiest way to configure Notes Sync is through the interactive setup:
 
 ```bash
-cp packages/service/config.example.json ~/.config/notes-sync/config.json
+notes-sync install
 ```
+
+This will guide you through:
+- 📁 **Notes Directory**: Where your notes will be stored
+- 📄 **Notes File**: Detect existing markdown files or create a new one
+- 🔧 **Git Repository**: Automatic Git setup for syncing
+- 🤖 **AI Features**: Optional AI integration with Gemini
+- 🔑 **API Keys**: Secure API key configuration
+
+#### **Manual Configuration**
+
+If you prefer to configure manually, you can edit the config file directly:
+
+```bash
+# Edit the configuration file
+nano ~/.config/notes-sync/config.json
+```
+
+**Example Configuration:**
 
 ```json
 {
   "notesDir": "/Users/yourusername/Documents/DailyNotes",
-  "server": {
-    "host": "127.0.0.1",
-    "port": 3127
-  },
+  "notesFile": "Notes.md",
+  "debounceMs": 20000,
+  "glob": "**/*.md",
+  "ignore": [
+    "**/.git/**",
+    "**/.git",
+    "**/node_modules/**",
+    "**/.DS_Store",
+    "**/.Trash/**",
+    "**/.Spotlight-V100/**",
+    "**/.fseventsd/**"
+  ],
   "autoCreateDaily": true,
   "wakeDetection": {
     "enabled": true,
     "intervalMs": 20000,
     "thresholdMs": 20000
   },
-  "debounceMs": 2000,
   "ai": {
     "enabled": true,
     "provider": "gemini",
-    "apiKey": "your-gemini-api-key"
+    "apiKey": "your-gemini-api-key-here",
+    "model": "gemini-2.5-flash-lite",
+    "features": {
+      "dailyQuotes": {
+        "maxLength": 30,
+        "focus": ["productivity", "personal growth"],
+        "adjectives": ["actionable or practical", "motivational"],
+        "additionalRules": ["Prefer wisdom that applies to daily work and life"]
+      }
+    },
+    "rateLimiting": {
+      "requestsPerMinute": 10,
+      "requestsPerDay": 100
+    }
+  },
+  "server": {
+    "port": 3127,
+    "host": "localhost"
   }
 }
 ```
 
 **🔒 Security Note**: Never commit your actual API key to Git. The `config.json` file is already added to `.gitignore` to prevent accidental commits.
 
-````
+**💡 Configuration Tips:**
+- **Notes Directory**: Use an absolute path for best reliability
+- **Notes File**: The filename for your notes (e.g., "Notes.md", "daily.md", "journal.md")
+- **AI Features**: You can enable/disable AI features anytime by editing the config
+- **API Keys**: Get a free Gemini API key from [Google AI Studio](https://makersuite.google.com/app/apikey)
+- **Reconfiguration**: Run `notes-sync install` anytime to reconfigure
 
 ### 🔧 **Troubleshooting**
 
@@ -288,6 +371,22 @@ notes-sync upgrade
 
 # View service logs
 notes-sync logs
+```
+
+### Viewing Notes
+
+```bash
+# View today's notes
+notes-sync view --today
+
+# View recent notes (last 7 days)
+notes-sync view --recent
+
+# View all notes
+notes-sync view --all
+
+# View recent notes with custom timeframe
+notes-sync view --recent --days 14
 ```
 
 #### **Service Lifecycle Management**
@@ -470,7 +569,7 @@ Ask questions about your notes and get insightful, concise responses:
       "dailyQuotes": {
         "maxLength": 30,
         "focus": ["productivity", "personal growth"],
-        "adjectives": ["actionable", "motivational"],
+        "adjectives": ["actionable or practical", "motivational"],
         "additionalRules": ["Prefer wisdom that applies to daily work and life"]
       }
     },
@@ -740,6 +839,55 @@ The service exposes these HTTP endpoints:
 - `GET /daily-status` - Check if today's section exists and get timing info
 - `POST /create-daily` - Manually create today's section (with force option)
 
+## 📦 Publishing
+
+### **Enhanced Publish Script**
+
+The project includes an enhanced publish script with automatic version management:
+
+```bash
+# Show current versions
+./scripts/publish.sh --version
+
+# Bump patch version and publish (1.0.0 → 1.0.1)
+./scripts/publish.sh --patch
+
+# Bump minor version and publish (1.0.0 → 1.1.0)
+./scripts/publish.sh --minor
+
+# Bump major version and publish (1.0.0 → 2.0.0)
+./scripts/publish.sh --major
+
+# Test version bumping without publishing
+./scripts/publish.sh --patch --dry-run
+
+# Publish current versions (no bump)
+./scripts/publish.sh
+```
+
+### **Version Management Features**
+
+- **Automatic Version Bumping**: Uses `npm version` to properly bump versions
+- **Dependency Order**: Bumps shared → service → CLI to maintain compatibility
+- **Lockfile Sync**: Automatically updates yarn lockfile after version changes
+- **Dry Run Mode**: Test version bumping without actually publishing
+- **Version Display**: Shows current versions before and after bumping
+
+### **Publishing Workflow**
+
+```bash
+# 1. Make your changes and commit them
+git add .
+git commit -m "Add new feature"
+
+# 2. Bump version and publish
+./scripts/publish.sh --minor
+
+# 3. Tag the release
+git tag v1.1.0
+git push origin v1.1.0
+```
+
 ## 🛠️ Development
 
 ### Running in Development Mode
@@ -845,6 +993,7 @@ Service configuration via `packages/service/config.json`:
 ```json
 {
   "notesDir": "/path/to/your/notes",
+  "notesFile": "Daily.md",
   "debounceMs": 3000,
   "glob": "**/*.md",
   "ignore": ["node_modules/**", ".git/**"],

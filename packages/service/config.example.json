@@ -1,5 +1,6 @@
 {
   "notesDir": "/path/to/your/notes",
+  "notesFile": "Daily.md",
   "debounceMs": 20000,
   "glob": "**/*.md",
   "ignore": [

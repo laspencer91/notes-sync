@@ -1,9 +1,11 @@
 import fs from "fs";
 import path from "path";
+import os from "os";
 import { AIConfig } from "@notes-sync/shared";
 
 export interface ServiceConfig {
   notesDir: string;
+  notesFile?: string; // Optional, defaults to "Daily.md"
   debounceMs: number;
   glob: string;
   ignore: string[];
@@ -20,12 +22,84 @@ export interface ServiceConfig {
   };
 }
 
-export function loadConfig(): ServiceConfig {
-  const configPath = path.resolve(__dirname, "..", "config.json");
-  if (!fs.existsSync(configPath)) {
-    throw new Error(`Config file not found at ${configPath}`);
+function isDevelopmentMode(): boolean {
+  try {
+    const cwd = process.cwd();
+    
+    // Check if we're in a globally installed npm package
+    // Global packages are typically in node_modules or lib directories
+    if (cwd.includes('node_modules') || cwd.includes('/lib/') || cwd.includes('\\lib\\')) {
+      return false; // This is a globally installed package, not development
+    }
+
+    // Check if we're in the monorepo root
+    const rootPackageJson = path.join(cwd, "package.json");
+    if (fs.existsSync(rootPackageJson)) {
+      const packageJson = JSON.parse(fs.readFileSync(rootPackageJson, "utf8"));
+      if (packageJson.workspaces && packageJson.workspaces.includes("packages/*")) {
+        return true;
+      }
+    }
+
+    // Check if we're in a packages directory
+    const parentDir = path.dirname(cwd);
+    const parentPackageJson = path.join(parentDir, "package.json");
+    if (fs.existsSync(parentPackageJson)) {
+      const parentJson = JSON.parse(fs.readFileSync(parentPackageJson, "utf8"));
+      if (parentJson.workspaces && parentJson.workspaces.includes("packages/*")) {
+        return true;
+      }
+    }
+
+    // Check if we're in packages/cli or packages/service
+    const grandParentDir = path.dirname(parentDir);
+    const grandParentPackageJson = path.join(grandParentDir, "package.json");
+    if (fs.existsSync(grandParentPackageJson)) {
+      const grandParentJson = JSON.parse(fs.readFileSync(grandParentPackageJson, "utf8"));
+      if (grandParentJson.workspaces && grandParentJson.workspaces.includes("packages/*")) {
+        return true;
+      }
+    }
+
+    return false;
+  } catch (error) {
+    console.warn("Error detecting development mode:", error);
+    return false;
   }
-  const raw = fs.readFileSync(configPath, "utf8");
+}
+
+export function loadConfig(): ServiceConfig {
+  const isDevelopment = isDevelopmentMode();
+  
+  // In development mode, prioritize local config
+  // In production mode, prioritize user config
+  const configPaths = isDevelopment 
+    ? [
+        path.resolve(__dirname, "..", "config.json"), // Package config (development priority)
+        path.join(os.homedir(), ".config", "notes-sync", "config.json"), // User config (fallback)
+        path.resolve(process.cwd(), "config.json"), // Current working directory
+      ]
+    : [
+        path.join(os.homedir(), ".config", "notes-sync", "config.json"), // User config (production priority)
+        path.resolve(__dirname, "..", "config.json"), // Package config (fallback)
+        path.resolve(process.cwd(), "config.json"), // Current working directory
+      ];
+
+  let configPath: string | null = null;
+  let raw: string = "";
+
+  for (const candidatePath of configPaths) {
+    if (fs.existsSync(candidatePath)) {
+      configPath = candidatePath;
+      raw = fs.readFileSync(configPath, "utf8");
+      break;
+    }
+  }
+
+  if (!configPath) {
+    throw new Error(`Config file not found. Tried: ${configPaths.join(", ")}`);
+  }
+
   const cfg = JSON.parse(raw);
 
   if (!cfg.notesDir || typeof cfg.notesDir !== "string") {
@@ -84,6 +158,7 @@ export function loadConfig(): ServiceConfig {
 
   return {
     ...cfg,
+    notesFile: cfg.notesFile || "Daily.md", // Default to Daily.md if not specified
     server: {
       port: server.port || 3127,
       host: server.host || "127.0.0.1",

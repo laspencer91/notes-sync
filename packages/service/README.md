@@ -49,6 +49,7 @@ Create a config file at `~/.config/notes-sync/config.json`:
 ```json
 {
   "notesDir": "/path/to/your/notes",
+  "notesFile": "Daily.md",
   "server": {
     "host": "127.0.0.1",
     "port": 3127
@@ -56,6 +57,13 @@ Create a config file at `~/.config/notes-sync/config.json`:
   "autoCreateDaily": true
 }
 ```
+
+**Interactive Setup**: The easiest way to configure is through the CLI:
+```bash
+notes-sync install
+```
+
+This will detect existing markdown files and ask if you want to use them.
 
 ## API Endpoints
 

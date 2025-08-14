@@ -12,12 +12,16 @@ import path from "path";
 // Handle install/uninstall commands
 if (process.argv.includes("install")) {
   require(path.join(__dirname, "..", "scripts", "install-service.js"));
-  process.exit(0);
-}
-
-if (process.argv.includes("uninstall")) {
+  // The install script will handle its own exit
+} else if (process.argv.includes("uninstall")) {
   require(path.join(__dirname, "..", "scripts", "uninstall-service.js"));
   process.exit(0);
+} else {
+  // Only run the main service if not installing/uninstalling
+  main().catch((error) => {
+    Logger.error(`Service failed: ${(error as Error).message}`);
+    process.exit(1);
+  });
 }
 
 async function main() {
@@ -89,7 +93,7 @@ async function main() {
   //////////////////////////
   const noteInteractor = new NoteInteractor(
     config.notesDir,
-    "Daily.md",
+    config.notesFile || "Daily.md",
     aiService,
   );
 
@@ -176,8 +180,3 @@ async function main() {
   process.on("SIGINT", () => shutdown("SIGINT"));
   process.on("SIGTERM", () => shutdown("SIGTERM"));
 }
-
-main().catch((err) => {
-  Logger.error("Fatal error:", err);
-  process.exit(1);
-});

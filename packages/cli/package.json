@@ -1,6 +1,6 @@
 {
   "name": "@notes-sync/cli",
-  "version": "1.0.6",
+  "version": "1.0.16",
   "description": "CLI for AI-powered note synchronization",
   "bin": {
     "notes-sync": "./dist/cli.js"
