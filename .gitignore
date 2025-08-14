@@ -71,3 +71,4 @@ Thumbs.db
 # Application specific
 config.json.local
 *.local.json
+packages/service/config.json
