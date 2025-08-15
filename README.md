@@ -1,4 +1,4 @@
-> ⚠️ **Alpha Status**: This project is in active development. [Contributions](docs/DEVELOPMENT.md) welcome!
+> ⚠️ **Alpha Status**: This project is in active development. [CONTRIBUTING](docs/CONTRIBUTING.md) welcomed!
 
 # Welcome to Notes Sync! 📝✨
 
