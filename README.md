@@ -1,6 +1,10 @@
 > ⚠️ **Alpha Status**: This project is in active development. [CONTRIBUTING](docs/CONTRIBUTING.md) welcomed!
 
-*Platform Support: Mac Only, Linux with minor tweaks, Windows in future*
+### **✅ macOS (Fully Supported)** 
+**❌ Linux (Not Supported)**
+**❌ Windows (Not Supported)**
+
+*Help us support new environments, check out [ISSUES](https://github.com/laspencer91/notes-sync/issues)*
 
 # Welcome to Notes Sync! 📝✨
 
