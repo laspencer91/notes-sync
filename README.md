@@ -1,1063 +1,232 @@
-# Notes Sync
+> ⚠️ **Alpha Status**: This project is in active development. [Contributions](docs/DEVELOPMENT.md) welcome!
 
----
+# Welcome to Notes Sync! 📝✨
 
-**Automatically sync your markdown notes to Git while you work, enhanced with AI-powered daily insights.**
+Hey, developer! Cozy up with your favorite editor and let Notes Sync transform your note-taking into a seamless, AI-enhanced adventure. Your notes live in **one simple Markdown file**—embracing simplicity. Everything in one place, synced effortlessly to Git by a background process with AI-powered insights. Ready to make note-taking a joy? Let’s dive in!
 
-This tool runs quietly in the background, watching your notes folder. Every time you save a note, it automatically commits and pushes to GitHub - no manual git commands needed. Plus, AI integration provides personalized daily quotes and intelligent content enhancement.
 
-## What it does
+<p align="center">
+  <img src="docs/readme-images/mark_complete_demo.gif" width="700px" style="border-radius:8px" border="2px solid white" />
+</p>
+<p align="center">See Typora for Markdown Editor / Viewer</p>
 
-- **Auto-sync** - Saves and pushes your notes to Git automatically
-- **Daily sections** - Creates new date sections in your notes each day with AI-generated quotes
-- **Terminal commands** - Add notes and check status from anywhere in your terminal
-- **AI Enhancement** - Contextual daily quotes and intelligent content generation
-- **Simple setup** - One markdown file, automatic organization
+[Get Started](#-get-started-in-3-steps) | [Key Features](#-key-features) | [See Limitations](#limitations)
 
-## Perfect for
+## What’s Notes Sync?
 
-- Daily work journals and task tracking
-- Meeting notes that sync across devices
-- Code snippets and quick references
-- Any markdown notes you want automatically backed up
+Notes Sync is your personal note-taking sidekick, keeping all your notes in a single Markdown file for ultimate simplicity. It:
 
-## 📖 Quick Navigation
+- **Auto-syncs** your Markdown file to GitHub with every save, preserving file history.
+- **Adds AI magic** with daily quotes and smart insights.
+- **Offers a unified CLI** for quick note and todo management wherever you are.
+- **Keeps things tidy** with automatic formatting and auto-generated daily templates each morning.
 
-**Essential Sections:**
+Perfect for:
 
-- [🚀 Quick Start](#-quick-start) - Get up and running in minutes
-- [🤖 AI-Powered Analysis](#ai-powered-analysis) - Ask questions about your notes
-- [📖 CLI Commands](#-cli-commands) - Complete command reference
-- [🤖 AI Integration](#-ai-integration) - Configure AI features and quotes
-- [📝 Configuration](#-configuration) - Customize your setup
+- Daily journals and task tracking in one file.
+- Meeting notes synced across devices.
+- Any Markdown notes you want backed up effortlessly.
+- The service can be installed without the CLI for use in auto-syncing a `.md` git repository.
 
-**Daily Workflow:**
+## 🚀 Get Started in 3 Steps
 
-- [Content Management](#content-management) - Add notes and todos
-- [Todo Management](#todo-management) - Interactive task management
-- [🎨 Document Formatting](#-document-formatting) - Keep notes clean
+> 💡 **No built-in MD editor**: [Typora](https://typora.io/) is recommended for its beautiful rendering and hot reloading.
 
-## ✨ Features
+1. **Install the CLI**:
 
-- 📝 **Automated Daily Templates** - Structured daily notes with Focus/Notes/Done/Tomorrow sections
-- 🔄 **Auto-sync to GitHub** - Intelligent debounced commits with meaningful messages
-- ✅ **Interactive Todo Management** - Add, complete, delete, and archive todos with intuitive selection menus
-- 🔍 **Smart Search** - Search through notes with context across multiple days
-- 📊 **Productivity Insights** - Track incomplete todos and review patterns
-- 🎯 **Unified CLI** - Single `add` command with `-n` (notes) and `-t` (todos) flags for lightning-fast input
-- 🛡️ **Git Safety** - Robust conflict resolution with rebase and autostash
-- 🎨 **Document Formatting** - Automatic cleanup of whitespace, spacing, and markdown consistency
-- 🌅 **Auto-Daily Creation** - Automatically creates today's section on wake-up and startup
-- 🤖 **AI Integration** - Context-aware daily quotes, intelligent note analysis, and conversational insights via `ai query` commands
+   ```bash
+   npm install -g @notes-sync/cli
+   ```
 
-## 📦 Package Structure
+2. **Run the Setup Wizard**:
 
-This project is published as three separate npm packages:
+   ```bash
+   notes-sync install
+   ```
 
-- **`@notes-sync/cli`** - Global CLI tool for note management
-- **`@notes-sync/service`** - Background HTTP server + file watcher daemon
-- **`@notes-sync/shared`** - Shared TypeScript types and API client
+   This guides you through:
 
-### Smart Service Discovery
+    - Choosing a notes directory (e.g., `~/Documents/DailyNotes`).
+    - Picking or creating **one Markdown file** (e.g., `Notes.md`) for all your notes.
+    - Setting up a Git repo for syncing.
+    - Enabling optional AI features with a Gemini API key.
 
-The CLI automatically discovers and connects to the service:
+3. **Test It Out**:
 
-- **Development Mode**: Detects workspace and uses local service
-- **Production Mode**: Checks for globally installed service
-- **Auto-Setup**: Guides you through installation and startup
-- **Fallback Prompts**: Clear instructions if service isn't found
+   ```bash
+   notes-sync status           # Check service
+   notes-sync add -n "First note!"  # Add a note
+   notes-sync view --today     # View today’s notes
+   ```
 
-## 🚀 Quick Start
+That’s it! Your single Markdown file is now syncing, and you’re ready to roll.
 
-### 📦 Installation
+## ✨ Why You’ll Love It
 
-#### **Step 1: Install the CLI**
+- **One File, All Notes**: Everything lives in a single Markdown file for simplicity and focus.
+- **Auto-Sync to Git**: Saves and pushes your file to GitHub with smart, debounced commits.
+- **Daily AI Quotes**: Personalized, motivational quotes based on your notes.
+- **Unified CLI**: Interact with your `Notes.md` from wherever you are at with the CLI.
+- **Interactive Todos**: Mark complete or delete tasks with simple menus.
+- **Smart Search**: Find notes across days within your single file.
+- **Auto-Daily Templates**: Fresh daily sections with Focus, Notes, Done, and Tomorrow.
+- **Clean Formatting**: Keeps your Markdown file neat and consistent.
 
-```bash
-# Install CLI globally (this is all you need to start!)
-npm install -g @notes-sync/cli
-```
+## 📦 What’s Inside?
 
-#### **Step 2: Interactive Setup (Recommended)**
+Notes Sync is split into three npm packages:
 
-```bash
-# Run the interactive setup - this will guide you through everything!
-notes-sync install
-```
+- `@notes-sync/cli`: Your go-to CLI for note and todo commands.
+- `@notes-sync/service`: Background server and file watcher for auto-sync.
+- `@notes-sync/shared`: Shared TypeScript types and API client for smooth communication.
 
-The interactive setup will:
-- ✅ **Ask for your notes directory** (defaults to `~/Documents/DailyNotes`)
-- ✅ **Create the directory** if it doesn't exist
-- ✅ **Initialize Git repository** for automatic syncing
-- ✅ **Detect existing markdown files** and ask if you want to use them
-- ✅ **Create initial notes file** (or use existing one) with helpful getting started content
-- ✅ **Configure AI features** (optional - you can skip and add later)
-- ✅ **Install as background service** that starts automatically
-- ✅ **Show you next steps** and how to use the system
+The CLI auto-detects the service, whether in dev or production mode, and guides you if setup is needed.
 
-#### **Step 3: Verify Everything Works**
+## 📖 Key Features
+
+### Add Notes & Todos
 
 ```bash
-# Check service status
-notes-sync status
-
-# Add your first note
-notes-sync add -n "Hello, Notes Sync!"
-
-# View today's notes
-notes-sync view --today
+notes-sync add -n "Great idea from standup"  # Appends to your freeflow notes section for today
+notes-sync add -t "Finish project proposal"  # Adds to today’s todo checkboxes
 ```
 
-### 🔧 **Alternative Setup Options**
-
-#### **Option A: Manual Service Installation**
+### Manage Todos
 
 ```bash
-# Install service globally
-npm install -g @notes-sync/service
-
-# Install as background service (runs on startup)
-notes-sync install
-
-# Start the service
-notes-sync-service start
-
-# Stop the service when needed
-notes-sync stop
+notes-sync mark-complete    # Interactive completion
+notes-sync delete           # Interactive deletion
+notes-sync incomplete-todos # See pending tasks
+notes-sync archive          # Move done tasks to Done
 ```
 
-#### **Option B: Manual Setup**
+### Search Notes
 
 ```bash
-# Install service globally
-npm install -g @notes-sync/service
-
-# Start service manually (runs in foreground)
-notes-sync-service
-
-# Or start in background
-notes-sync-service &
+notes-sync search "project alpha" --days 30  # Search your single file
 ```
 
-#### **Upgrading**
+### AI Insights
+
+Ask your notes anything with Gemini-powered analysis:
+
+<p align="center">
+  <img src="docs/readme-images/ai_query_demo.gif" width="600px" style="border-radius:8px" border="2px solid white" />
+</p>
 
 ```bash
-# Upgrade both CLI and service packages
-notes-sync upgrade
-
-# Complete upgrade workflow
-notes-sync stop      # Stop the service
-notes-sync upgrade   # Upgrade packages
-notes-sync install   # Reinstall and start the service
+notes-sync ai query "What should I focus on next?"
+notes-sync ai query --week "How productive was I?"
 ```
 
-### ✅ **Verify Installation**
+### Auto-Daily Sections
+
+Each day adds a fresh section to your single Markdown file:
+
+```markdown
+# 8/14/2025
+_Keep your focus sharp, one task at a time_ - AI Generated
+
+**Today's Focus**
+- [ ] Your tasks here
+
+**Notes**
+Freeflow text in any format you like here!
+
+**Done**
+The cli `archive` command will move completed tasks here!
+
+**Tomorrow**
+A section to track tomorrows tasks
+```
+
+### Format Like a Pro
 
 ```bash
-# Check if everything is working
-notes-sync status
-
-# Add your first note
-notes-sync add -n "Hello, Notes Sync!"
-
-# Check if it was saved and synced
-ls ~/Documents/DailyNotes/Notes.md  # or whatever filename you chose
+notes-sync format           # Clean up your single file
+notes-sync format --validate # Check for issues
 ```
 
-### 📄 **Configurable Notes File**
+## ⚙️ Configure It Your Way
 
-During installation, Notes Sync will:
-
-1. **Detect Existing Files**: Look for any `.md` files in your notes directory
-2. **Ask Your Preference**: 
-   - If one file found: "Do you want to use Notes.md? (Y/n)" (default: yes)
-   - If multiple files: Show list and let you choose
-   - If no files: Create new "Daily.md"
-3. **Store Your Choice**: Save the filename in your config
-4. **Use Consistently**: All operations use your chosen filename
-
-**Example Installation Flow:**
-```
-📄 Found existing markdown files:
-  - Notes.md
-  - daily.md
-  - journal.md
-
-Do you want to use one of these files for Notes Sync? (Y/n): [Enter]
-
-Which file would you like to use?
-  1. Notes.md
-  2. daily.md
-  3. journal.md
-
-Enter number (1-3): 1
-✅ Will use: Notes.md
-```
-
-### ⚙️ **Configuration**
-
-The service uses a configuration file at `~/.config/notes-sync/config.json`. This file is automatically created during the interactive setup process.
-
-#### **Interactive Configuration (Recommended)**
-
-The easiest way to configure Notes Sync is through the interactive setup:
-
-```bash
-notes-sync install
-```
-
-This will guide you through:
-- 📁 **Notes Directory**: Where your notes will be stored
-- 📄 **Notes File**: Detect existing markdown files or create a new one
-- 🔧 **Git Repository**: Automatic Git setup for syncing
-- 🤖 **AI Features**: Optional AI integration with Gemini
-- 🔑 **API Keys**: Secure API key configuration
-
-#### **Manual Configuration**
-
-If you prefer to configure manually, you can edit the config file directly:
-
-```bash
-# Edit the configuration file
-nano ~/.config/notes-sync/config.json
-```
-
-**Example Configuration:**
+Run `notes-sync install` for an interactive setup, or edit `~/.config/notes-sync/config.json`:
 
 ```json
 {
-  "notesDir": "/Users/yourusername/Documents/DailyNotes",
+  "notesDir": "~/Documents/DailyNotes",
   "notesFile": "Notes.md",
-  "debounceMs": 20000,
-  "glob": "**/*.md",
-  "ignore": [
-    "**/.git/**",
-    "**/.git",
-    "**/node_modules/**",
-    "**/.DS_Store",
-    "**/.Trash/**",
-    "**/.Spotlight-V100/**",
-    "**/.fseventsd/**"
-  ],
   "autoCreateDaily": true,
-  "wakeDetection": {
-    "enabled": true,
-    "intervalMs": 20000,
-    "thresholdMs": 20000
-  },
   "ai": {
     "enabled": true,
     "provider": "gemini",
-    "apiKey": "your-gemini-api-key-here",
-    "model": "gemini-2.5-flash-lite",
-    "features": {
-      "dailyQuotes": {
-        "maxLength": 30,
-        "focus": ["productivity", "personal growth"],
-        "adjectives": ["actionable or practical", "motivational"],
-        "additionalRules": ["Prefer wisdom that applies to daily work and life"]
-      }
-    },
-    "rateLimiting": {
-      "requestsPerMinute": 10,
-      "requestsPerDay": 100
-    }
-  },
-  "server": {
-    "port": 3127,
-    "host": "localhost"
+    "apiKey": "your-gemini-api-key",
+    "features": { "dailyQuotes": true }
   }
 }
 ```
 
-**🔒 Security Note**: Never commit your actual API key to Git. The `config.json` file is already added to `.gitignore` to prevent accidental commits.
+Get a free Gemini API key at [Google AI Studio](https://aistudio.google.com/).
 
-**💡 Configuration Tips:**
-- **Notes Directory**: Use an absolute path for best reliability
-- **Notes File**: The filename for your notes (e.g., "Notes.md", "daily.md", "journal.md")
-- **AI Features**: You can enable/disable AI features anytime by editing the config
-- **API Keys**: Get a free Gemini API key from [Google AI Studio](https://makersuite.google.com/app/apikey)
-- **Reconfiguration**: Run `notes-sync install` anytime to reconfigure
+## 📋 Daily Workflow
 
-### 🔧 **Troubleshooting**
-
-#### **Service Not Found**
+**Morning**:
 
 ```bash
-# If you get "Service not found" error:
-npm install -g @notes-sync/service
-notes-sync status
-````
-
-#### **Service Not Starting**
-
-```bash
-# Check if service is running
-notes-sync status
-
-# Start service manually
-notes-sync-service
-
-# Check logs
-notes-sync logs
+notes-sync daily --status    # Check today’s section
+notes-sync add -t "Plan sprint"  # Set goals
 ```
 
-#### **Git Repository Issues**
+**Daytime**:
 
 ```bash
-# Make sure your notes directory is a Git repo
-cd ~/Documents/DailyNotes
-git status
-
-# If not a repo, initialize it
-git init
-git remote add origin https://github.com/yourusername/your-notes-repo.git
+notes-sync add -n "Discussed API with team"  # Add to your file
+notes-sync mark-complete     # Check off tasks
 ```
 
-#### **Permission Issues**
+**Evening**:
 
 ```bash
-# If you get permission errors, try:
-sudo npm install -g @notes-sync/cli
-sudo npm install -g @notes-sync/service
+notes-sync archive           # Clean up completed todos
+notes-sync ai query --review # Reflect on progress
 ```
 
-### 🗑️ **Uninstalling**
+## 🛠️ Troubleshoot & Uninstall
 
-#### **Stop and Remove Background Service**
+**Service Issues**:
 
 ```bash
-# Stop the running service first
+notes-sync status  # Check if running
+notes-sync logs    # View logs
+npm install -g @notes-sync/service  # Reinstall service
+```
+
+**Uninstall**:
+
+```bash
 notes-sync stop
-
-# Uninstall the background service
 notes-sync-service uninstall
-```
-
-#### **Remove Packages**
-
-```bash
-# Remove CLI and service packages
-npm uninstall -g @notes-sync/cli
-npm uninstall -g @notes-sync/service
-```
-
-#### **Clean Up Configuration**
-
-```bash
-# Remove configuration files
+npm uninstall -g @notes-sync/cli @notes-sync/service
 rm -rf ~/.config/notes-sync
 ```
 
-## 📖 CLI Commands
+## Limitations
 
-### Service Management
+- While a directory of .md files can be synced to git, only one file can be managed by the CLI / Server HTTP.
+- No built in UI for Markdown rendering. [Typora](https://typora.io/) is a great option with a clean interface and supports "hot reloading" by default.
+- The template format is relatively strict, and not configurable at the time of writing. This would be an awesome feature to have in the future.
 
-```bash
-# Check if service is running (auto-detects and guides setup)
-notes-sync status
+## 🌟 Glossary
 
-# Trigger manual sync
-notes-sync sync
+- **Single File Simplicity**: All notes and todos live in one Markdown file for clarity and ease. See [Why You’ll Love It](#-why-youll-love-it).
+- **Auto-Sync**: Commits and pushes your file to GitHub on save. Learn more [here](#-key-features).
+- **AI Insights**: Contextual quotes and note analysis via Gemini. See [AI Insights](#-key-features).
+- **Daily Templates**: Auto-created daily sections in your file. Check [Auto-Daily Sections](#-key-features).
 
-# Force sync even without changes
-notes-sync sync --force
+## 🔮 Explore More
 
-# Stop the running service
-notes-sync stop
+- [CLI Commands](#-key-features): Full command reference.
+- [Development Guide](./docs/DEVELOPMENT.md): Build and extend Notes Sync.
+- [Contributing](#-development): Add your own features.
+- [License](#-development): MIT License details.
 
-# Upgrade CLI and service packages
-notes-sync upgrade
-
-# View service logs
-notes-sync logs
-```
-
-### Viewing Notes
-
-```bash
-# View today's notes
-notes-sync view --today
-
-# View recent notes (last 7 days)
-notes-sync view --recent
-
-# View all notes
-notes-sync view --all
-
-# View recent notes with custom timeframe
-notes-sync view --recent --days 14
-```
-
-#### **Service Lifecycle Management**
-
-The `stop` and `upgrade` commands help you manage the service lifecycle:
-
-##### **Stopping the Service**
-```bash
-# Stop the running service gracefully
-notes-sync stop
-```
-This command sends a shutdown signal to the service, allowing it to complete any pending operations before exiting. Use this before upgrading or when you want to temporarily stop the service.
-
-##### **Upgrading Packages**
-```bash
-# Upgrade both CLI and service packages
-notes-sync upgrade
-```
-This command updates both the CLI and service packages to their latest versions. After upgrading, you'll need to restart the service:
-```bash
-# Full upgrade workflow
-notes-sync stop      # Stop the service
-notes-sync upgrade   # Upgrade packages
-notes-sync install   # Reinstall and start the service
-```
-
-### Content Management
-
-```bash
-# Add content using the unified command (auto-creates daily section with AI quote if needed)
-notes-sync add -n "Met with John about the project timeline"
-notes-sync add -t "Review quarterly budget"
-
-# Multiple words work naturally
-notes-sync add -n This is a longer note about something important
-notes-sync add -t Call client about proposal
-```
-
-### Todo Management
-
-```bash
-# Interactive todo completion (select from list)
-notes-sync mark-complete
-
-# Interactive todo deletion (select from list)
-notes-sync delete
-
-# See all incomplete todos from last 7 days
-notes-sync incomplete-todos
-
-# See incomplete todos from last 2 weeks
-notes-sync incomplete-todos --days 14
-
-# Archive completed todos to Done section
-notes-sync archive
-```
-
-### AI-Powered Analysis
-
-```bash
-# Ask AI questions about your notes (uses today by default)
-notes-sync ai query "What should I focus on next?"
-notes-sync ai query "What did I accomplish today?"
-
-# Analyze different time ranges
-notes-sync ai query --week "How productive was I this week?"
-notes-sync ai query -d 5 "What themes keep coming up?"
-notes-sync ai query --month "What should I improve?"
-
-# Quick analysis shortcuts
-notes-sync ai query --focus    # What should I focus on next?
-notes-sync ai query --review   # Summarize my recent progress
-notes-sync ai query --next     # What should I work on next?
-
-# Interactive mode (prompts for question)
-notes-sync ai query
-
-# Custom analysis examples
-notes-sync ai query "What am I procrastinating on?"
-notes-sync ai query "What patterns do you see in my work?"
-notes-sync ai query -d 7 "What's been my biggest challenge this week?"
-```
-
-> **💡 Getting Started Tip**: If you get a message about missing notes, create some content first with `notes-sync daily --create` and `notes-sync add -n "your note"`, then try your AI query again!
-
-### 🔧 **Service Discovery**
-
-The CLI automatically handles service setup and connection:
-
-- **First Run**: CLI detects missing service and guides you through installation
-- **Development Mode**: Automatically uses local service when running from workspace
-- **Production Mode**: Connects to globally installed service
-- **Smart Retry**: Attempts connection up to 3 times with helpful error messages
-- **Config Detection**: Reads service configuration from `~/.config/notes-sync/config.json`
-
-### Search & Discovery
-
-```bash
-# Search for content in notes (last 30 days)
-notes-sync search "budget meeting"
-
-# Search with custom timeframe
-notes-sync search "project alpha" --days 60
-notes-sync search "standup notes" --days 7
-```
-
-### Document Formatting
-
-```bash
-# Format and clean up the entire document
-notes-sync format
-
-# Format specific sections only
-notes-sync format --section todos
-notes-sync format --section notes
-
-# Check for formatting issues without making changes
-notes-sync format --validate
-```
-
-### Daily Section Management
-
-```bash
-# Check daily section status
-notes-sync daily --status
-
-# Create today's daily section manually (with AI-generated quote)
-notes-sync daily --create
-
-# Force create today's section (even if exists, with fresh AI quote)
-notes-sync daily --create --force
-```
-
-## 🤖 AI Integration
-
-Enhance your note-taking experience with intelligent AI analysis powered by Google's Gemini API.
-
-### ✨ **Smart Daily Quotes**
-
-Every time a new daily section is created, the AI analyzes your recent notes and generates personalized, motivational quotes:
-
-```markdown
-# 1/15/2025
-
-_Focus on progress over perfection in your current projects_ - AI Generated
-
-**Today's Focus**
-
-- [ ] Your tasks here
-```
-
-### 🧠 **Conversational Note Analysis**
-
-Ask questions about your notes and get insightful, concise responses:
-
-- **"What should I focus on next?"** - Get prioritized recommendations
-- **"How productive was I this week?"** - Weekly progress summary
-- **"What patterns do you see?"** - Identify trends and themes
-- **"What am I procrastinating on?"** - Spot avoided tasks
-
-### 🔧 **How It Works:**
-
-- **Context Analysis**: Reviews your recent daily notes for themes and patterns
-- **Personalized Generation**: Creates quotes and insights relevant to your work
-- **Smart Limiting**: Analyzes up to 15k characters (2 weeks) for comprehensive context
-- **Graceful Fallback**: Uses curated quotes if AI is unavailable
-- **Privacy Focused**: Only sends note content for analysis, no personal data
-- **Robust Error Handling**: Provides helpful guidance when notes are empty or missing
-
-### ⚙️ **Configuration:**
-
-```json
-{
-  "ai": {
-    "enabled": true,
-    "provider": "gemini",
-    "apiKey": "your-gemini-api-key",
-    "model": "gemini-2.5-flash-lite",
-    "features": {
-      "dailyQuotes": {
-        "maxLength": 30,
-        "focus": ["productivity", "personal growth"],
-        "adjectives": ["actionable or practical", "motivational"],
-        "additionalRules": ["Prefer wisdom that applies to daily work and life"]
-      }
-    },
-    "rateLimiting": {
-      "requestsPerMinute": 10,
-      "requestsPerDay": 100
-    }
-  }
-}
-```
-
-### 🔑 **Getting Started with AI:**
-
-1. **Get API Key**: Visit [Google AI Studio](https://aistudio.google.com/) (free tier available)
-2. **Set Environment Variable**: `export GEMINI_API_KEY="your-key"`
-3. **Or Add to Config**: Include in your `config.json` file
-4. **Start Analyzing**: Use `notes-sync ai query` commands immediately
-
-## 🎨 Document Formatting
-
-The `format` command intelligently cleans up your notes with these improvements:
-
-- **Whitespace Cleanup**: Removes trailing spaces and normalizes blank lines
-- **Header Spacing**: Ensures consistent spacing around date headers (protects against breaking dates)
-- **Todo Formatting**: Standardizes checkbox formatting (`- [ ]` vs `- []`)
-- **Bullet Points**: Consistent spacing for all bullet points
-- **Section Spacing**: Proper spacing between Today's Focus, Notes, Done, Tomorrow
-- **Quote Formatting**: Clean spacing around daily quotes (preserves quote integrity)
-- **Empty Item Removal**: Removes empty todo items and orphaned formatting
-- **File Ending**: Ensures proper single newline at end of file
-- **Content Protection**: Smart detection and repair of accidentally broken quotes/dates
-- **Quote Integrity**: Fixes malformed quotes like `_ text_` to `_text_`
-- **Validation Mode**: Check for issues without making changes (`--validate`)
-
-Perfect for cleaning up after manual edits or copy-paste operations! The formatter is designed to preserve content integrity while fixing formatting issues.
-
-## 🌅 Auto-Daily Creation
-
-The service automatically creates today's daily section when needed, ensuring you always have a fresh workspace ready:
-
-### 🚀 **When It Triggers:**
-
-- **Service Startup**: Checks if today's section exists when the service starts
-- **Wake Detection**: Automatically creates today's section when your computer wakes from sleep
-- **Adding Notes/Todos**: Creates today's section before adding content if it doesn't exist
-
-### 📋 **What It Creates:**
-
-- **Today Only**: Only creates today's date section - never backfills missing days
-- **Clean Slate**: Fresh daily template with Today's Focus, Notes, Done, and Tomorrow sections
-- **Smart Detection**: Only creates when truly needed - won't duplicate existing sections
-
-### ⚙️ **Configuration:**
-
-```json
-{
-  "autoCreateDaily": true, // Enable/disable auto-creation (default: true)
-  "wakeDetection": {
-    "enabled": true, // Enable wake detection (default: true)
-    "intervalMs": 20000, // Check interval (default: 20s)
-    "thresholdMs": 20000 // Sleep threshold (default: 20s)
-  }
-}
-```
-
-### 🎯 **Philosophy: Today-Focused Workflow**
-
-- **No Backfilling**: Deliberately doesn't create sections for missed days
-- **Fresh Start**: Each day gets a clean slate when you're ready to work
-- **Intentional Gaps**: Missing days indicate intentional breaks (weekends, vacations, etc.)
-- **Wake & Work**: Open your laptop, and today's section is ready to capture your thoughts
-
-### 💡 **Example Workflow:**
-
-1. **Friday**: Last entry in notes
-2. **Monday Morning**: Wake laptop → today's section auto-created
-3. **Gap Preserved**: No sections for Sat/Sun (intentional weekend break)
-4. **Ready to Go**: Fresh Monday template with Today's Focus ready for planning
-
-```markdown
-# 1/15/2025
-
-_Focus on progress over perfection in your current projects_ - AI Generated
-
-**Today's Focus**
-
-- [ ] Your tasks here
-```
-
-### 🧠 **How It Works:**
-
-- **Context Analysis**: Reviews your last 3 days of notes for themes and patterns
-- **Personalized Generation**: Creates quotes relevant to your work and mindset
-- **Graceful Fallback**: Uses curated quotes if AI is unavailable
-- **Privacy Focused**: Only sends note content (not personal data) for context
-
-### ⚙️ **Configuration:**
-
-```json
-{
-  "ai": {
-    "enabled": true, // Enable AI features
-    "provider": "gemini", // Currently supports Gemini
-    "apiKey": "your-gemini-api-key", // Get free key from Google AI Studio
-    "model": "gemini-1.5-flash", // Model version
-    "features": {
-      "dailyQuotes": true // Enable contextual daily quotes
-    },
-    "rateLimiting": {
-      "requestsPerMinute": 10, // API rate limiting
-      "requestsPerDay": 100
-    }
-  }
-}
-```
-
-### 🔑 **Getting Started with AI:**
-
-1. **Get API Key**: Visit [Google AI Studio](https://aistudio.google.com/) (free tier available)
-2. **Set Environment Variable**: `export GEMINI_API_KEY="your-key"`
-3. **Or Add to Config**: Include in your `config.json` file
-4. **Automatic Enhancement**: AI quotes appear in new daily sections
-
-### 💻 **CLI Commands That Trigger AI:**
-
-```bash
-# Manual daily creation (with AI quote generation)
-notes-sync daily --create
-notes-sync daily --create --force
-
-# Adding content (auto-creates daily section with AI quote if needed)
-notes-sync add -t "New task"
-notes-sync add -n "Meeting notes"
-```
-
-**Automatic Triggers:**
-
-- **System wake-up**: AI quotes generated when daily sections auto-create
-- **Service startup**: AI quotes generated if missing daily section is created
-- **Adding content**: AI quotes generated when daily section is auto-created before adding notes/todos
-
-### 🛡️ **Privacy & Safety:**
-
-- **No Personal Data**: Only note content is analyzed for context
-- **Rate Limited**: Respects API limits with built-in cooldowns
-- **Failure Safe**: Never breaks daily creation if AI is unavailable
-- **Local First**: All your notes stay on your machine, only context sent for quotes
-
-### 🔮 **Future AI Features:**
-
-- **Weekly Summaries**: AI-generated insights from your week's notes
-- **Action Item Extraction**: Automatically find tasks in meeting notes
-- **Smart Suggestions**: Content recommendations based on your patterns
-
-## 🔄 Daily Workflows
-
-### Morning Planning
-
-```bash
-# Check if today's section exists (auto-created on wake-up!)
-notes-sync daily --status
-
-# See what's pending from previous days
-notes-sync incomplete-todos
-
-# Add today's focus items (auto-creates today's section if needed)
-notes-sync add -t "Finish presentation"
-notes-sync add -t "Review code changes"
-notes-sync add -t "Call client"
-```
-
-### During the Day
-
-```bash
-# Quick note capture
-notes-sync add -n "Great idea from the standup: implement feature flags"
-
-# Mark tasks complete interactively (select from list)
-notes-sync mark-complete
-
-# Delete unwanted todos interactively
-notes-sync delete
-```
-
-### Evening Review
-
-```bash
-# Clean up completed todos
-notes-sync archive
-
-# Review what's still pending
-notes-sync incomplete-todos
-```
-
-### Weekly Review
-
-```bash
-# Check daily status and timing
-notes-sync daily --status
-
-# What didn't get done this week?
-notes-sync incomplete-todos --days 7
-
-# Search for recurring themes
-notes-sync search "blocked" --days 14
-notes-sync search "meeting" --days 7
-
-# Check for formatting issues first
-notes-sync format --validate
-
-# Clean up formatting after a week of edits
-notes-sync format
-```
-
-## 📋 Daily Template Structure
-
-Each day gets automatically structured with AI-enhanced quotes:
-
-```markdown
-# 12/15/2024
-
-_Progress over perfection leads to consistent growth_ - AI Generated
-
-**Today's Focus**
-
-- [ ] Task 1
-
-**Notes**
-
-**Done**
-
-**Tomorrow**
-```
-
-**Quote Sources:**
-
-- **AI-Generated**: Context-aware quotes based on your recent notes (when AI is enabled)
-- **Curated Fallbacks**: Hand-selected motivational quotes when AI is unavailable
-- **Personalized**: Quotes reflect your work patterns and themes
-
-## 🔧 API Endpoints
-
-The service exposes these HTTP endpoints:
-
-### Service Status
-
-- `GET /status` - Service health and info
-- `POST /sync` - Trigger manual sync
-- `GET /logs` - Service logs
-- `POST /shutdown` - Graceful shutdown
-
-### Content Management
-
-- `POST /add-note` - Add note to today's Notes section
-- `POST /add-todo` - Add todo to Today's Focus
-- `POST /mark-todo-complete` - Mark specific todo as done
-- `POST /delete-todo` - Delete a specific todo entirely
-- `POST /search-notes` - Search through notes with context
-- `GET /incomplete-todos?daysBack=7` - Get pending todos
-- `POST /archive-completed-todos` - Move completed todos to Done
-- `POST /format-document` - Format and clean up entire document
-- `POST /format-section` - Format specific section (todos, notes)
-- `GET /validate-formatting` - Check document for formatting issues
-
-### Daily Management
-
-- `GET /daily-status` - Check if today's section exists and get timing info
-- `POST /create-daily` - Manually create today's section (with force option)
-
-## 📦 Publishing
-
-### **Enhanced Publish Script**
-
-The project includes an enhanced publish script with automatic version management:
-
-```bash
-# Show current versions
-./scripts/publish.sh --version
-
-# Bump patch version and publish (1.0.0 → 1.0.1)
-./scripts/publish.sh --patch
-
-# Bump minor version and publish (1.0.0 → 1.1.0)
-./scripts/publish.sh --minor
-
-# Bump major version and publish (1.0.0 → 2.0.0)
-./scripts/publish.sh --major
-
-# Test version bumping without publishing
-./scripts/publish.sh --patch --dry-run
-
-# Publish current versions (no bump)
-./scripts/publish.sh
-```
-
-### **Version Management Features**
-
-- **Automatic Version Bumping**: Uses `npm version` to properly bump versions
-- **Dependency Order**: Bumps shared → service → CLI to maintain compatibility
-- **Lockfile Sync**: Automatically updates yarn lockfile after version changes
-- **Dry Run Mode**: Test version bumping without actually publishing
-- **Version Display**: Shows current versions before and after bumping
-
-### **Publishing Workflow**
-
-```bash
-# 1. Make your changes and commit them
-git add .
-git commit -m "Add new feature"
-
-# 2. Bump version and publish
-./scripts/publish.sh --minor
-
-# 3. Tag the release
-git tag v1.1.0
-git push origin v1.1.0
-```
-
-## 🛠️ Development
-
-### Running in Development Mode
-
-```bash
-# Run service in development mode
-npm run dev:service
-
-# Run CLI in development mode
-cd packages/cli && npm run dev -- status
-
-# Test specific commands
-cd packages/cli && npm run dev -- add -t "Test todo"
-cd packages/cli && npm run dev -- add -n "Test note"
-cd packages/cli && npm run dev -- mark-complete
-cd packages/cli && npm run dev -- delete
-cd packages/cli && npm run dev -- search "test"
-```
-
-### System Architecture Overview
-
-The Notes Sync system follows a **distributed architecture** with clear separation of concerns:
-
-```
-┌─────────────────┐    ┌──────────────────┐    ┌─────────────────┐
-│                 │    │                  │    │                 │
-│   CLI Package   │───▶│  Shared Package  │◀───│ Service Package │
-│                 │    │                  │    │                 │
-│  • Commander.js │    │  • TypeScript    │    │  • HTTP Server  │
-│  • User Input   │    │    Types         │    │  • File Watcher │
-│  • Inquirer UI  │    │  • API Client    │    │  • Git Sync     │
-│                 │    │  • HTTP Requests │    │  • NoteInteractor│
-└─────────────────┘    └──────────────────┘    └─────────────────┘
-         │                        │                        │
-         │                        │                        │
-         ▼                        ▼                        ▼
-┌─────────────────┐    ┌──────────────────┐    ┌─────────────────┐
-│                 │    │                  │    │                 │
-│  User Terminal  │    │  Network Layer   │    │ Markdown Files  │
-│                 │    │                  │    │                 │
-│  • Interactive  │    │  • HTTP/JSON     │    │  • Daily.md     │
-│    Selection    │    │  • localhost:3127│    │  • Git History  │
-│  • Fast Input   │    │  • Type Safety   │    │  • Auto-sync    │
-│                 │    │                  │    │                 │
-└─────────────────┘    └──────────────────┘    └─────────────────┘
-```
-
-### **Core Components:**
-
-#### **1. Background Service** (`packages/service/`)
-
-- **HTTP Server**: Fastify-based REST API on port 3000
-- **File Watcher**: Chokidar monitoring for markdown changes
-- **Git Integration**: Smart sync with conflict resolution and meaningful commits
-- **NoteInteractor**: Core markdown parsing and manipulation logic
-- **Wake Detection**: Auto-creates daily sections on system wake-up
-
-#### **2. CLI Tool** (`packages/cli/`)
-
-- **Commander.js**: Structured command-line interface
-- **Inquirer.js**: Interactive selection for todos (mark-complete, delete)
-- **API Client**: HTTP requests to background service
-- **User Experience**: Fast input, clear feedback, error handling
-
-#### **3. Shared Package** (`packages/shared/`)
-
-- **TypeScript Types**: Full type safety across packages
-- **API Client**: Centralized HTTP request logic
-- **Request/Response Interfaces**: Consistent data contracts
-
-### **Data Flow:**
-
-```
-User Command → CLI Parser → API Client → HTTP Request
-     ↓              ↓           ↓            ↓
-Type Safety → Validation → JSON Payload → Service Endpoint
-     ↓              ↓           ↓            ↓
-Error Handle ← HTTP Response ← Business Logic ← NoteInteractor
-     ↓              ↓           ↓            ↓
-User Feedback ← Format Result ← File Operations ← Git Sync
-```
-
-### **Key Design Patterns:**
-
-- **Event-Driven**: File changes trigger debounced Git operations
-- **Type-Safe**: Full TypeScript coverage prevents runtime errors
-- **Stateless**: Each CLI command is independent, service holds state
-- **Robust**: Graceful error handling and recovery mechanisms
-- **Extensible**: Clear integration pattern for new features
-
-### **Development Philosophy:**
-
-- **Fast Feedback**: CLI commands execute quickly with clear responses
-- **Interactive UX**: Inquirer selection menus for complex operations
-- **Git Safety**: Rebase with autostash, conflict resolution, meaningful commits
-- **Content Integrity**: Smart formatting that preserves user content
-- **Today-Focused**: Auto-creation philosophy that respects intentional gaps
-
-## 📝 Configuration
-
-Service configuration via `packages/service/config.json`:
-
-```json
-{
-  "notesDir": "/path/to/your/notes",
-  "notesFile": "Daily.md",
-  "debounceMs": 3000,
-  "glob": "**/*.md",
-  "ignore": ["node_modules/**", ".git/**"],
-  "autoCreateDaily": true,
-  "wakeDetection": {
-    "enabled": true,
-    "intervalMs": 20000,
-    "thresholdMs": 20000
-  },
-  "ai": {
-    "enabled": true,
-    "provider": "gemini",
-    "apiKey": "your-gemini-api-key",
-    "model": "gemini-1.5-flash",
-    "features": {
-      "dailyQuotes": true
-    },
-    "rateLimiting": {
-      "requestsPerMinute": 10,
-      "requestsPerDay": 100
-    }
-  },
-  "server": {
-    "port": 3127,
-    "host": "127.0.0.1"
-  }
-}
-```
-
-## 🛠️ Development
-
-For local development, see [DEVELOPMENT.md](./DEVELOPMENT.md) for detailed setup instructions.
-
-### Quick Development Commands
-
-```bash
-# Clone and setup
-git clone <repository>
-yarn install
-yarn build
-
-# Start service in development mode
-yarn dev:service
-
-# Test CLI in development mode
-yarn dev:cli status
-```
-
-## 🤝 Contributing
-
-This system follows a clear integration pattern for adding new functionality:
-
-1. **Add Types** (`packages/shared/src/types.ts`)
-2. **Add API Client Method** (`packages/shared/src/api-client.ts`)
-3. **Add Server Endpoint** (`packages/service/src/server.ts`)
-4. **Add NoteInteractor Method** (`packages/service/src/note-interactor.ts`)
-5. **Add CLI Command** (`packages/cli/src/commands/*.ts` + `cli.ts`)
-
-Perfect for extending with additional note management features!
-
-## 📄 License
-
-MIT License - see LICENSE file for details.
-
----
-
-_Built for developers who want powerful, automated note-taking with the reliability of Git and the speed of CLI workflows._ 🚀
+Notes Sync is your cozy, powerful companion for keeping all your notes in one Markdown file. Embrace simplicity, capture ideas, and let AI spark your productivity! 🚀

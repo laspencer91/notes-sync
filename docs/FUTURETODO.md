@@ -149,7 +149,7 @@ This document outlines planned features and enhancements for the Notes Sync proj
 
 ### **Package Management**
 
-- [ ] **NPM Global Package** - Distribute via `npm install -g @notes-sync/cli`
+- [x] **NPM Global Package** - Distribute via `npm install -g @notes-sync/cli`
 - [ ] **Homebrew Formula** - `brew install notes-sync`
 - [ ] **Docker Container** - Containerized deployment option
 - [ ] **Auto-updater** - Automatic updates for new versions
