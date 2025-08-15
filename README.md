@@ -1,11 +1,5 @@
 > ⚠️ **Alpha Status**: This project is in active development. [CONTRIBUTING](docs/CONTRIBUTING.md) welcomed!
 
-### **✅ macOS (Fully Supported)** 
-**❌ Linux (Not Supported)**
-**❌ Windows (Not Supported)**
-
-*Help us support new environments, check out [ISSUES](https://github.com/laspencer91/notes-sync/issues)*
-
 # Welcome to Notes Sync! 📝✨
 
 Hey, developer! Cozy up with your favorite editor and let Notes Sync transform your note-taking into a seamless, AI-enhanced adventure. Your notes live in **one simple Markdown file**—embracing simplicity. Everything in one place, synced effortlessly to Git by a background process with AI-powered insights. Ready to make note-taking a joy? Let’s dive in!
@@ -14,9 +8,15 @@ Hey, developer! Cozy up with your favorite editor and let Notes Sync transform y
 <p align="center">
   <img src="docs/readme-images/mark_complete_demo.gif" width="700px" style="border-radius:8px" border="2px solid white" />
 </p>
-<p align="center">See Typora for Markdown Editor / Viewer</p>
+<p align="center">Using Typora as Editor / Viewer</p>
 
 [Get Started](#-get-started-in-3-steps) | [Key Features](#-key-features) | [See Limitations](#limitations)
+
+### **✅ macOS (Fully Supported)** 
+**❌ Linux (Not Supported)**
+**❌ Windows (Not Supported)**
+
+*Help us support new environments, check out [ISSUES](https://github.com/laspencer91/notes-sync/issues)*
 
 ## What’s Notes Sync?
 
