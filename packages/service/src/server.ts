@@ -8,6 +8,7 @@ import {
   MarkTodoCompleteResponse,
   DeleteTodoRequest,
   DeleteTodoResponse,
+  SearchFilters,
   SearchNotesRequest,
   SearchNotesResponse,
   GetIncompleteTodosResponse,
@@ -32,7 +33,7 @@ import { NoteInteractor } from "./note-interactor";
 export function createServer(
   config: ServiceConfig,
   scheduleSync: (reason: string) => void,
-  noteInteractor: NoteInteractor,
+  noteInteractor: NoteInteractor
 ) {
   const server = fastify({ logger: true });
   let lastSyncTime = new Date().toISOString();
@@ -78,7 +79,7 @@ export function createServer(
       Logger.log("Add note requested via API");
       await noteInteractor.addNote(request.body.text);
       return { message: "Added note" };
-    },
+    }
   );
 
   // POST /shutdown - Graceful shutdown
@@ -115,7 +116,7 @@ export function createServer(
         success,
         message: success ? "Todo deleted successfully" : "Todo not found",
       };
-    },
+    }
   );
 
   // POST /search-notes - Search through notes
@@ -125,10 +126,10 @@ export function createServer(
       Logger.log(`Search notes requested: ${request.body.query}`);
       const results = noteInteractor.searchNotes(
         request.body.query,
-        request.body.daysBack,
+        request.body
       );
       return { results };
-    },
+    }
   );
 
   // GET /incomplete-todos - Get incomplete todos
@@ -151,7 +152,7 @@ export function createServer(
       Logger.log("Archive completed todos requested");
       const archivedCount = noteInteractor.archiveCompletedTodos();
       return { archivedCount };
-    },
+    }
   );
 
   // POST /format-document - Format the entire document
@@ -161,7 +162,7 @@ export function createServer(
       Logger.log("Format document requested");
       const result = noteInteractor.formatDocument();
       return result;
-    },
+    }
   );
 
   // POST /format-section - Format a specific section
@@ -171,7 +172,7 @@ export function createServer(
       Logger.log(`Format section requested: ${request.body.sectionName}`);
       const success = noteInteractor.formatSection(request.body.sectionName);
       return { success };
-    },
+    }
   );
 
   // GET /validate-formatting - Check document for formatting issues
@@ -181,7 +182,7 @@ export function createServer(
       Logger.log("Validate formatting requested");
       const result = noteInteractor.validateFormatting();
       return result;
-    },
+    }
   );
 
   // GET /daily-status - Check daily section status
@@ -194,7 +195,7 @@ export function createServer(
       const timeSinceLastEntry = noteInteractor.getTimeSinceLastEntry();
 
       return { hasToday, missingDays, timeSinceLastEntry };
-    },
+    }
   );
 
   // POST /create-daily - Force create daily section
@@ -203,7 +204,7 @@ export function createServer(
     async (request, reply) => {
       Logger.log("Manual daily section creation requested");
       const result = await noteInteractor.autoCreateDailySection(
-        request.body?.force,
+        request.body?.force
       );
 
       if (result.created) {
@@ -211,7 +212,7 @@ export function createServer(
       }
 
       return result;
-    },
+    }
   );
 
   server.post<{ Body: ViewNotesRequest; Reply: ViewNotesResponse }>(
@@ -233,14 +234,14 @@ export function createServer(
           },
         };
       }
-    },
+    }
   );
 
   server.post<{ Body: AIQueryRequest; Reply: AIQueryResponse }>(
     "/ai/query",
     async (request, reply) => {
       Logger.log(
-        `AI Query: "${request.body.query}" (${JSON.stringify(request.body.timeRange)})`,
+        `AI Query: "${request.body.query}" (${JSON.stringify(request.body.timeRange)})`
       );
 
       try {
@@ -255,7 +256,7 @@ export function createServer(
           contextUsed: { daysCovered: 0, charactersUsed: 0, truncated: false },
         };
       }
-    },
+    }
   );
 
   return server;
