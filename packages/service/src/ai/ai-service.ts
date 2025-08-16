@@ -5,10 +5,10 @@ import {
   GenerateQuoteResponse,
   GenerateQueryRequest,
   AIError,
-} from "@notes-sync/shared";
-import { GeminiProvider } from "./providers/gemini-provider";
-import { Logger } from "../logger";
-import { FALLBACK_QUOTES } from "./fallback-quotes";
+} from '@notes-sync/shared';
+import { GeminiProvider } from './providers/gemini-provider';
+import { Logger } from '../logger';
+import { FALLBACK_QUOTES } from './fallback-quotes';
 
 export class AIService {
   private provider?: AIProvider;
@@ -20,7 +20,7 @@ export class AIService {
       this.initializeProvider();
     } else if (config.enabled) {
       Logger.log(
-        "AI enabled but no API key provided - quotes will be disabled",
+        'AI enabled but no API key provided - quotes will be disabled'
       );
     }
   }
@@ -28,14 +28,14 @@ export class AIService {
   private initializeProvider(): void {
     try {
       switch (this.config.provider) {
-        case "gemini":
+        case 'gemini':
           this.provider = new GeminiProvider(
             this.config.apiKey!,
             this.config.model,
-            this.config.features.dailyQuotes,
+            this.config.features.dailyQuotes
           );
           Logger.log(
-            `AI Service initialized with ${this.config.provider} provider`,
+            `AI Service initialized with ${this.config.provider} provider`
           );
           break;
         default:
@@ -43,7 +43,7 @@ export class AIService {
       }
     } catch (error) {
       Logger.error(
-        `Failed to initialize AI provider: ${(error as Error).message}`,
+        `Failed to initialize AI provider: ${(error as Error).message}`
       );
       this.provider = undefined;
     }
@@ -58,7 +58,7 @@ export class AIService {
   }
 
   async generateDailyQuote(
-    context?: string,
+    context?: string
   ): Promise<GenerateQuoteResponse | null> {
     if (!this.isDailyQuotesEnabled()) {
       return null;
@@ -67,13 +67,13 @@ export class AIService {
     // Rate limiting: don't generate quotes too frequently
     const now = Date.now();
     if (now - this.lastQuoteTime < this.quoteCooldownMs) {
-      Logger.log("Skipping quote generation due to cooldown");
+      Logger.log('Skipping quote generation due to cooldown');
       return null;
     }
 
     try {
       const request: GenerateQuoteRequest = {
-        theme: "productivity",
+        theme: 'productivity',
         context: context ? context.substring(0, 500) : undefined, // Limit context length
       };
 
@@ -84,11 +84,11 @@ export class AIService {
     } catch (error) {
       if (error instanceof AIError) {
         Logger.error(
-          `AI quote generation failed: ${error.message} (${error.provider})`,
+          `AI quote generation failed: ${error.message} (${error.provider})`
         );
       } else {
         Logger.error(
-          `Unexpected error generating quote: ${(error as Error).message}`,
+          `Unexpected error generating quote: ${(error as Error).message}`
         );
       }
 
@@ -104,7 +104,7 @@ export class AIService {
   }
 
   async generateQuoteWithFallback(
-    context?: string,
+    context?: string
   ): Promise<GenerateQuoteResponse> {
     const aiQuote = await this.generateDailyQuote(context);
 
@@ -113,19 +113,19 @@ export class AIService {
     }
 
     // Use fallback quote if AI is unavailable
-    Logger.log("Using fallback quote - AI unavailable");
+    Logger.log('Using fallback quote - AI unavailable');
     return this.getFallbackQuote();
   }
 
   async processQuery(prompt: string): Promise<string> {
     if (!this.isEnabled()) {
-      throw new Error("AI query processing requires AI to be enabled");
+      throw new Error('AI query processing requires AI to be enabled');
     }
 
     try {
       const request: GenerateQueryRequest = {
         query: prompt,
-        context: "", // Context is already in the prompt
+        context: '', // Context is already in the prompt
         maxLength: 500, // Longer responses for analysis
       };
 
@@ -137,7 +137,7 @@ export class AIService {
       Logger.error(`AI query processing failed: ${(error as Error).message}`);
       throw new AIError(
         `Failed to process query: ${(error as Error).message}`,
-        this.config.provider,
+        this.config.provider
       );
     }
   }

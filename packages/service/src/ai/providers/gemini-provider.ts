@@ -7,22 +7,22 @@ import {
   AIError,
   AIRateLimitError,
   AIConfig,
-} from "@notes-sync/shared";
-import { GoogleGenAI } from "@google/genai";
-import { Logger } from "../../logger";
+} from '@notes-sync/shared';
+import { GoogleGenAI } from '@google/genai';
+import { Logger } from '../../logger';
 
 export class GeminiProvider implements AIProvider {
-  public readonly name = "gemini";
-  private config: AIConfig["features"]["dailyQuotes"];
+  public readonly name = 'gemini';
+  private config: AIConfig['features']['dailyQuotes'];
   private ai: GoogleGenAI;
 
   constructor(
     private apiKey: string,
-    private model: string = "gemini-2.5-flash-lite",
-    quoteConfig: AIConfig["features"]["dailyQuotes"],
+    private model: string = 'gemini-2.5-flash-lite',
+    quoteConfig: AIConfig['features']['dailyQuotes']
   ) {
     if (!apiKey) {
-      throw new Error("Gemini API key is required");
+      throw new Error('Gemini API key is required');
     }
 
     // Initialize the Google GenAI client
@@ -31,17 +31,17 @@ export class GeminiProvider implements AIProvider {
     // Set defaults for quote configuration
     this.config = {
       maxLength: quoteConfig?.maxLength || 30,
-      focus: quoteConfig?.focus || ["productivity", "personal growth"],
-      adjectives: quoteConfig?.adjectives || ["historical", "motivational"],
+      focus: quoteConfig?.focus || ['productivity', 'personal growth'],
+      adjectives: quoteConfig?.adjectives || ['historical', 'motivational'],
       additionalRules: quoteConfig?.additionalRules || [
-        "If quoting from spiritual texts, include the book name as author",
-        "Prefer wisdom that applies to daily work and life",
+        'If quoting from spiritual texts, include the book name as author',
+        'Prefer wisdom that applies to daily work and life',
       ],
     };
   }
 
   async generateQuote(
-    request: GenerateQuoteRequest,
+    request: GenerateQuoteRequest
   ): Promise<GenerateQuoteResponse> {
     try {
       const prompt = this.buildQuotePrompt(request);
@@ -58,18 +58,18 @@ export class GeminiProvider implements AIProvider {
       });
 
       if (!response.text) {
-        throw new AIError("No text content in Gemini API response", this.name);
+        throw new AIError('No text content in Gemini API response', this.name);
       }
 
       const parsed = this.parseQuoteResponse(response.text);
 
       Logger.log(
-        `Generated quote via Gemini: "${parsed.quote}" - ${parsed.author}`,
+        `Generated quote via Gemini: "${parsed.quote}" - ${parsed.author}`
       );
       return parsed;
     } catch (error) {
       // Handle rate limiting errors
-      if (error instanceof Error && error.message.includes("429")) {
+      if (error instanceof Error && error.message.includes('429')) {
         throw new AIRateLimitError(this.name);
       }
 
@@ -78,11 +78,11 @@ export class GeminiProvider implements AIProvider {
       }
 
       Logger.error(
-        `Gemini quote generation failed: ${(error as Error).message}`,
+        `Gemini quote generation failed: ${(error as Error).message}`
       );
       throw new AIError(
         `Failed to generate quote: ${(error as Error).message}`,
-        this.name,
+        this.name
       );
     }
   }
@@ -92,23 +92,23 @@ export class GeminiProvider implements AIProvider {
       return 'Find a short, daily quote for someone focused on productivity in the format -> "Quote text" - Author Name -> Under 50 characters.';
     }
 
-    const theme = request.theme || "productivity";
+    const theme = request.theme || 'productivity';
     const context = request.context
       ? `\n\nContext about the user's recent work: ${request.context}`
-      : "";
+      : '';
 
     const additionalRulesText = this.config.additionalRules?.length
-      ? `\n- ${this.config.additionalRules.join("\n- ")}`
-      : "";
+      ? `\n- ${this.config.additionalRules.join('\n- ')}`
+      : '';
 
-    return `Generate a short, daily quote for someone focused on ${this.config.focus?.join(" and ")}. 
+    return `Generate a short, daily quote for someone focused on ${this.config.focus?.join(' and ')}. 
 
 Theme: ${theme}
 ${context}
 
 Requirements:
 - Keep it under ${this.config.maxLength} words
-- Make it ${this.config.adjectives?.join(" and ")}
+- Make it ${this.config.adjectives?.join(' and ')}
 - Include the author's name or passage if from spiritual book of unknown author
 - Format as: "Quote text" - Author Name
 - Avoid cliches and focus on practical wisdom${additionalRulesText}
@@ -118,11 +118,11 @@ Examples:
 "Pain is inevitable. Suffering is optional. The difference lies in what we choose to do with our pain." - Haruki Murakami
 "Your future self is counting on what you do today" - Unknown
 
-Find a real quote ${this.config.allowGenerated && " or generate one."}`;
+Find a real quote ${this.config.allowGenerated && ' or generate one.'}`;
   }
 
   async processQuery(
-    request: GenerateQueryRequest,
+    request: GenerateQueryRequest
   ): Promise<GenerateQueryResponse> {
     try {
       const response = await this.ai.models.generateContent({
@@ -137,7 +137,7 @@ Find a real quote ${this.config.allowGenerated && " or generate one."}`;
       });
 
       if (!response.text) {
-        throw new AIError("No text content in Gemini API response", this.name);
+        throw new AIError('No text content in Gemini API response', this.name);
       }
 
       Logger.log(`Processed AI query: ${request.query.substring(0, 50)}...`);
@@ -147,7 +147,7 @@ Find a real quote ${this.config.allowGenerated && " or generate one."}`;
       };
     } catch (error) {
       // Handle rate limiting errors
-      if (error instanceof Error && error.message.includes("429")) {
+      if (error instanceof Error && error.message.includes('429')) {
         throw new AIRateLimitError(this.name);
       }
 
@@ -156,11 +156,11 @@ Find a real quote ${this.config.allowGenerated && " or generate one."}`;
       }
 
       Logger.error(
-        `Gemini query processing failed: ${(error as Error).message}`,
+        `Gemini query processing failed: ${(error as Error).message}`
       );
       throw new AIError(
         `Failed to process query: ${(error as Error).message}`,
-        this.name,
+        this.name
       );
     }
   }
@@ -181,15 +181,15 @@ Find a real quote ${this.config.allowGenerated && " or generate one."}`;
     if (fallbackMatch) {
       return {
         quote: fallbackMatch[1].trim(),
-        author: "Unknown",
+        author: 'Unknown',
       };
     }
 
     // Last resort: use the first line and attribute to Unknown
-    const firstLine = text.split("\n")[0].trim();
+    const firstLine = text.split('\n')[0].trim();
     return {
       quote: firstLine,
-      author: "Unknown",
+      author: 'Unknown',
     };
   }
 }

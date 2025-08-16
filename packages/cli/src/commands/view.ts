@@ -1,4 +1,4 @@
-import { ServiceDiscovery } from "../service-discovery";
+import { ServiceDiscovery } from '../service-discovery';
 
 export async function viewCommand(options: {
   today?: boolean;
@@ -10,17 +10,17 @@ export async function viewCommand(options: {
   const client = await serviceDiscovery.ensureService();
 
   try {
-    let requestType: "today" | "recent" | "all";
+    let requestType: 'today' | 'recent' | 'all';
 
     if (options.today) {
-      requestType = "today";
+      requestType = 'today';
     } else if (options.recent) {
-      requestType = "recent";
+      requestType = 'recent';
     } else if (options.all) {
-      requestType = "all";
+      requestType = 'all';
     } else {
       // Default to today if no option specified
-      requestType = "today";
+      requestType = 'today';
     }
 
     const days = options.days ? parseInt(options.days) : undefined;
@@ -36,18 +36,18 @@ export async function viewCommand(options: {
     // Show metadata
     console.log();
     console.log(
-      `📊 ${result.metadata.type.toUpperCase()}: ${result.metadata.totalLines} lines`,
+      `📊 ${result.metadata.type.toUpperCase()}: ${result.metadata.totalLines} lines`
     );
     if (result.metadata.daysCovered) {
       console.log(`📅 Days covered: ${result.metadata.daysCovered}`);
     }
     if (result.metadata.dateRange) {
       console.log(
-        `📅 Date range: ${result.metadata.dateRange.start} to ${result.metadata.dateRange.end}`,
+        `📅 Date range: ${result.metadata.dateRange.start} to ${result.metadata.dateRange.end}`
       );
     }
   } catch (error) {
-    console.error("❌ Failed to view notes:", (error as Error).message);
-    console.log("💡 Is the service running? Try: notes-sync status");
+    console.error('❌ Failed to view notes:', (error as Error).message);
+    console.log('💡 Is the service running? Try: notes-sync status');
   }
 }

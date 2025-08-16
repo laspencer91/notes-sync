@@ -20,17 +20,20 @@ Welcome to Notes Sync! We're excited to have you contribute to our project. This
 ### First Time Setup
 
 1. **Clone the repository**
+
    ```bash
    git clone https://github.com/yourusername/notes-sync.git
    cd notes-sync
    ```
 
 2. **Install dependencies**
+
    ```bash
    yarn install
    ```
 
 3. **Build the project**
+
    ```bash
    yarn build
    ```
@@ -54,6 +57,7 @@ docs/issue-number-short-description
 ```
 
 **Examples:**
+
 - `feature/123-add-todo-blocks`
 - `bugfix/456-fix-auto-save`
 - `docs/789-update-readme`
@@ -61,11 +65,13 @@ docs/issue-number-short-description
 ### Branch Workflow
 
 1. **Create a feature branch**
+
    ```bash
    git checkout -b feature/123-add-todo-blocks
    ```
 
 2. **Make your changes**
+
    ```bash
    # Edit files, add tests, etc.
    git add .
@@ -73,14 +79,15 @@ docs/issue-number-short-description
    ```
 
 3. **Push your branch**
+
    ```bash
    git push origin feature/123-add-todo-blocks
    ```
 
 4. **Create a Pull Request**
-    - Go to GitHub and create a PR from your branch to `main`
-    - Fill out the PR template
-    - Request review from maintainers
+   - Go to GitHub and create a PR from your branch to `main`
+   - Fill out the PR template
+   - Request review from maintainers
 
 ## 🎯 Finding Issues to Work On
 
@@ -224,16 +231,18 @@ cd packages/web && yarn test
 ### Making Changes
 
 1. **Check out your branch**
+
    ```bash
    git checkout feature/123-add-todo-blocks
    ```
 
 2. **Make your changes**
-    - Write code
-    - Add tests
-    - Update documentation
+   - Write code
+   - Add tests
+   - Update documentation
 
 3. **Test your changes**
+
    ```bash
    yarn test
    yarn lint
@@ -261,6 +270,7 @@ refactor(api): simplify service discovery
 ```
 
 **Types:**
+
 - `feat`: New feature
 - `fix`: Bug fix
 - `docs`: Documentation changes
@@ -283,26 +293,31 @@ refactor(api): simplify service discovery
 
 ```markdown
 ## Description
+
 Brief description of changes
 
 ## Type of Change
+
 - [ ] Bug fix
 - [ ] New feature
 - [ ] Documentation update
 - [ ] Refactoring
 
 ## Testing
+
 - [ ] Unit tests added/updated
 - [ ] Manual testing completed
 - [ ] All tests pass
 
 ## Checklist
+
 - [ ] Code follows style guidelines
 - [ ] Self-review completed
 - [ ] Documentation updated
 - [ ] No breaking changes
 
 ## Related Issues
+
 Closes #123
 ```
 
@@ -325,25 +340,31 @@ Closes #123
 
 ```markdown
 ## Bug Description
+
 Clear description of the bug
 
 ## Steps to Reproduce
+
 1. Step 1
 2. Step 2
 3. Step 3
 
 ## Expected Behavior
+
 What should happen
 
 ## Actual Behavior
+
 What actually happens
 
 ## Environment
+
 - OS: [macOS/Windows/Linux]
 - Node.js Version: [version]
 - Notes Sync Version: [version]
 
 ## Additional Information
+
 Screenshots, logs, etc.
 ```
 
@@ -353,15 +374,19 @@ Screenshots, logs, etc.
 
 ```markdown
 ## Feature Description
+
 Clear description of the feature
 
 ## Use Case
+
 Why this feature would be useful
 
 ## Proposed Implementation
+
 Optional: suggest how to implement
 
 ## Acceptance Criteria
+
 - [ ] Criterion 1
 - [ ] Criterion 2
 - [ ] Criterion 3

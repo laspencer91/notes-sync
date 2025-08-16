@@ -4,7 +4,6 @@
 
 Hey, developer! Cozy up with your favorite editor and let Notes Sync transform your note-taking into a seamless, AI-enhanced adventure. Your notes live in **one simple Markdown file**—embracing simplicity. Everything in one place, synced effortlessly to Git by a background process with AI-powered insights. Ready to make note-taking a joy? Let’s dive in!
 
-
 <p align="center">
   <img src="docs/readme-images/mark_complete_demo.gif" width="700px" style="border-radius:8px" border="2px solid white" />
 </p>
@@ -52,11 +51,10 @@ Perfect for:
    ```
 
    This guides you through:
-
-    - Choosing a notes directory (e.g., `~/Documents/DailyNotes`).
-    - Picking or creating **one Markdown file** (e.g., `Notes.md`) for all your notes.
-    - Setting up a Git repo for syncing.
-    - Enabling optional AI features with a Gemini API key.
+   - Choosing a notes directory (e.g., `~/Documents/DailyNotes`).
+   - Picking or creating **one Markdown file** (e.g., `Notes.md`) for all your notes.
+   - Setting up a Git repo for syncing.
+   - Enabling optional AI features with a Gemini API key.
 
 3. **Test It Out**:
 
@@ -132,9 +130,11 @@ Each day adds a fresh section to your single Markdown file:
 
 ```markdown
 # 8/14/2025
+
 _Keep your focus sharp, one task at a time_ - AI Generated
 
 **Today's Focus**
+
 - [ ] Your tasks here
 
 **Notes**
@@ -167,11 +167,7 @@ Run `notes-sync install` for an interactive setup, or edit your config file:
   "notesFile": "Daily.md",
   "debounceMs": 20000,
   "glob": "**/*.md",
-  "ignore": [
-    "**/.git/**",
-    "**/.git",
-    "**/node_modules/**"
-  ],
+  "ignore": ["**/.git/**", "**/.git", "**/node_modules/**"],
   "autoCreateDaily": true,
   "wakeDetection": {
     "enabled": true,
@@ -188,8 +184,10 @@ Run `notes-sync install` for an interactive setup, or edit your config file:
         "maxLength": 30,
         "focus": ["productivity", "personal growth"],
         "adjectives": ["actionable or practical", "motivational"],
-        "additionalRules": ["Prefer wisdom that applies to daily work and life"],
-         "allowGenerated": false
+        "additionalRules": [
+          "Prefer wisdom that applies to daily work and life"
+        ],
+        "allowGenerated": false
       }
     },
     "rateLimiting": {

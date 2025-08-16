@@ -1,21 +1,21 @@
-import fs from "fs";
-import path from "path";
-import simpleGit, { SimpleGit } from "simple-git";
-import { Logger } from "./logger";
+import fs from 'fs';
+import path from 'path';
+import simpleGit, { SimpleGit } from 'simple-git';
+import { Logger } from './logger';
 
 function nowIso(): string {
   return new Date().toISOString();
 }
 
 export function isGitRepo(directoryPath: string): boolean {
-  return fs.existsSync(path.join(directoryPath, ".git"));
+  return fs.existsSync(path.join(directoryPath, '.git'));
 }
 
 export async function hasOriginRemote(git: SimpleGit): Promise<boolean> {
   const remotes = await git.getRemotes(true);
-  const origin = remotes.find((r) => r.name === "origin");
+  const origin = remotes.find(r => r.name === 'origin');
   return Boolean(
-    origin && origin.refs && (origin.refs.push || origin.refs.fetch),
+    origin && origin.refs && (origin.refs.push || origin.refs.fetch)
   );
 }
 
@@ -37,7 +37,7 @@ export async function safeSync(git: SimpleGit, reason: string): Promise<void> {
     // 1) Stage and commit local changes first to ensure clean working tree
     let status = await git.status();
     if (status.files.length > 0) {
-      await git.add(["-A"]);
+      await git.add(['-A']);
       status = await git.status();
       if (status.files.length > 0) {
         const msg = `notesync: ${nowIso()} (${status.files.length} changes)`;
@@ -48,10 +48,10 @@ export async function safeSync(git: SimpleGit, reason: string): Promise<void> {
     // 2) Fetch and rebase onto remote, with autostash as a safety net
     await git.fetch();
     try {
-      await git.pull(["--rebase", "--autostash"]);
+      await git.pull(['--rebase', '--autostash']);
     } catch (pullErr: any) {
       Logger.error(
-        `- [GIT] - pull --rebase --autostash failed: ${pullErr?.message || pullErr}`,
+        `- [GIT] - pull --rebase --autostash failed: ${pullErr?.message || pullErr}`
       );
       // Best effort fallback: try a normal pull
       try {

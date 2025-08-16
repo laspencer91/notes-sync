@@ -2,9 +2,9 @@
   "name": "@notes-sync/service",
   "version": "1.0.17",
   "description": "Background service for AI-powered note synchronization",
-  "main": "dist/main.js",
+  "main": "dist/index.js",
   "bin": {
-    "notes-sync-service": "./dist/main.js"
+    "notes-sync-service": "./dist/index.js"
   },
   "scripts": {
     "build": "tsc",

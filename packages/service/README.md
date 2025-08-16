@@ -5,6 +5,7 @@ Background service for Notes Sync - AI-powered note synchronization with Git bac
 ## Overview
 
 This package provides a background service that:
+
 - Watches your notes directory for changes
 - Automatically commits and pushes to Git
 - Provides an HTTP API for the CLI to interact with
@@ -59,6 +60,7 @@ Create a config file at `~/.config/notes-sync/config.json`:
 ```
 
 **Interactive Setup**: The easiest way to configure is through the CLI:
+
 ```bash
 notes-sync install
 ```
@@ -68,6 +70,7 @@ This will detect existing markdown files and ask if you want to use them.
 ## API Endpoints
 
 The service exposes HTTP endpoints on port 3127:
+
 - `GET /status` - Service health and info
 - `POST /sync` - Trigger manual sync
 - `POST /add-note` - Add note to today's section

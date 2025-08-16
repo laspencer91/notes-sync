@@ -8,7 +8,7 @@
     "build": "yarn workspaces foreach -At run build",
     "dev:service": "yarn workspace @notes-sync/service run dev",
     "dev:cli": "yarn workspace @notes-sync/cli run dev",
-    "install:cli": "yarn global add ./packages/cli",
+    "install:cli": "npm install -g ./packages/cli",
     "format": "prettier --write .",
     "format:check": "prettier --check ."
   },

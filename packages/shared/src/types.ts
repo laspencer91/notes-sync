@@ -56,9 +56,9 @@ export interface AIQueryRequest {
   query: string;
   timeRange: {
     days?: number;
-    type?: "today" | "week" | "month" | "custom";
+    type?: 'today' | 'week' | 'month' | 'custom';
   };
-  analysisType?: "focus" | "review" | "next" | "general";
+  analysisType?: 'focus' | 'review' | 'next' | 'general';
 }
 
 export interface AIQueryResponse {
@@ -133,14 +133,14 @@ export interface CreateDailyResponse {
 }
 
 export interface ViewNotesRequest {
-  type: "today" | "recent" | "all";
+  type: 'today' | 'recent' | 'all';
   days?: number; // for recent
 }
 
 export interface ViewNotesResponse {
   content: string;
   metadata: {
-    type: "today" | "recent" | "all";
+    type: 'today' | 'recent' | 'all';
     daysCovered?: number;
     totalLines: number;
     dateRange?: {

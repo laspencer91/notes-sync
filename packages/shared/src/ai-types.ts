@@ -2,7 +2,7 @@
 
 export interface AIConfig {
   enabled: boolean;
-  provider: "gemini"; // Will expand to | 'groq' | 'ollama' in future
+  provider: 'gemini'; // Will expand to | 'groq' | 'ollama' in future
   apiKey?: string;
   model?: string;
   features: {
@@ -22,7 +22,7 @@ export interface AIConfig {
 
 export interface GenerateQuoteRequest {
   context?: string;
-  theme?: "motivational" | "productivity" | "reflection" | "wisdom";
+  theme?: 'motivational' | 'productivity' | 'reflection' | 'wisdom';
 }
 
 export interface GenerateQuoteResponse {
@@ -51,16 +51,16 @@ export class AIError extends Error {
   constructor(
     message: string,
     public provider: string,
-    public code?: string,
+    public code?: string
   ) {
     super(message);
-    this.name = "AIError";
+    this.name = 'AIError';
   }
 }
 
 export class AIRateLimitError extends AIError {
   constructor(provider: string, retryAfter?: number) {
-    super(`Rate limit exceeded for ${provider}`, provider, "RATE_LIMIT");
+    super(`Rate limit exceeded for ${provider}`, provider, 'RATE_LIMIT');
     this.retryAfter = retryAfter;
   }
 

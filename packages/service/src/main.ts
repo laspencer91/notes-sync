@@ -1,31 +1,31 @@
 #!/usr/bin/env node
-import { createServer } from "./server";
-import { FileWatcher } from "./watcher";
-import { loadConfig } from "./config";
-import { createGit, isGitRepo, hasOriginRemote, safeSync } from "./git";
-import { Logger } from "./logger";
-import { NoteInteractor } from "./note-interactor";
-import { AIService } from "./ai/ai-service";
-import { WakeDetector } from "./wake-detect";
-import path from "path";
+import { createServer } from './server';
+import { FileWatcher } from './watcher';
+import { loadConfig } from './config';
+import { createGit, isGitRepo, hasOriginRemote, safeSync } from './git';
+import { Logger } from './logger';
+import { NoteInteractor } from './note-interactor';
+import { AIService } from './ai/ai-service';
+import { WakeDetector } from './wake-detect';
+import path from 'path';
 
 // Handle install/uninstall commands
-if (process.argv.includes("install")) {
-  require(path.join(__dirname, "..", "scripts", "install-service.js"));
+if (process.argv.includes('install')) {
+  require(path.join(__dirname, '..', 'scripts', 'install-service.js'));
   // The install script will handle its own exit
-} else if (process.argv.includes("uninstall")) {
-  require(path.join(__dirname, "..", "scripts", "uninstall-service.js"));
-  process.exit(0);
+} else if (process.argv.includes('uninstall')) {
+  require(path.join(__dirname, '..', 'scripts', 'uninstall-service.js'));
+  // The uninstall script will handle its own exit
 } else {
   // Only run the main service if not installing/uninstalling
-  main().catch((error) => {
+  main().catch(error => {
     Logger.error(`Service failed: ${(error as Error).message}`);
     process.exit(1);
   });
 }
 
-async function main() {
-  Logger.log("Notes Sync Service starting...");
+export async function main() {
+  Logger.log('Notes Sync Service starting...');
 
   // Load configuration
   const config = loadConfig();
@@ -43,7 +43,7 @@ async function main() {
   const hasOrigin = await hasOriginRemote(git);
   if (!hasOrigin) {
     Logger.error(
-      'No "origin" remote configured. Please set it to your GitHub repo.',
+      'No "origin" remote configured. Please set it to your GitHub repo.'
     );
     process.exit(1);
   }
@@ -51,7 +51,7 @@ async function main() {
   ///////////////////////////
   // SYNC INIT
   //////////////////////////
-  await safeSync(git, "initial");
+  await safeSync(git, 'initial');
 
   // Setup debounced sync
   let debounceTimer: NodeJS.Timeout | null = null;
@@ -76,14 +76,14 @@ async function main() {
       aiService = new AIService(config.ai);
       if (aiService.isEnabled()) {
         Logger.log(
-          `AI Service initialized with ${config.ai.provider} provider`,
+          `AI Service initialized with ${config.ai.provider} provider`
         );
       } else {
-        Logger.log("AI Service initialized but disabled (no API key)");
+        Logger.log('AI Service initialized but disabled (no API key)');
       }
     } catch (error) {
       Logger.error(
-        `Failed to initialize AI service: ${(error as Error).message}`,
+        `Failed to initialize AI service: ${(error as Error).message}`
       );
     }
   }
@@ -93,18 +93,18 @@ async function main() {
   //////////////////////////
   const noteInteractor = new NoteInteractor(
     config.notesDir,
-    config.notesFile || "Daily.md",
-    aiService,
+    config.notesFile || 'Daily.md',
+    aiService
   );
 
   // Auto-create today's section on startup (if enabled)
   if (config.autoCreateDaily !== false) {
     // Default to true
-    Logger.log("Checking for missing daily sections...");
+    Logger.log('Checking for missing daily sections...');
     const result = await noteInteractor.autoCreateDailySection();
     if (result.created) {
       Logger.log(`Daily section auto-created: ${result.reason}`);
-      scheduleSync("auto-daily-startup");
+      scheduleSync('auto-daily-startup');
     } else {
       Logger.log(`Daily section check: ${result.reason}`);
     }
@@ -124,17 +124,17 @@ async function main() {
     const thresholdMs = wakeConfig.thresholdMs || 20000;
 
     Logger.log(
-      `Starting wake detection (interval: ${intervalMs}ms, threshold: ${thresholdMs}ms)`,
+      `Starting wake detection (interval: ${intervalMs}ms, threshold: ${thresholdMs}ms)`
     );
 
     WakeDetector.onWake(async () => {
-      Logger.log("Wake detected! Checking for new daily section...");
+      Logger.log('Wake detected! Checking for new daily section...');
 
       // Auto-create daily section on wake
       const result = await noteInteractor.autoCreateDailySection();
       if (result.created) {
         Logger.log(`Daily section created on wake: ${result.reason}`);
-        scheduleSync("auto-daily-wake");
+        scheduleSync('auto-daily-wake');
       } else {
         Logger.log(`No daily section needed: ${result.reason}`);
       }
@@ -151,10 +151,10 @@ async function main() {
   try {
     await server.listen({ port: config.server.port, host: config.server.host });
     Logger.log(
-      `Server listening on http://${config.server.host}:${config.server.port}`,
+      `Server listening on http://${config.server.host}:${config.server.port}`
     );
   } catch (err) {
-    Logger.error("Failed to start server:", err);
+    Logger.error('Failed to start server:', err);
     process.exit(1);
   }
 
@@ -163,7 +163,7 @@ async function main() {
   //////////////////////////
   const watcher = new FileWatcher();
   watcher.start(config.notesDir, config.glob, config.ignore, () => {
-    scheduleSync("file-change");
+    scheduleSync('file-change');
   });
 
   ///////////////////////////
@@ -177,6 +177,6 @@ async function main() {
     process.exit(0);
   };
 
-  process.on("SIGINT", () => shutdown("SIGINT"));
-  process.on("SIGTERM", () => shutdown("SIGTERM"));
+  process.on('SIGINT', () => shutdown('SIGINT'));
+  process.on('SIGTERM', () => shutdown('SIGTERM'));
 }

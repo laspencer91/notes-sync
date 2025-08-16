@@ -1,6 +1,6 @@
-import inquirer from "inquirer";
-import { ApiClient } from "@notes-sync/shared";
-import { ServiceDiscovery } from "../service-discovery";
+import inquirer from 'inquirer';
+import { ApiClient } from '@notes-sync/shared';
+import { ServiceDiscovery } from '../service-discovery';
 
 export async function deleteCommand() {
   const serviceDiscovery = new ServiceDiscovery();
@@ -11,7 +11,7 @@ export async function deleteCommand() {
     const todosResponse = await client.getIncompleteTodos(7);
 
     if (todosResponse.todos.length === 0) {
-      console.log("📝 No incomplete todos found in the last 7 days");
+      console.log('📝 No incomplete todos found in the last 7 days');
       return;
     }
 
@@ -20,7 +20,7 @@ export async function deleteCommand() {
       name: string;
       value: string | null;
       short: string;
-    }> = todosResponse.todos.map((todo) => ({
+    }> = todosResponse.todos.map(todo => ({
       name: `${todo.todo} (${todo.date})`,
       value: todo.todo,
       short: todo.todo,
@@ -30,15 +30,15 @@ export async function deleteCommand() {
     choices.push({
       name: "Cancel - don't delete anything",
       value: null,
-      short: "Cancel",
+      short: 'Cancel',
     });
 
     // Ask user to select a todo to delete
     const { selectedTodo } = await inquirer.prompt([
       {
-        type: "list",
-        name: "selectedTodo",
-        message: "Which todo would you like to delete?",
+        type: 'list',
+        name: 'selectedTodo',
+        message: 'Which todo would you like to delete?',
         choices,
         pageSize: 10,
       },
@@ -46,22 +46,22 @@ export async function deleteCommand() {
 
     // If user cancelled, exit
     if (!selectedTodo) {
-      console.log("❌ Cancelled");
+      console.log('❌ Cancelled');
       return;
     }
 
     // Confirm deletion
     const { confirmDelete } = await inquirer.prompt([
       {
-        type: "confirm",
-        name: "confirmDelete",
+        type: 'confirm',
+        name: 'confirmDelete',
         message: `Are you sure you want to permanently delete: "${selectedTodo}"?`,
         default: true,
       },
     ]);
 
     if (!confirmDelete) {
-      console.log("❌ Cancelled");
+      console.log('❌ Cancelled');
       return;
     }
 
@@ -74,7 +74,7 @@ export async function deleteCommand() {
       console.log(`❌ Failed to delete todo: ${result.message}`);
     }
   } catch (error) {
-    console.error("❌ Failed to delete todo:", (error as Error).message);
-    console.log("💡 Is the service running? Try: notes-sync install");
+    console.error('❌ Failed to delete todo:', (error as Error).message);
+    console.log('💡 Is the service running? Try: notes-sync install');
   }
 }
