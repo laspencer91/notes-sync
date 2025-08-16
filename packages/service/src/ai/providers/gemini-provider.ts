@@ -118,7 +118,7 @@ Examples:
 "Pain is inevitable. Suffering is optional. The difference lies in what we choose to do with our pain." - Haruki Murakami
 "Your future self is counting on what you do today" - Unknown
 
-Generate one quote:`;
+Find a real quote ${this.config.allowGenerated && " or generate one."}`;
   }
 
   async processQuery(

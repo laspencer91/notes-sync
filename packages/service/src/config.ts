@@ -143,6 +143,7 @@ export function loadConfig(): ServiceConfig {
           "If quoting from spiritual texts, include the book name as author",
           "Prefer wisdom that applies to daily work and life",
         ],
+        allowGenerated: ai.features?.dailyQuotes?.allowGenerated ?? false,
       },
     },
     rateLimiting: {
@@ -154,6 +155,11 @@ export function loadConfig(): ServiceConfig {
   // Enable AI if API key is available
   if (defaultAIConfig.apiKey) {
     defaultAIConfig.enabled = ai.enabled !== false; // Default to true if API key exists
+  }
+
+  // Ensure allowGenerated is always a boolean
+  if (defaultAIConfig.features.dailyQuotes && typeof defaultAIConfig.features.dailyQuotes.allowGenerated !== 'boolean') {
+    defaultAIConfig.features.dailyQuotes.allowGenerated = false;
   }
 
   return {

@@ -159,14 +159,43 @@ Run `notes-sync install` for an interactive setup, or edit `~/.config/notes-sync
 
 ```json
 {
-  "notesDir": "~/Documents/DailyNotes",
-  "notesFile": "Notes.md",
+  "notesDir": "/path/to/your/notes",
+  "notesFile": "Daily.md",
+  "debounceMs": 20000,
+  "glob": "**/*.md",
+  "ignore": [
+    "**/.git/**",
+    "**/.git",
+    "**/node_modules/**"
+  ],
   "autoCreateDaily": true,
+  "wakeDetection": {
+    "enabled": true,
+    "intervalMs": 20000,
+    "thresholdMs": 20000
+  },
   "ai": {
     "enabled": true,
     "provider": "gemini",
-    "apiKey": "your-gemini-api-key",
-    "features": { "dailyQuotes": true }
+    "apiKey": "your-gemini-api-key-here",
+    "model": "gemini-2.5-flash-lite",
+    "features": {
+      "dailyQuotes": {
+        "maxLength": 30,
+        "focus": ["productivity", "personal growth"],
+        "adjectives": ["actionable or practical", "motivational"],
+        "additionalRules": ["Prefer wisdom that applies to daily work and life"],
+         "allowGenerated": false
+      }
+    },
+    "rateLimiting": {
+      "requestsPerMinute": 10,
+      "requestsPerDay": 100
+    }
+  },
+  "server": {
+    "port": 3127,
+    "host": "localhost"
   }
 }
 ```

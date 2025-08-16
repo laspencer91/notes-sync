@@ -28,7 +28,8 @@
         "maxLength": 30,
         "focus": ["productivity", "personal growth"],
         "adjectives": ["actionable or practical", "motivational"],
-        "additionalRules": ["Prefer wisdom that applies to daily work and life"]
+        "additionalRules": ["Prefer wisdom that applies to daily work and life"],
+        "allowGenerated": false
       }
     },
     "rateLimiting": {

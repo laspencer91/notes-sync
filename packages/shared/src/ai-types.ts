@@ -11,6 +11,7 @@ export interface AIConfig {
       focus?: string[];
       adjectives?: string[];
       additionalRules?: string[];
+      allowGenerated?: boolean;
     };
   };
   rateLimiting: {
