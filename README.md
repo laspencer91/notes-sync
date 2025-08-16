@@ -12,11 +12,12 @@ Hey, developer! Cozy up with your favorite editor and let Notes Sync transform y
 
 [Get Started](#-get-started-in-3-steps) | [Key Features](#-key-features) | [See Limitations](#limitations)
 
-### **✅ macOS (Fully Supported)** 
-**❌ Linux (Not Supported)**
-**❌ Windows (Not Supported)**
+### **✅ macOS (Fully Supported)**
 
-*Help us support new environments, check out [ISSUES](https://github.com/laspencer91/notes-sync/issues)*
+**❌ Linux (Not Supported)**
+**✅ Windows (Fully Supported)**
+
+_Help us support new environments, check out [ISSUES](https://github.com/laspencer91/notes-sync/issues)_
 
 ## What’s Notes Sync?
 
@@ -155,7 +156,10 @@ notes-sync format --validate # Check for issues
 
 ## ⚙️ Configure It Your Way
 
-Run `notes-sync install` for an interactive setup, or edit `~/.config/notes-sync/config.json`:
+Run `notes-sync install` for an interactive setup, or edit your config file:
+
+- macOS/Linux: `~/.config/notes-sync/config.json`
+- Windows: `%APPDATA%\notes-sync\config.json`
 
 ```json
 {
@@ -238,10 +242,16 @@ npm install -g @notes-sync/service  # Reinstall service
 **Uninstall**:
 
 ```bash
+# For all platforms
 notes-sync stop
 notes-sync-service uninstall
 npm uninstall -g @notes-sync/cli @notes-sync/service
+
+# macOS/Linux
 rm -rf ~/.config/notes-sync
+
+# Windows (Command Prompt)
+rd /s /q %APPDATA%\notes-sync
 ```
 
 ## Limitations
