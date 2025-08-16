@@ -9,6 +9,7 @@ import {
   ViewNotesRequest,
   ViewNotesResponse,
 } from "@notes-sync/shared";
+import { SearchFilters } from "@notes-sync/shared";
 
 // Section constants for parsing
 const TODAY_SECTION = `**Today's Focus**`;
@@ -20,7 +21,7 @@ export class NoteInteractor {
   constructor(
     private notesDir: string,
     private noteFile: string,
-    private aiService?: AIService,
+    private aiService?: AIService
   ) {}
 
   async writeNewDay(): Promise<void> {
@@ -43,7 +44,7 @@ export class NoteInteractor {
           }
         } catch (error) {
           Logger.error(
-            `Failed to generate AI quote, using fallback: ${(error as Error).message}`,
+            `Failed to generate AI quote, using fallback: ${(error as Error).message}`
           );
           // Continue with default quote - don't let AI failures break daily creation
         }
@@ -52,17 +53,17 @@ export class NoteInteractor {
       const template = getDailyTemplate(
         new Date().toLocaleDateString(),
         quote,
-        author,
+        author
       );
 
       this.append("\n\n" + template);
 
       Logger.log(
-        `Daily section created for ${new Date().toLocaleDateString()}`,
+        `Daily section created for ${new Date().toLocaleDateString()}`
       );
     } catch (error) {
       Logger.error(
-        `Failed to write daily section: ${(error as Error).message}`,
+        `Failed to write daily section: ${(error as Error).message}`
       );
     }
   }
@@ -80,7 +81,7 @@ export class NoteInteractor {
       return context;
     } catch (error) {
       Logger.error(
-        `Failed to get recent notes context: ${(error as Error).message}`,
+        `Failed to get recent notes context: ${(error as Error).message}`
       );
       return "";
     }
@@ -126,7 +127,7 @@ export class NoteInteractor {
   private extractSection(
     text: string,
     sectionHeader: string,
-    nextSectionHeader?: string,
+    nextSectionHeader?: string
   ): string {
     const sectionIndex = text.indexOf(sectionHeader);
     if (sectionIndex === -1) return "";
@@ -155,7 +156,7 @@ export class NoteInteractor {
 
     const todayHeaderRegex = new RegExp(
       `^# ${todayDate.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}`,
-      "m",
+      "m"
     );
     const todayMatch = content.match(todayHeaderRegex);
 
@@ -211,7 +212,7 @@ export class NoteInteractor {
       return dayMap.get(dateStr) || "";
     } catch (error) {
       Logger.error(
-        `Failed to get date ${date.toLocaleDateString()}: ${(error as Error).message}`,
+        `Failed to get date ${date.toLocaleDateString()}: ${(error as Error).message}`
       );
       return "";
     }
@@ -222,7 +223,7 @@ export class NoteInteractor {
       const todosSection = this.extractSection(
         dayText,
         TODAY_SECTION,
-        NOTE_SECTION,
+        NOTE_SECTION
       );
 
       // Extract checkbox items (- [ ] or - [x])
@@ -269,7 +270,7 @@ export class NoteInteractor {
       // Find the end of the Today's Focus section
       const notesSectionStart = todaySection.content.indexOf(
         NOTE_SECTION,
-        todayFocusStart,
+        todayFocusStart
       );
       if (notesSectionStart === -1) {
         Logger.error("Notes section not found");
@@ -279,7 +280,7 @@ export class NoteInteractor {
       // Find the last todo item in the Today's Focus section
       const focusSection = todaySection.content.substring(
         todayFocusStart,
-        notesSectionStart,
+        notesSectionStart
       );
       const todoRegex = /^- \[[ x]\] .+$/gm;
       let lastTodoEnd = todayFocusStart + TODAY_SECTION.length;
@@ -324,7 +325,7 @@ export class NoteInteractor {
       // Find the end of the Notes section (before Done section)
       const doneSectionStart = todaySection.content.indexOf(
         DONE_SECTION,
-        notesSectionStart,
+        notesSectionStart
       );
       if (doneSectionStart === -1) {
         Logger.error("Done section not found");
@@ -334,7 +335,7 @@ export class NoteInteractor {
       // Find where to insert the note (at the end of the Notes section)
       const notesSection = todaySection.content.substring(
         notesSectionStart + NOTE_SECTION.length,
-        doneSectionStart,
+        doneSectionStart
       );
 
       // Find the last non-empty line in the notes section
@@ -384,7 +385,7 @@ export class NoteInteractor {
       const content = this.readNotesFile();
       const todoPattern = new RegExp(
         `^(- \\[ \\] )(${todoText.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")})$`,
-        "gm",
+        "gm"
       );
 
       if (!todoPattern.test(content)) {
@@ -409,7 +410,7 @@ export class NoteInteractor {
       // Match both incomplete and complete todos
       const todoPattern = new RegExp(
         `^- \\[[x ]\\] ${todoText.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\s*$`,
-        "gm",
+        "gm"
       );
 
       if (!todoPattern.test(content)) {
@@ -432,58 +433,152 @@ export class NoteInteractor {
     }
   }
 
-  searchNotes(
-    query: string,
-    daysBack: number = 30,
-  ): Array<{ date: string; context: string }> {
-    try {
-      const content = this.readNotesFile();
-      const dayMap = this.parseDays(content);
-      const results: Array<{ date: string; context: string }> = [];
+  // searchNotes(
+  //   query: string,
+  //   daysBack: number = 30,
+  // ): Array<{ date: string; context: string }> {
+  //   try {
+  //     const content = this.readNotesFile();
+  //     const dayMap = this.parseDays(content);
+  //     const results: Array<{ date: string; context: string }> = [];
 
-      // Get dates and sort them in descending order
-      const sortedDates = Array.from(dayMap.keys()).sort((a, b) => {
-        const dateA = new Date(a);
-        const dateB = new Date(b);
-        return dateB.getTime() - dateA.getTime();
+  //     // Get dates and sort them in descending order
+  //     const sortedDates = Array.from(dayMap.keys()).sort((a, b) => {
+  //       const dateA = new Date(a);
+  //       const dateB = new Date(b);
+  //       return dateB.getTime() - dateA.getTime();
+  //     });
+
+  //     // Search through the specified number of days
+  //     const searchDates = sortedDates.slice(0, daysBack);
+  //     const searchRegex = new RegExp(
+  //       query.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"),
+  //       "gi",
+  //     );
+
+  //     for (const date of searchDates) {
+  //       const dayContent = dayMap.get(date) || "";
+  //       const lines = dayContent.split("\n");
+
+  //       for (let i = 0; i < lines.length; i++) {
+  //         if (searchRegex.test(lines[i])) {
+  //           // Get context: 1 line before and after the match
+  //           const contextStart = Math.max(0, i - 1);
+  //           const contextEnd = Math.min(lines.length, i + 2);
+  //           const context = lines.slice(contextStart, contextEnd).join("\n");
+
+  //           results.push({
+  //             date,
+  //             context: context.trim(),
+  //           });
+  //         }
+  //       }
+  //     }
+
+  //     Logger.log(`Search for "${query}" found ${results.length} results`);
+  //     return results;
+  //   } catch (error) {
+  //     Logger.error(`Failed to search notes: ${(error as Error).message}`);
+  //     return [];
+  //   }
+  // }
+
+  searchNotes(query: string, filters: SearchFilters = {}) {
+    const content = this.readNotesFile();
+    const dayMap = this.parseDays(content);
+
+    let results: Array<{
+      date: string;
+      context: string;
+      section?: string;
+      type?: string;
+      status?: string;
+    }> = [];
+
+    // Dates ko descending order me sort karo
+    const sortedDates = Array.from(dayMap.keys()).sort(
+      (a, b) => new Date(b).getTime() - new Date(a).getTime()
+    );
+
+    // Apply daysBack ya dateRange
+    let filteredDates = sortedDates;
+    if (filters.daysBack) {
+      const cutoff = new Date();
+      cutoff.setDate(cutoff.getDate() - filters.daysBack);
+      filteredDates = sortedDates.filter((d) => new Date(d) >= cutoff);
+    } else if (filters.dateRange) {
+      const startDate = new Date(filters.dateRange.start);
+      const endDate = new Date(filters.dateRange.end);
+      filteredDates = sortedDates.filter((d) => {
+        const current = new Date(d);
+        return current >= startDate && current <= endDate;
       });
+    }
 
-      // Search through the specified number of days
-      const searchDates = sortedDates.slice(0, daysBack);
-      const searchRegex = new RegExp(
-        query.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"),
-        "gi",
-      );
+    for (const date of filteredDates) {
+      const dayText = dayMap.get(date)!;
 
-      for (const date of searchDates) {
-        const dayContent = dayMap.get(date) || "";
-        const lines = dayContent.split("\n");
+      const sectionsToCheck = filters.section
+        ? [filters.section]
+        : ["todos", "notes", "daily"];
 
-        for (let i = 0; i < lines.length; i++) {
-          if (searchRegex.test(lines[i])) {
-            // Get context: 1 line before and after the match
-            const contextStart = Math.max(0, i - 1);
-            const contextEnd = Math.min(lines.length, i + 2);
-            const context = lines.slice(contextStart, contextEnd).join("\n");
+      for (const section of sectionsToCheck) {
+        let sectionContent = "";
+        switch (section) {
+          case "todos":
+            sectionContent = this.extractSection(
+              dayText,
+              "TODOS_SECTION_START",
+              "TODOS_SECTION_END"
+            ); // TODO: correct markers
+            break;
+          case "notes":
+            sectionContent = this.extractSection(
+              dayText,
+              "NOTES_SECTION_START",
+              "NOTES_SECTION_END"
+            ); // TODO: correct markers
+            break;
+          case "daily":
+            sectionContent = dayText;
+            break;
+        }
 
-            results.push({
-              date,
-              context: context.trim(),
-            });
+        const lines = sectionContent.split("\n");
+        for (const line of lines) {
+          if (!line.includes(query)) continue;
+
+          // Todo status filter
+          if (section === "todos" && filters.status) {
+            const isComplete = line.startsWith("- [x]");
+            if (
+              (filters.status === "complete" && !isComplete) ||
+              (filters.status === "incomplete" && isComplete)
+            )
+              continue;
           }
+
+          results.push({
+            date,
+            context: line.trim(),
+            section,
+            type: section === "todos" ? "todo" : "note",
+            status:
+              section === "todos"
+                ? line.startsWith("- [x]")
+                  ? "complete"
+                  : "incomplete"
+                : undefined,
+          });
         }
       }
-
-      Logger.log(`Search for "${query}" found ${results.length} results`);
-      return results;
-    } catch (error) {
-      Logger.error(`Failed to search notes: ${(error as Error).message}`);
-      return [];
     }
+
+    return results;
   }
 
   getIncompleteTodos(
-    daysBack: number = 7,
+    daysBack: number = 7
   ): Array<{ date: string; todo: string }> {
     try {
       const content = this.readNotesFile();
@@ -509,7 +604,7 @@ export class NoteInteractor {
         const todayFocusSection = this.extractSection(
           dayContent,
           TODAY_SECTION,
-          NOTE_SECTION,
+          NOTE_SECTION
         );
 
         let match;
@@ -522,12 +617,12 @@ export class NoteInteractor {
       }
 
       Logger.log(
-        `Found ${incompleteTodos.length} incomplete todos from last ${daysBack} days`,
+        `Found ${incompleteTodos.length} incomplete todos from last ${daysBack} days`
       );
       return incompleteTodos;
     } catch (error) {
       Logger.error(
-        `Failed to get incomplete todos: ${(error as Error).message}`,
+        `Failed to get incomplete todos: ${(error as Error).message}`
       );
       return [];
     }
@@ -545,12 +640,12 @@ export class NoteInteractor {
       const todayFocusSection = this.extractSection(
         todaySection.content,
         TODAY_SECTION,
-        NOTE_SECTION,
+        NOTE_SECTION
       );
       const doneSection = this.extractSection(
         todaySection.content,
         DONE_SECTION,
-        TOMORROW_SECTION,
+        TOMORROW_SECTION
       );
 
       // Find completed todos in Today's Focus
@@ -572,7 +667,7 @@ export class NoteInteractor {
       for (const todo of completedTodos) {
         const todoPattern = new RegExp(
           `^- \\[x\\] ${todo.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`,
-          "gm",
+          "gm"
         );
         updatedTodayFocus = updatedTodayFocus.replace(todoPattern, "");
       }
@@ -597,12 +692,12 @@ export class NoteInteractor {
 
       let newDayContent = todaySection.content.substring(
         0,
-        todayFocusStart + TODAY_SECTION.length,
+        todayFocusStart + TODAY_SECTION.length
       );
       newDayContent += `\n\n${updatedTodayFocus}\n\n`;
       newDayContent += todaySection.content.substring(
         notesSectionStart,
-        doneSectionStart + DONE_SECTION.length,
+        doneSectionStart + DONE_SECTION.length
       );
       newDayContent += `\n\n${updatedDoneSection}\n\n`;
       newDayContent += todaySection.content.substring(tomorrowSectionStart);
@@ -619,7 +714,7 @@ export class NoteInteractor {
       return completedTodos.length;
     } catch (error) {
       Logger.error(
-        `Failed to archive completed todos: ${(error as Error).message}`,
+        `Failed to archive completed todos: ${(error as Error).message}`
       );
       return 0;
     }
@@ -655,12 +750,12 @@ export class NoteInteractor {
       // Fix broken quotes (rejoin lines that should be together without adding extra spaces)
       formattedContent = formattedContent.replace(
         /(_[^_\n]*)\n([^_\n]*_)/g,
-        "$1$2",
+        "$1$2"
       );
       // Fix broken dates (rejoin date parts)
       formattedContent = formattedContent.replace(
         /(# \d{1,2}\/\d{1,2}\/\d{2,3})\n(\d)/gm,
-        "$1$2",
+        "$1$2"
       );
       if (beforeFixes !== formattedContent) {
         changes.push("Fixed broken content lines");
@@ -671,12 +766,12 @@ export class NoteInteractor {
       // Add blank line before headers (except at start of file) - but only for complete date lines
       formattedContent = formattedContent.replace(
         /(?<!^)(?<!\n\n)(\n)(# \d{1,2}\/\d{1,2}\/\d{4})/gm,
-        "\n\n$2",
+        "\n\n$2"
       );
       // Ensure blank line after complete date headers
       formattedContent = formattedContent.replace(
         /(^# \d{1,2}\/\d{1,2}\/\d{4})(?!\n\n)/gm,
-        "$1\n",
+        "$1\n"
       );
       if (beforeHeaders !== formattedContent) {
         changes.push("Standardized header spacing");
@@ -686,11 +781,11 @@ export class NoteInteractor {
       const beforeTodos = formattedContent;
       formattedContent = formattedContent.replace(
         /^-\s*\[([x ])\]([^ ])/gm,
-        "- [$1] $2",
+        "- [$1] $2"
       );
       formattedContent = formattedContent.replace(
         /^-\s*\[([x ])\]\s+/gm,
-        "- [$1] ",
+        "- [$1] "
       );
       if (beforeTodos !== formattedContent) {
         changes.push("Standardized todo formatting");
@@ -715,7 +810,7 @@ export class NoteInteractor {
       for (const section of sectionHeaders) {
         const sectionRegex = new RegExp(
           `(\\*\\*${section.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\*\\*)(?!\\n\\n)`,
-          "g",
+          "g"
         );
         formattedContent = formattedContent.replace(sectionRegex, "$1\n");
       }
@@ -730,7 +825,7 @@ export class NoteInteractor {
       // Only add spacing after quotes that are followed by section headers or other content, but preserve quote integrity
       formattedContent = formattedContent.replace(
         /(_[^_\n]+_)(\s*)(\*\*)/gm,
-        "$1\n\n$3",
+        "$1\n\n$3"
       );
       if (beforeQuotes !== formattedContent) {
         changes.push("Cleaned quote formatting");
@@ -757,20 +852,20 @@ export class NoteInteractor {
       // Final pass: ensure quotes and dates weren't accidentally broken by any of the above rules
       formattedContent = formattedContent.replace(
         /(_[^_\n]*)\n([^_\n]*_)/g,
-        "$1$2",
+        "$1$2"
       );
       formattedContent = formattedContent.replace(
         /(# \d{1,2}\/\d{1,2}\/\d{2,3})\n(\d)/gm,
-        "$1$2",
+        "$1$2"
       );
 
       if (changes.length > 0) {
         fs.writeFileSync(
           path.join(this.notesDir, this.noteFile),
-          formattedContent,
+          formattedContent
         );
         Logger.log(
-          `Document formatted with ${changes.length} changes: ${changes.join(", ")}`,
+          `Document formatted with ${changes.length} changes: ${changes.join(", ")}`
         );
         return { formatted: true, changesMade: changes };
       } else {
@@ -802,7 +897,7 @@ export class NoteInteractor {
           const focusSection = this.extractSection(
             updatedSection,
             TODAY_SECTION,
-            NOTE_SECTION,
+            NOTE_SECTION
           );
           let cleanFocus = focusSection
             .replace(/^- \[ \]\s*$/gm, "") // Remove empty todos
@@ -812,9 +907,9 @@ export class NoteInteractor {
           // Replace the section
           updatedSection = updatedSection.replace(
             new RegExp(
-              `(${TODAY_SECTION.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")})([\\s\\S]*?)(?=${NOTE_SECTION.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")})`,
+              `(${TODAY_SECTION.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")})([\\s\\S]*?)(?=${NOTE_SECTION.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")})`
             ),
-            `$1\n\n${cleanFocus.trim()}\n\n`,
+            `$1\n\n${cleanFocus.trim()}\n\n`
           );
           break;
 
@@ -823,7 +918,7 @@ export class NoteInteractor {
           const notesSection = this.extractSection(
             updatedSection,
             NOTE_SECTION,
-            DONE_SECTION,
+            DONE_SECTION
           );
           let cleanNotes = notesSection
             .replace(/[ \t]+$/gm, "") // Remove trailing whitespace
@@ -833,9 +928,9 @@ export class NoteInteractor {
           // Replace the section
           updatedSection = updatedSection.replace(
             new RegExp(
-              `(${NOTE_SECTION.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")})([\\s\\S]*?)(?=${DONE_SECTION.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")})`,
+              `(${NOTE_SECTION.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")})([\\s\\S]*?)(?=${DONE_SECTION.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")})`
             ),
-            `$1\n\n${cleanNotes}\n\n`,
+            `$1\n\n${cleanNotes}\n\n`
           );
           break;
 
@@ -855,7 +950,7 @@ export class NoteInteractor {
       return true;
     } catch (error) {
       Logger.error(
-        `Failed to format section ${sectionName}: ${(error as Error).message}`,
+        `Failed to format section ${sectionName}: ${(error as Error).message}`
       );
       return false;
     }
@@ -904,7 +999,7 @@ export class NoteInteractor {
       return { isValid: issues.length === 0, issues };
     } catch (error) {
       Logger.error(
-        `Failed to validate formatting: ${(error as Error).message}`,
+        `Failed to validate formatting: ${(error as Error).message}`
       );
       return { isValid: false, issues: ["Validation failed"] };
     }
@@ -936,7 +1031,7 @@ export class NoteInteractor {
       return missingDays;
     } catch (error) {
       Logger.error(
-        `Failed to check for missing days: ${(error as Error).message}`,
+        `Failed to check for missing days: ${(error as Error).message}`
       );
       return [];
     }
@@ -944,7 +1039,7 @@ export class NoteInteractor {
 
   // Auto-create daily section if needed (enhanced version)
   async autoCreateDailySection(
-    force: boolean = false,
+    force: boolean = false
   ): Promise<{ created: boolean; reason: string }> {
     try {
       // Check if today already exists (unless forced)
@@ -970,7 +1065,7 @@ export class NoteInteractor {
       return { created: false, reason: "Today's section not needed" };
     } catch (error) {
       Logger.error(
-        `Failed to auto-create daily section: ${(error as Error).message}`,
+        `Failed to auto-create daily section: ${(error as Error).message}`
       );
       return { created: false, reason: `Error: ${(error as Error).message}` };
     }
@@ -998,7 +1093,7 @@ export class NoteInteractor {
       return now.getTime() - lastDate.getTime();
     } catch (error) {
       Logger.error(
-        `Failed to get time since last entry: ${(error as Error).message}`,
+        `Failed to get time since last entry: ${(error as Error).message}`
       );
       return 0;
     }
@@ -1010,7 +1105,7 @@ export class NoteInteractor {
     const { content, metadata } = this.extractFullDayContext(request.timeRange);
 
     Logger.log(
-      `AI Query context: ${metadata.daysCovered} days, ${metadata.charactersUsed} chars${metadata.truncated ? " (truncated)" : ""}`,
+      `AI Query context: ${metadata.daysCovered} days, ${metadata.charactersUsed} chars${metadata.truncated ? " (truncated)" : ""}`
     );
 
     // Debug: Log first 100 chars of content to see what's being sent
@@ -1144,7 +1239,7 @@ Then try your AI query again!`,
             // Only truncate if we have reasonable space
             const truncatedDay = this.truncateDayContent(
               daySection,
-              availableSpace,
+              availableSpace
             );
             sections.push(truncatedDay);
             totalCharacters += truncatedDay.length;

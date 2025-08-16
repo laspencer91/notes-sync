@@ -70,6 +70,12 @@ program
   .description("Search through notes")
   .argument("<query>", "Search query")
   .option("-d, --days <number>", "Number of days to search back (default: 30)")
+  .option(
+    "--date-range <start:end>",
+    "Search notes between a date range (e.g., 2024-01-01:2024-01-31)"
+  )
+  .option("--section <section>", "Filter by section (todos, notes, done)")
+  .option("--status <status>", "Filter by todo status (complete, incomplete)")
   .action(searchCommand);
 
 program
@@ -121,7 +127,7 @@ program
       .option("--focus", "What should I focus on?")
       .option("--review", "Review my progress")
       .option("--next", "What should I do next?")
-      .action(aiQueryCommand),
+      .action(aiQueryCommand)
   );
 
 program

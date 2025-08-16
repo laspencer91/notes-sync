@@ -71,9 +71,18 @@ export interface AIQueryResponse {
   suggestions?: string[];
 }
 
-export interface SearchNotesRequest {
-  query: string;
+export interface SearchFilters {
+  section?: "todos" | "notes" | "done";
+  status?: "complete" | "incomplete";
+  dateRange?: {
+    start: string;
+    end: string;
+  };
   daysBack?: number;
+}
+
+export interface SearchNotesRequest extends SearchFilters {
+  query: string;
 }
 
 export interface SearchNotesResponse {
