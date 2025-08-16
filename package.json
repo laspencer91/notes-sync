@@ -10,7 +10,8 @@
     "dev:cli": "yarn workspace @notes-sync/cli run dev",
     "install:cli": "npm install -g ./packages/cli",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "publish": "node scripts/publish.js"
   },
   "devDependencies": {
     "prettier": "^3.6.2",

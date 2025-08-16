@@ -77,7 +77,9 @@ Your notes will be automatically synced to Git when you make changes.
 }
 
 async function setupConfig() {
-  const configDir = path.join(os.homedir(), '.config', 'notes-sync');
+  const configDir = isWindows 
+    ? path.join(process.env.APPDATA || '', 'notes-sync')
+    : path.join(os.homedir(), '.config', 'notes-sync');
   const configPath = path.join(configDir, 'config.json');
 
   // Create config directory if it doesn't exist
@@ -339,9 +341,9 @@ async function installMacService() {
     <key>KeepAlive</key>
     <true/>
     <key>StandardErrorPath</key>
-    <string>${homeDir}/.config/notes-sync/error.log</string>
+    <string>${path.join(homeDir, '.config', 'notes-sync', 'error.log')}</string>
     <key>StandardOutPath</key>
-    <string>${homeDir}/.config/notes-sync/output.log</string>
+    <string>${path.join(homeDir, '.config', 'notes-sync', 'output.log')}</string>
 </dict>
 </plist>`;
 
