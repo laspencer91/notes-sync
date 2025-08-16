@@ -1,4 +1,3 @@
-import { ApiClient } from "@notes-sync/shared";
 import { ServiceDiscovery } from "../service-discovery";
 
 export async function dailyCommand(
@@ -8,11 +7,6 @@ export async function dailyCommand(
   const serviceDiscovery = new ServiceDiscovery();
   const client = await serviceDiscovery.ensureService();
 
-  // Debug info to see what Commander.js is actually passing
-  console.log("=== DEBUG INFO ===");
-  console.log("Arguments length:", arguments.length);
-  console.log("options received:", JSON.stringify(options, null, 2));
-  console.log("command object present:", !!command);
   if (command) {
     console.log("command.args:", command.args);
     console.log("command.opts():", JSON.stringify(command.opts(), null, 2));

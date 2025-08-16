@@ -8,9 +8,15 @@ Hey, developer! Cozy up with your favorite editor and let Notes Sync transform y
 <p align="center">
   <img src="docs/readme-images/mark_complete_demo.gif" width="700px" style="border-radius:8px" border="2px solid white" />
 </p>
-<p align="center">See Typora for Markdown Editor / Viewer</p>
+<p align="center">Using Typora as Editor / Viewer</p>
 
 [Get Started](#-get-started-in-3-steps) | [Key Features](#-key-features) | [See Limitations](#limitations)
+
+### **✅ macOS (Fully Supported)** 
+**❌ Linux (Not Supported)**
+**❌ Windows (Not Supported)**
+
+*Help us support new environments, check out [ISSUES](https://github.com/laspencer91/notes-sync/issues)*
 
 ## What’s Notes Sync?
 
@@ -153,14 +159,43 @@ Run `notes-sync install` for an interactive setup, or edit `~/.config/notes-sync
 
 ```json
 {
-  "notesDir": "~/Documents/DailyNotes",
-  "notesFile": "Notes.md",
+  "notesDir": "/path/to/your/notes",
+  "notesFile": "Daily.md",
+  "debounceMs": 20000,
+  "glob": "**/*.md",
+  "ignore": [
+    "**/.git/**",
+    "**/.git",
+    "**/node_modules/**"
+  ],
   "autoCreateDaily": true,
+  "wakeDetection": {
+    "enabled": true,
+    "intervalMs": 20000,
+    "thresholdMs": 20000
+  },
   "ai": {
     "enabled": true,
     "provider": "gemini",
-    "apiKey": "your-gemini-api-key",
-    "features": { "dailyQuotes": true }
+    "apiKey": "your-gemini-api-key-here",
+    "model": "gemini-2.5-flash-lite",
+    "features": {
+      "dailyQuotes": {
+        "maxLength": 30,
+        "focus": ["productivity", "personal growth"],
+        "adjectives": ["actionable or practical", "motivational"],
+        "additionalRules": ["Prefer wisdom that applies to daily work and life"],
+         "allowGenerated": false
+      }
+    },
+    "rateLimiting": {
+      "requestsPerMinute": 10,
+      "requestsPerDay": 100
+    }
+  },
+  "server": {
+    "port": 3127,
+    "host": "localhost"
   }
 }
 ```
