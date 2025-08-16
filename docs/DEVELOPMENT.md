@@ -14,8 +14,8 @@ Welcome to the Notes Sync development guide! This document covers everything you
 
 ```bash
 # Clone the repository
-git clone <repository-url>
-cd notes-sync-mono
+git clone https://github.com/laspencer91/notes-sync.git
+cd notes-sync
 
 # Install dependencies
 yarn install
@@ -460,17 +460,66 @@ git pull --rebase
 
 ## 📦 Publishing
 
+The project uses a cross-platform publish script that works on Windows, macOS, and Linux:
+
+```bash
+# Show current versions
+yarn publish --version
+
+# Publish current versions
+yarn publish
+
+# Bump patch version and publish (1.0.0 -> 1.0.1)
+yarn publish --patch
+
+# Bump minor version and publish (1.0.0 -> 1.1.0)  
+yarn publish --minor
+
+# Bump major version and publish (1.0.0 -> 2.0.0)
+yarn publish --major
+
+# Test version bumping without publishing
+yarn publish --patch --dry-run
+```
+
+### Publishing Process
+
+The publish script will:
+
+1. **Bump versions** (if requested) in dependency order:
+   - `@notes-sync/shared` (dependency)
+   - `@notes-sync/service` 
+   - `@notes-sync/cli`
+
+2. **Update lockfile** to sync with new versions
+
+3. **Build all packages** using `yarn build`
+
+4. **Publish packages** in dependency order:
+   - `@notes-sync/shared` first
+   - `@notes-sync/service` second  
+   - `@notes-sync/cli` last
+
+### Cross-Platform Compatibility
+
+The publish script is written in JavaScript and works on:
+- ✅ Windows (PowerShell, Command Prompt)
+- ✅ macOS (Terminal, iTerm)
+- ✅ Linux (Bash, Zsh)
+
+The old bash script (`scripts/publish.sh`) is kept for reference but the new `scripts/publish.js` is the recommended approach.
+
 ### **Version Management**
 
 ```bash
 # Show current versions
-./scripts/publish.sh --version
+yarn publish --version
 
 # Bump and publish
-./scripts/publish.sh --minor
+yarn publish --minor
 
 # Dry run (no actual publishing)
-./scripts/publish.sh --patch --dry-run
+yarn publish --patch --dry-run
 ```
 
 ### **Package Dependencies**
@@ -486,6 +535,61 @@ The packages have specific dependency relationships:
 1. **Shared** (types and API client)
 2. **Service** (depends on Shared)
 3. **CLI** (depends on Shared)
+
+## Project Structure
+
+```
+notes-sync/
+├── packages/
+│   ├── cli/          # Command-line interface
+│   ├── service/      # Background service
+│   └── shared/       # Shared types and utilities
+├── scripts/
+│   ├── publish.js    # Cross-platform publish script
+│   └── publish.sh    # Legacy bash script (deprecated)
+└── docs/             # Documentation
+```
+
+## Package Dependencies
+
+```
+@notes-sync/cli
+├── @notes-sync/shared
+└── @notes-sync/service
+
+@notes-sync/service  
+├── @notes-sync/shared
+└── node-windows (Windows only)
+
+@notes-sync/shared
+└── (no dependencies)
+```
+
+## Windows Development
+
+The project is fully Windows-compatible:
+
+- **Line Endings**: Uses Unix line endings (LF) with `.gitattributes` enforcement
+- **Paths**: Proper Windows path handling in all scripts
+- **Services**: Native Windows service support via `node-windows`
+- **CLI**: Works in PowerShell and Command Prompt
+
+### Windows-Specific Setup
+
+```bash
+# Configure Git for Windows (if not already done)
+git config core.autocrlf false
+
+# Install dependencies
+yarn install
+
+# Build packages
+yarn build
+
+# Test CLI
+yarn install:cli
+notes-sync --help
+```
 
 ## 🤝 Contributing
 
@@ -524,6 +628,35 @@ test: add integration tests for CLI
 - [ ] Manual testing completed
 - [ ] Service discovery works correctly
 - [ ] Git integration tested
+
+## Troubleshooting
+
+### Build Issues
+
+```bash
+# Clean and rebuild
+rm -rf packages/*/dist
+yarn build
+```
+
+### Publishing Issues
+
+```bash
+# Check current versions
+yarn publish --version
+
+# Test version bumping
+yarn publish --patch --dry-run
+
+# Check npm login status
+npm whoami
+```
+
+### Windows Issues
+
+- **Path Issues**: Ensure using forward slashes in code, Node.js handles conversion
+- **Service Issues**: Check Windows Services app for service status
+- **Permission Issues**: Run PowerShell as Administrator for service installation
 
 ## 📚 Additional Resources
 
