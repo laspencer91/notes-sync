@@ -13,6 +13,7 @@ const readline = require('readline');
 // Platform detection
 const isWindows = process.platform === 'win32';
 const isMacOS = process.platform === 'darwin';
+const isLinux = process.platform === 'linux';
 
 // Service configuration
 const AGENT_LABEL = 'com.notesync.service';
@@ -364,6 +365,117 @@ async function installMacService() {
   }
 }
 
+/**
+ * Install as a Linux systemd user service
+ */
+async function installLinuxService() {
+  try {
+    const homeDir = os.homedir();
+    const user = os.userInfo().username;
+
+    // Create systemd user directory if it doesn't exist
+    const systemdUserDir = path.join(homeDir, '.config', 'systemd', 'user');
+    if (!fs.existsSync(systemdUserDir)) {
+      fs.mkdirSync(systemdUserDir, { recursive: true });
+    }
+
+    // Path to the service executable
+    const execPath = path.join(__dirname, '..', 'dist', 'main.js');
+
+    // Create systemd service file
+    const serviceName = 'notes-sync.service';
+    const servicePath = path.join(systemdUserDir, serviceName);
+
+    const serviceContent = `[Unit]
+Description=Notes Sync Service
+After=network.target
+Wants=network.target
+
+[Service]
+Type=simple
+User=${user}
+WorkingDirectory=${homeDir}
+ExecStart=${process.execPath} ${execPath}
+Restart=always
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+Environment=NODE_ENV=production
+
+# Security settings
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=${homeDir}/.config/notes-sync
+ReadWritePaths=${homeDir}/Documents
+
+[Install]
+WantedBy=default.target`;
+
+    // Write service file
+    fs.writeFileSync(servicePath, serviceContent);
+
+    // Set proper permissions
+    execSync(`chmod 644 "${servicePath}"`);
+
+    // Reload systemd user daemon
+    execSync('systemctl --user daemon-reload');
+
+    // Enable the service (start on boot)
+    execSync('systemctl --user enable notes-sync.service');
+
+    // Start the service
+    execSync('systemctl --user start notes-sync.service');
+
+    // Check if service started successfully
+    const statusResult = execSync(
+      'systemctl --user is-active notes-sync.service',
+      { encoding: 'utf8' }
+    );
+
+    if (statusResult.trim() === 'active') {
+      console.log(
+        '✅ Linux systemd user service installed and started successfully!'
+      );
+      console.log('📋 Service Details:');
+      console.log(`   • Service file: ${servicePath}`);
+      console.log(`   • Status: ${statusResult.trim()}`);
+      console.log('   • Auto-start: Enabled (will start on login)');
+      console.log('\n💡 Useful commands:');
+      console.log(
+        '   • Check status: systemctl --user status notes-sync.service'
+      );
+      console.log('   • View logs: journalctl --user -u notes-sync.service -f');
+      console.log(
+        '   • Stop service: systemctl --user stop notes-sync.service'
+      );
+      console.log(
+        '   • Restart service: systemctl --user restart notes-sync.service'
+      );
+    } else {
+      throw new Error(
+        `Service failed to start. Status: ${statusResult.trim()}`
+      );
+    }
+  } catch (error) {
+    console.error('Failed to install Linux service:', error);
+
+    // Provide helpful debugging information
+    console.log('\n🔧 Troubleshooting:');
+    console.log('1. Check if systemd is available: systemctl --version');
+    console.log('2. Check user systemd status: systemctl --user status');
+    console.log(
+      '3. Check service logs: journalctl --user -u notes-sync.service'
+    );
+    console.log(
+      '4. Try manual start: systemctl --user start notes-sync.service'
+    );
+
+    throw error;
+  }
+}
+
 // Main install function
 async function installService() {
   try {
@@ -375,6 +487,8 @@ async function installService() {
       await installWindowsService();
     } else if (isMacOS) {
       await installMacService();
+    } else if (isLinux) {
+      await installLinuxService();
     } else {
       console.error(
         'Unsupported platform. Only macOS and Windows are currently supported.'

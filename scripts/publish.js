@@ -18,15 +18,27 @@ function showUsage() {
   console.log('  --minor     Bump minor version (1.0.0 -> 1.1.0)');
   console.log('  --major     Bump major version (1.0.0 -> 2.0.0)');
   console.log('  --version   Show current versions of all packages');
-  console.log('  --dry-run   Show what would be done without actually doing it');
+  console.log(
+    '  --dry-run   Show what would be done without actually doing it'
+  );
   console.log('  --help      Show this help message');
   console.log('');
   console.log('Examples:');
-  console.log('  node scripts/publish.js                    # Publish current versions');
-  console.log('  node scripts/publish.js --patch            # Bump patch version and publish');
-  console.log('  node scripts/publish.js --minor            # Bump minor version and publish');
-  console.log('  node scripts/publish.js --major            # Bump major version and publish');
-  console.log('  node scripts/publish.js --patch --dry-run  # Test version bumping without publishing');
+  console.log(
+    '  node scripts/publish.js                    # Publish current versions'
+  );
+  console.log(
+    '  node scripts/publish.js --patch            # Bump patch version and publish'
+  );
+  console.log(
+    '  node scripts/publish.js --minor            # Bump minor version and publish'
+  );
+  console.log(
+    '  node scripts/publish.js --major            # Bump major version and publish'
+  );
+  console.log(
+    '  node scripts/publish.js --patch --dry-run  # Test version bumping without publishing'
+  );
   console.log('');
 }
 
@@ -40,15 +52,17 @@ function getVersion(packagePath) {
 // Function to bump version
 function bumpVersion(packagePath, bumpType) {
   const currentVersion = getVersion(packagePath);
-  
+
   console.log(`📦 Bumping ${packagePath} from ${currentVersion}...`);
-  
+
   // Use npm version to bump the version
   const originalCwd = process.cwd();
   process.chdir(packagePath);
-  execSync(`npm version ${bumpType} --no-git-tag-version`, { stdio: 'inherit' });
+  execSync(`npm version ${bumpType} --no-git-tag-version`, {
+    stdio: 'inherit',
+  });
   process.chdir(originalCwd);
-  
+
   const newVersion = getVersion(packagePath);
   console.log(`✅ Bumped to ${newVersion}`);
 }
@@ -77,7 +91,7 @@ let dryRun = false;
 
 for (let i = 0; i < args.length; i++) {
   const arg = args[i];
-  
+
   switch (arg) {
     case '--patch':
       bumpType = 'patch';
@@ -116,15 +130,15 @@ if (showVersionsFlag) {
 if (bumpType) {
   console.log(`🚀 Bumping versions (${bumpType}) for all packages...`);
   console.log('');
-  
+
   // Bump versions in dependency order
   bumpVersion('./packages/shared', bumpType);
   bumpVersion('./packages/service', bumpType);
   bumpVersion('./packages/cli', bumpType);
-  
+
   // Update yarn lockfile to sync with new versions
   updateLockfile();
-  
+
   console.log('');
   console.log('📋 New versions:');
   showVersions();
