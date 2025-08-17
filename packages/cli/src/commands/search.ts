@@ -1,5 +1,5 @@
-import { ApiClient, SearchFilters } from "@notes-sync/shared";
-import { ServiceDiscovery } from "../service-discovery";
+import { ApiClient, SearchFilters } from '@notes-sync/shared';
+import { ServiceDiscovery } from '../service-discovery';
 
 export async function searchCommand(
   query: string,
@@ -18,10 +18,10 @@ export async function searchCommand(
 
     let dateRange: { start: string; end: string } | undefined;
     if (options.dateRange) {
-      const [start, end] = options.dateRange.split(":");
+      const [start, end] = options.dateRange.split(':');
       if (!start || !end) {
         console.error(
-          "❌ Invalid --date-range format. Use YYYY-MM-DD:YYYY-MM-DD"
+          '❌ Invalid --date-range format. Use YYYY-MM-DD:YYYY-MM-DD'
         );
         return;
       }
@@ -30,13 +30,13 @@ export async function searchCommand(
 
     // Validating section and status
     const section =
-      options.section && ["todos", "notes", "done"].includes(options.section)
-        ? (options.section as "todos" | "notes" | "done")
+      options.section && ['todos', 'notes', 'done'].includes(options.section)
+        ? (options.section as 'todos' | 'notes' | 'done')
         : undefined;
 
     const status =
-      options.status && ["complete", "incomplete"].includes(options.status)
-        ? (options.status as "complete" | "incomplete")
+      options.status && ['complete', 'incomplete'].includes(options.status)
+        ? (options.status as 'complete' | 'incomplete')
         : undefined;
 
     const filters: SearchFilters = {
@@ -58,11 +58,11 @@ export async function searchCommand(
 
     for (const item of result.results) {
       console.log(`📅 ${item.date}`);
-      console.log(`   ${item.context.split("\n").join("\n   ")}`);
+      console.log(`   ${item.context.split('\n').join('\n   ')}`);
       console.log();
     }
   } catch (error) {
-    console.error("❌ Failed to search notes:", error as Error);
-    console.log("💡 Is the service running? Try: notes-sync install");
+    console.error('❌ Failed to search notes:', error as Error);
+    console.log('💡 Is the service running? Try: notes-sync install');
   }
 }

@@ -1,5 +1,5 @@
-import { ApiClient } from "@notes-sync/shared";
-import { ServiceDiscovery } from "../service-discovery";
+import { ApiClient } from '@notes-sync/shared';
+import { ServiceDiscovery } from '../service-discovery';
 
 export async function statusCommand() {
   const serviceDiscovery = new ServiceDiscovery();
@@ -7,12 +7,12 @@ export async function statusCommand() {
 
   try {
     const status = await client.getStatus();
-    console.log("📊 Service Status:");
-    console.log(`  Running: ${status.running ? "✅" : "❌"}`);
+    console.log('📊 Service Status:');
+    console.log(`  Running: ${status.running ? '✅' : '❌'}`);
     console.log(`  Watching: ${status.watching}`);
     console.log(`  Last Sync: ${status.lastSync}`);
     console.log(`  Uptime: ${Math.floor(status.uptime)}s`);
   } catch (error) {
-    console.error("❌ Failed to get status:", error as Error);
+    console.error('❌ Failed to get status:', error as Error);
   }
 }

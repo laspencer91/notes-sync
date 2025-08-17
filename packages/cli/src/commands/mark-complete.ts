@@ -1,5 +1,5 @@
-import inquirer from "inquirer";
-import { ServiceDiscovery } from "../service-discovery";
+import inquirer from 'inquirer';
+import { ServiceDiscovery } from '../service-discovery';
 
 export async function markCompleteCommand() {
   const serviceDiscovery = new ServiceDiscovery();
@@ -10,7 +10,7 @@ export async function markCompleteCommand() {
     const todosResponse = await client.getIncompleteTodos(7);
 
     if (todosResponse.todos.length === 0) {
-      console.log("📝 No incomplete todos found in the last 7 days");
+      console.log('📝 No incomplete todos found in the last 7 days');
       return;
     }
 
@@ -19,7 +19,7 @@ export async function markCompleteCommand() {
       name: string;
       value: string | null;
       short: string;
-    }> = todosResponse.todos.map((todo) => ({
+    }> = todosResponse.todos.map(todo => ({
       name: `${todo.todo} (${todo.date})`,
       value: todo.todo,
       short: todo.todo,
@@ -29,15 +29,15 @@ export async function markCompleteCommand() {
     choices.push({
       name: "Cancel - don't mark anything complete",
       value: null,
-      short: "Cancel",
+      short: 'Cancel',
     });
 
     // Ask user to select a todo to mark complete
     const { selectedTodo } = await inquirer.prompt([
       {
-        type: "list",
-        name: "selectedTodo",
-        message: "Which todo would you like to mark as complete?",
+        type: 'list',
+        name: 'selectedTodo',
+        message: 'Which todo would you like to mark as complete?',
         choices,
         pageSize: 10,
       },
@@ -45,7 +45,7 @@ export async function markCompleteCommand() {
 
     // If user cancelled, exit
     if (!selectedTodo) {
-      console.log("❌ Cancelled");
+      console.log('❌ Cancelled');
       return;
     }
 
@@ -58,7 +58,7 @@ export async function markCompleteCommand() {
       console.log(`❌ Failed to mark todo complete - todo not found`);
     }
   } catch (error) {
-    console.error("❌ Failed to mark todo complete:", (error as Error).message);
-    console.log("💡 Is the service running? Try: notes-sync install");
+    console.error('❌ Failed to mark todo complete:', (error as Error).message);
+    console.log('💡 Is the service running? Try: notes-sync install');
   }
 }
