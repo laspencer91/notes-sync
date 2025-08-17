@@ -1,5 +1,5 @@
-import { ApiClient } from "@notes-sync/shared";
-import { ServiceDiscovery } from "../service-discovery";
+import { ApiClient } from '@notes-sync/shared';
+import { ServiceDiscovery } from '../service-discovery';
 
 export async function formatCommand(options: {
   section?: string;
@@ -14,14 +14,14 @@ export async function formatCommand(options: {
       const result = await client.validateFormatting();
 
       if (result.isValid) {
-        console.log("✅ Document formatting is already perfect!");
+        console.log('✅ Document formatting is already perfect!');
       } else {
-        console.log("⚠️  Found formatting issues:");
+        console.log('⚠️  Found formatting issues:');
         for (const issue of result.issues) {
           console.log(`   • ${issue}`);
         }
         console.log(
-          "\n💡 Run 'notes-sync format' to fix these issues automatically",
+          "\n💡 Run 'notes-sync format' to fix these issues automatically"
         );
       }
     } else if (options.section) {
@@ -46,11 +46,11 @@ export async function formatCommand(options: {
           console.log(`   • ${change}`);
         }
       } else {
-        console.log("📄 Document was already properly formatted");
+        console.log('📄 Document was already properly formatted');
       }
     }
   } catch (error) {
-    console.error("❌ Failed to format:", error as Error);
-    console.log("💡 Is the service running? Try: notes-sync install");
+    console.error('❌ Failed to format:', error as Error);
+    console.log('💡 Is the service running? Try: notes-sync install');
   }
 }

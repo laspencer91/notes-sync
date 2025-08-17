@@ -5,6 +5,7 @@ Command-line interface for Notes Sync - AI-powered note synchronization with Git
 ## Overview
 
 This CLI tool allows you to:
+
 - Add notes and todos from anywhere in your terminal
 - Search through your notes with context
 - Manage todos (complete, delete, archive)

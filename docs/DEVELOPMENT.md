@@ -31,7 +31,9 @@ yarn build
 ⚠️ **Critical**: The service runs on port `3127` by default. If you have a globally installed version of `@notes-sync/service`, it will conflict with your local development service.
 
 **Solutions:**
+
 1. **Uninstall global service** (recommended):
+
    ```bash
    npm uninstall -g @notes-sync/service
    ```
@@ -61,6 +63,7 @@ npm run dev
 ```
 
 The service will:
+
 - Watch for file changes and auto-rebuild
 - Use `packages/service/config.json` for configuration
 - Run on the configured port (default: 3127)
@@ -100,6 +103,7 @@ yarn dev:cli ai query "What should I focus on?"
 The service uses different config files based on environment:
 
 #### **Development Mode** (`packages/service/config.json`)
+
 ```json
 {
   "notesDir": "/path/to/your/dev/notes",
@@ -117,6 +121,7 @@ The service uses different config files based on environment:
 ```
 
 #### **Production Mode** (`~/.config/notes-sync/config.json`)
+
 - Used when service is installed globally
 - Created during `notes-sync install`
 
@@ -127,9 +132,11 @@ The service automatically detects development vs production:
 ```typescript
 // packages/service/src/config.ts
 function isDevelopmentMode(): boolean {
-  return process.env.NODE_ENV === 'development' || 
-         process.argv.includes('--dev') ||
-         !fs.existsSync(path.join(os.homedir(), '.config', 'notes-sync'));
+  return (
+    process.env.NODE_ENV === 'development' ||
+    process.argv.includes('--dev') ||
+    !fs.existsSync(path.join(os.homedir(), '.config', 'notes-sync'))
+  );
 }
 ```
 
@@ -164,12 +171,14 @@ Notes Sync follows a **distributed microservices architecture** with clear separ
 ### **Core Components**
 
 #### **1. CLI Package** (`packages/cli/`)
+
 - **Commander.js**: Command-line argument parsing
 - **Inquirer.js**: Interactive user selection menus
 - **Service Discovery**: Automatic service detection and connection
 - **User Experience**: Fast input, clear feedback, error handling
 
 #### **2. Service Package** (`packages/service/`)
+
 - **HTTP Server**: Fastify-based REST API
 - **File Watcher**: Chokidar monitoring for markdown changes
 - **Git Integration**: Smart sync with conflict resolution
@@ -177,6 +186,7 @@ Notes Sync follows a **distributed microservices architecture** with clear separ
 - **Wake Detection**: Auto-creates daily sections on system wake-up
 
 #### **3. Shared Package** (`packages/shared/`)
+
 - **TypeScript Types**: Full type safety across packages
 - **API Client**: Centralized HTTP request logic
 - **Request/Response Interfaces**: Consistent data contracts
@@ -335,6 +345,7 @@ To add a new feature, follow this pattern:
 ### **Example: Adding a "Copy Note" Feature**
 
 #### **Step 1: Add Types**
+
 ```typescript
 // packages/shared/src/types.ts
 export interface CopyNoteRequest {
@@ -349,6 +360,7 @@ export interface CopyNoteResponse {
 ```
 
 #### **Step 2: Add API Client Method**
+
 ```typescript
 // packages/shared/src/api-client.ts
 async copyNote(request: CopyNoteRequest): Promise<CopyNoteResponse> {
@@ -357,6 +369,7 @@ async copyNote(request: CopyNoteRequest): Promise<CopyNoteResponse> {
 ```
 
 #### **Step 3: Add Server Endpoint**
+
 ```typescript
 // packages/service/src/server.ts
 app.post('/copy-note', async (request, reply) => {
@@ -366,6 +379,7 @@ app.post('/copy-note', async (request, reply) => {
 ```
 
 #### **Step 4: Add NoteInteractor Method**
+
 ```typescript
 // packages/service/src/note-interactor.ts
 async copyNote(request: CopyNoteRequest): Promise<CopyNoteResponse> {
@@ -374,6 +388,7 @@ async copyNote(request: CopyNoteRequest): Promise<CopyNoteResponse> {
 ```
 
 #### **Step 5: Add CLI Command**
+
 ```typescript
 // packages/cli/src/commands/copy-note.ts
 export async function copyNoteCommand(noteId: string, targetDate: string) {
@@ -411,6 +426,7 @@ yarn dev:cli status --debug
 ### **Common Issues**
 
 #### **Port Already in Use**
+
 ```bash
 # Check what's using the port
 lsof -i :3127
@@ -422,6 +438,7 @@ kill -9 <PID>
 ```
 
 #### **Service Not Found**
+
 ```bash
 # Check if service is running
 curl http://localhost:3127/status
@@ -431,6 +448,7 @@ yarn dev:service
 ```
 
 #### **Git Conflicts**
+
 ```bash
 # Check git status
 cd ~/Documents/DailyNotes

@@ -1,18 +1,18 @@
-import { ApiClient } from "@notes-sync/shared";
-import { ServiceDiscovery } from "../service-discovery";
+import { ApiClient } from '@notes-sync/shared';
+import { ServiceDiscovery } from '../service-discovery';
 
 export async function addCommand(
   text: string[],
-  options: { note?: boolean; todo?: boolean },
+  options: { note?: boolean; todo?: boolean }
 ) {
   const serviceDiscovery = new ServiceDiscovery();
   const client = await serviceDiscovery.ensureService();
 
-  const content = text.join(" ");
+  const content = text.join(' ');
 
   if (!content.trim()) {
-    console.error("❌ Error: Please provide text to add");
-    console.log("   Examples:");
+    console.error('❌ Error: Please provide text to add');
+    console.log('   Examples:');
     console.log('   notes-sync add -n "This is a note"');
     console.log('   notes-sync add -t "This is a todo item"');
     return;
@@ -21,14 +21,14 @@ export async function addCommand(
   // Check that exactly one option is specified
   if (options.note && options.todo) {
     console.error(
-      "❌ Error: Cannot specify both -n (note) and -t (todo) at the same time",
+      '❌ Error: Cannot specify both -n (note) and -t (todo) at the same time'
     );
     return;
   }
 
   if (!options.note && !options.todo) {
-    console.error("❌ Error: Must specify either -n (note) or -t (todo)");
-    console.log("   Examples:");
+    console.error('❌ Error: Must specify either -n (note) or -t (todo)');
+    console.log('   Examples:');
     console.log('   notes-sync add -n "This is a note"');
     console.log('   notes-sync add -t "This is a todo item"');
     return;
@@ -45,8 +45,8 @@ export async function addCommand(
       console.log(`✅ Added todo: "${content}"`);
     }
   } catch (error) {
-    const action = options.note ? "add note" : "add todo";
+    const action = options.note ? 'add note' : 'add todo';
     console.error(`❌ Failed to ${action}:`, (error as Error).message);
-    console.log("💡 Is the service running? Try: notes-sync install");
+    console.log('💡 Is the service running? Try: notes-sync install');
   }
 }
