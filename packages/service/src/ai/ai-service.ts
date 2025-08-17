@@ -135,10 +135,12 @@ export class AIService {
       return response.response;
     } catch (error) {
       Logger.error(`AI query processing failed: ${(error as Error).message}`);
-      throw new AIError(
-        `Failed to process query: ${(error as Error).message}`,
-        this.config.provider
-      );
+
+      if (error instanceof AIError) {
+        throw error;
+      }
+
+      throw new AIError((error as Error).message, this.config.provider);
     }
   }
 }

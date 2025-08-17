@@ -244,7 +244,8 @@ export class ApiClient {
       body: JSON.stringify(request),
     });
     if (!response.ok) {
-      throw new Error(`AI query failed: ${response.statusText}`);
+      const responseJson: AIQueryResponse = await response.json();
+      throw new Error(`Failed to query AI: ${responseJson.response}`);
     }
     return response.json();
   }

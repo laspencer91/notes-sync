@@ -49,7 +49,44 @@ export async function stopCommand() {
 
     // As a last resort, find and kill any remaining processes
     console.log('🔍 Checking for any remaining service processes...');
-    if (process.platform === 'darwin' || process.platform === 'linux') {
+
+    if (process.platform === 'win32') {
+      // Windows process handling
+      const findCmd = spawnSync(
+        'wmic',
+        [
+          'process',
+          'where',
+          'name like "%node%"',
+          'get',
+          'processid,commandline',
+        ],
+        { encoding: 'utf8', shell: true }
+      );
+
+      if (findCmd.status === 0) {
+        const processes = findCmd.stdout
+          .split('\n')
+          .filter(line => line.includes('notes-sync-service'));
+
+        if (processes.length > 0) {
+          console.log(
+            `Found ${processes.length} service processes still running`
+          );
+          processes.forEach(proc => {
+            const pidMatch = proc.match(/\s+(\d+)\s*$/);
+            if (pidMatch) {
+              const pid = pidMatch[1];
+              console.log(`Stopping process ${pid}`);
+              spawnSync('taskkill', ['/F', '/PID', pid], { shell: true });
+            }
+          });
+        } else {
+          console.log('✅ No service processes found running');
+        }
+      }
+    } else {
+      // Linux / Mac process kill handling
       const findCmd = spawnSync('ps', ['aux'], { encoding: 'utf8' });
       if (findCmd.status === 0) {
         const processes = findCmd.stdout

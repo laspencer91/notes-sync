@@ -248,12 +248,28 @@ export function createServer(
         return response;
       } catch (error) {
         Logger.error(`AI query failed: ${(error as Error).message}`);
-        reply.code(500);
-        return {
-          response:
-            'Sorry, I encountered an error analyzing your notes. Please try again.',
-          contextUsed: { daysCovered: 0, charactersUsed: 0, truncated: false },
-        };
+        if ((error as Error).message.includes('API key not valid.')) {
+          reply.code(400);
+          return {
+            response: 'Invalid API Key, please check your configuration.',
+            contextUsed: {
+              daysCovered: 0,
+              charactersUsed: 0,
+              truncated: false,
+            },
+          };
+        } else {
+          reply.code(500);
+          return {
+            response:
+              'Sorry, I encountered an error analyzing your notes. Please try again.',
+            contextUsed: {
+              daysCovered: 0,
+              charactersUsed: 0,
+              truncated: false,
+            },
+          };
+        }
       }
     }
   );

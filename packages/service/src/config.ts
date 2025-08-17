@@ -2,6 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import os from 'os';
 import { AIConfig } from '@notes-sync/shared';
+import { Logger } from './logger';
 
 export interface ServiceConfig {
   notesDir: string;
@@ -114,6 +115,8 @@ export function loadConfig(): ServiceConfig {
   if (!configPath) {
     throw new Error(`Config file not found. Tried: ${configPaths.join(', ')}`);
   }
+
+  Logger.log(`- [CONFIG] loaded config from ${configPath}`);
 
   const cfg = JSON.parse(raw);
 

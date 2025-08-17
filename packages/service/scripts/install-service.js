@@ -51,6 +51,7 @@ function initGitRepo(dir) {
   const result = spawnSync('git', ['init'], {
     cwd: dir,
     stdio: 'inherit',
+    shell: process.platform === 'win32',
   });
   return result.status === 0;
 }
@@ -77,7 +78,7 @@ Your notes will be automatically synced to Git when you make changes.
 }
 
 async function setupConfig() {
-  const configDir = isWindows 
+  const configDir = isWindows
     ? path.join(process.env.APPDATA || '', 'notes-sync')
     : path.join(os.homedir(), '.config', 'notes-sync');
   const configPath = path.join(configDir, 'config.json');

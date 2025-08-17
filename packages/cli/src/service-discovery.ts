@@ -2,8 +2,9 @@ import fs from 'fs';
 import path from 'path';
 import os from 'os';
 import { spawnSync } from 'child_process';
-import inquirer from 'inquirer';
 import { ApiClient } from '@notes-sync/shared';
+import inquirer from 'inquirer';
+import { startService } from './installation.utils';
 
 interface ServiceInfo {
   host: string;
@@ -101,6 +102,7 @@ export class ServiceDiscovery {
     const result = spawnSync('npm', ['list', '-g', '@notes-sync/service'], {
       stdio: 'pipe',
       encoding: 'utf8',
+      shell: process.platform === 'win32',
     });
 
     return result.status === 0;
@@ -177,6 +179,11 @@ export class ServiceDiscovery {
         if (serviceInfo.isInstalled) {
           // Service is installed but not running
           await this.promptStartService(serviceInfo);
+          if (serviceInfo.isRunning) {
+            return new ApiClient(
+              `http://${serviceInfo.host}:${serviceInfo.port}`
+            );
+          }
         } else {
           // Service is not installed
           await this.promptInstallService();
@@ -247,10 +254,24 @@ export class ServiceDiscovery {
         console.log('2. cd packages/service && yarn dev');
         console.log('3. Or start it manually and try again');
       } else {
-        console.log('\nTo start the service, run one of these commands:');
-        console.log('1. notes-sync-service start');
-        console.log('2. npm start -g @notes-sync/service');
-        console.log('3. Or start it manually and try again');
+        console.log('🚀 Starting the service...');
+
+        // Try to start the service
+        const serviceStarted = await startService(
+          serviceInfo.host,
+          serviceInfo.port
+        );
+
+        if (serviceStarted) {
+          console.log('✅ Service started successfully!');
+          console.log('✅ Service is now running on port', serviceInfo.port);
+          serviceInfo.isRunning = true;
+        } else {
+          console.error('❌ Failed to start service');
+          console.log('\nTry starting manually:');
+          console.log('1. notes-sync-service start');
+          console.log('2. Check logs: notes-sync-service logs');
+        }
       }
     }
 
@@ -290,6 +311,8 @@ export class ServiceDiscovery {
 
     console.log('📦 Service not installed. Installing it now...');
 
+    const isWindows = process.platform === 'win32';
+
     try {
       const { spawnSync } = require('child_process');
       const installResult = spawnSync(
@@ -297,6 +320,7 @@ export class ServiceDiscovery {
         ['install', '-g', '@notes-sync/service'],
         {
           stdio: 'inherit',
+          shell: isWindows,
         }
       );
 
@@ -316,6 +340,7 @@ export class ServiceDiscovery {
         ['install'],
         {
           stdio: 'inherit',
+          shell: isWindows,
         }
       );
 

@@ -22,6 +22,8 @@ export async function upgradeCommand() {
     // Wait a moment for the service to fully stop
     await new Promise(resolve => setTimeout(resolve, 1000));
 
+    const isWindows = process.platform === 'win32';
+
     // Upgrade shared package first
     console.log('📦 Upgrading shared package...');
     const sharedResult = spawnSync(
@@ -29,6 +31,7 @@ export async function upgradeCommand() {
       ['install', '-g', '@notes-sync/shared@latest'],
       {
         stdio: 'inherit',
+        shell: isWindows,
       }
     );
 
@@ -44,6 +47,7 @@ export async function upgradeCommand() {
       ['install', '-g', '@notes-sync/service@latest'],
       {
         stdio: 'inherit',
+        shell: isWindows,
       }
     );
 
@@ -59,6 +63,7 @@ export async function upgradeCommand() {
       ['install', '-g', '@notes-sync/cli@latest'],
       {
         stdio: 'inherit',
+        shell: isWindows,
       }
     );
 
