@@ -1,5 +1,5 @@
-import chokidar from "chokidar";
-import { Logger } from "./logger";
+import chokidar from 'chokidar';
+import { Logger } from './logger';
 
 export class FileWatcher {
   private watcher?: chokidar.FSWatcher;
@@ -16,27 +16,27 @@ export class FileWatcher {
     });
 
     this.watcher
-      .on("add", (path) => {
+      .on('add', path => {
         Logger.log(`File added: ${path}`);
         onSync();
       })
-      .on("change", (path) => {
+      .on('change', path => {
         Logger.log(`File changed: ${path}`);
         onSync();
       })
-      .on("unlink", (path) => {
+      .on('unlink', path => {
         Logger.log(`File removed: ${path}`);
         onSync();
       })
-      .on("error", (err) => {
-        Logger.error("File watcher error:", err);
+      .on('error', err => {
+        Logger.error('File watcher error:', err);
       });
   }
 
   stop() {
     if (this.watcher) {
       this.watcher.close();
-      Logger.log("File watcher stopped");
+      Logger.log('File watcher stopped');
     }
   }
 }

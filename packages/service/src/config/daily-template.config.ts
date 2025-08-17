@@ -29,9 +29,9 @@ ${TOMORROW_SECTION}
 export function getDailyTemplate(
   todayDate: string,
   quote: string,
-  quoteAuthor: string = "Unknown",
+  quoteAuthor: string = 'Unknown'
 ) {
-  return DAILY_TEMPLATE.replace("{date}", todayDate)
-    .replace("{quote}", quote)
-    .replace("{name}", quoteAuthor);
+  return DAILY_TEMPLATE.replace('{date}', todayDate)
+    .replace('{quote}', quote)
+    .replace('{name}', quoteAuthor);
 }

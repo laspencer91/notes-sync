@@ -4,7 +4,6 @@
 
 Hey, developer! Cozy up with your favorite editor and let Notes Sync transform your note-taking into a seamless, AI-enhanced adventure. Your notes live in **one simple Markdown file**—embracing simplicity. Everything in one place, synced effortlessly to Git by a background process with AI-powered insights. Ready to make note-taking a joy? Let’s dive in!
 
-
 <p align="center">
   <img src="docs/readme-images/mark_complete_demo.gif" width="700px" style="border-radius:8px" border="2px solid white" />
 </p>
@@ -12,11 +11,12 @@ Hey, developer! Cozy up with your favorite editor and let Notes Sync transform y
 
 [Get Started](#-get-started-in-3-steps) | [Key Features](#-key-features) | [See Limitations](#limitations)
 
-### **✅ macOS (Fully Supported)** 
-**❌ Linux (Not Supported)**
-**❌ Windows (Not Supported)**
+### **✅ macOS (Fully Supported)**
 
-*Help us support new environments, check out [ISSUES](https://github.com/laspencer91/notes-sync/issues)*
+**❌ Linux (Not Supported)**
+**✅ Windows (Fully Supported)**
+
+_Help us support new environments, check out [ISSUES](https://github.com/laspencer91/notes-sync/issues)_
 
 ## What’s Notes Sync?
 
@@ -51,11 +51,10 @@ Perfect for:
    ```
 
    This guides you through:
-
-    - Choosing a notes directory (e.g., `~/Documents/DailyNotes`).
-    - Picking or creating **one Markdown file** (e.g., `Notes.md`) for all your notes.
-    - Setting up a Git repo for syncing.
-    - Enabling optional AI features with a Gemini API key.
+   - Choosing a notes directory (e.g., `~/Documents/DailyNotes`).
+   - Picking or creating **one Markdown file** (e.g., `Notes.md`) for all your notes.
+   - Setting up a Git repo for syncing.
+   - Enabling optional AI features with a Gemini API key.
 
 3. **Test It Out**:
 
@@ -131,9 +130,11 @@ Each day adds a fresh section to your single Markdown file:
 
 ```markdown
 # 8/14/2025
+
 _Keep your focus sharp, one task at a time_ - AI Generated
 
 **Today's Focus**
+
 - [ ] Your tasks here
 
 **Notes**
@@ -155,7 +156,10 @@ notes-sync format --validate # Check for issues
 
 ## ⚙️ Configure It Your Way
 
-Run `notes-sync install` for an interactive setup, or edit `~/.config/notes-sync/config.json`:
+Run `notes-sync install` for an interactive setup, or edit your config file:
+
+- macOS/Linux: `~/.config/notes-sync/config.json`
+- Windows: `%APPDATA%\notes-sync\config.json`
 
 ```json
 {
@@ -163,11 +167,7 @@ Run `notes-sync install` for an interactive setup, or edit `~/.config/notes-sync
   "notesFile": "Daily.md",
   "debounceMs": 20000,
   "glob": "**/*.md",
-  "ignore": [
-    "**/.git/**",
-    "**/.git",
-    "**/node_modules/**"
-  ],
+  "ignore": ["**/.git/**", "**/.git", "**/node_modules/**"],
   "autoCreateDaily": true,
   "wakeDetection": {
     "enabled": true,
@@ -184,8 +184,10 @@ Run `notes-sync install` for an interactive setup, or edit `~/.config/notes-sync
         "maxLength": 30,
         "focus": ["productivity", "personal growth"],
         "adjectives": ["actionable or practical", "motivational"],
-        "additionalRules": ["Prefer wisdom that applies to daily work and life"],
-         "allowGenerated": false
+        "additionalRules": [
+          "Prefer wisdom that applies to daily work and life"
+        ],
+        "allowGenerated": false
       }
     },
     "rateLimiting": {
@@ -238,10 +240,16 @@ npm install -g @notes-sync/service  # Reinstall service
 **Uninstall**:
 
 ```bash
+# For all platforms
 notes-sync stop
 notes-sync-service uninstall
 npm uninstall -g @notes-sync/cli @notes-sync/service
+
+# macOS/Linux
 rm -rf ~/.config/notes-sync
+
+# Windows (Command Prompt)
+rd /s /q %APPDATA%\notes-sync
 ```
 
 ## Limitations

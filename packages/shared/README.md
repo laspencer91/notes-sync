@@ -5,6 +5,7 @@ Shared types and API client for Notes Sync - an AI-powered note synchronization 
 ## Overview
 
 This package contains:
+
 - TypeScript interfaces for API communication
 - API client for interacting with the Notes Sync service
 - Shared types for consistent data contracts across packages

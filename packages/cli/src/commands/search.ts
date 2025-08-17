@@ -1,5 +1,5 @@
-import { ApiClient } from "@notes-sync/shared";
-import { ServiceDiscovery } from "../service-discovery";
+import { ApiClient } from '@notes-sync/shared';
+import { ServiceDiscovery } from '../service-discovery';
 
 export async function searchCommand(query: string, options: { days?: string }) {
   const serviceDiscovery = new ServiceDiscovery();
@@ -19,11 +19,11 @@ export async function searchCommand(query: string, options: { days?: string }) {
 
     for (const item of result.results) {
       console.log(`📅 ${item.date}`);
-      console.log(`   ${item.context.split("\n").join("\n   ")}`);
+      console.log(`   ${item.context.split('\n').join('\n   ')}`);
       console.log();
     }
   } catch (error) {
-    console.error("❌ Failed to search notes:", error as Error);
-    console.log("💡 Is the service running? Try: notes-sync install");
+    console.error('❌ Failed to search notes:', error as Error);
+    console.log('💡 Is the service running? Try: notes-sync install');
   }
 }

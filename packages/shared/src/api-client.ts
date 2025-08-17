@@ -23,13 +23,13 @@ import {
   AIQueryResponse,
   ViewNotesRequest,
   ViewNotesResponse,
-} from "./types";
+} from './types';
 
 export class ApiClient {
-  constructor(private baseUrl: string = "http://localhost:3127") {}
+  constructor(private baseUrl: string = 'http://localhost:3127') {}
 
   async getStatus(): Promise<ServiceStatus> {
-    console.log("Getting Status....");
+    console.log('Getting Status....');
     const response = await fetch(`${this.baseUrl}/status`);
     if (!response.ok) {
       throw new Error(`Failed to get status: ${response.statusText}`);
@@ -38,9 +38,9 @@ export class ApiClient {
   }
 
   async shutdown(): Promise<void> {
-    console.log("Shutting down service...");
+    console.log('Shutting down service...');
     const response = await fetch(`${this.baseUrl}/shutdown`, {
-      method: "POST",
+      method: 'POST',
     });
     if (!response.ok) {
       throw new Error(`Failed to shutdown service: ${response.statusText}`);
@@ -49,11 +49,11 @@ export class ApiClient {
   }
 
   async addNote(request: AddNoteRequest): Promise<void> {
-    console.log("Adding Note....");
+    console.log('Adding Note....');
     const response = await fetch(`${this.baseUrl}/add-note`, {
-      method: "POST",
+      method: 'POST',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify(request),
     });
@@ -65,9 +65,9 @@ export class ApiClient {
 
   async sync(request?: SyncRequest): Promise<void> {
     const response = await fetch(`${this.baseUrl}/sync`, {
-      method: "POST",
+      method: 'POST',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify(request || {}),
     });
@@ -85,11 +85,11 @@ export class ApiClient {
   }
 
   async addTodo(request: AddTodoRequest): Promise<void> {
-    console.log("Adding Todo....");
+    console.log('Adding Todo....');
     const response = await fetch(`${this.baseUrl}/add-todo`, {
-      method: "POST",
+      method: 'POST',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify(request),
     });
@@ -100,13 +100,13 @@ export class ApiClient {
   }
 
   async markTodoComplete(
-    request: MarkTodoCompleteRequest,
+    request: MarkTodoCompleteRequest
   ): Promise<MarkTodoCompleteResponse> {
-    console.log("Marking Todo Complete....");
+    console.log('Marking Todo Complete....');
     const response = await fetch(`${this.baseUrl}/mark-todo-complete`, {
-      method: "POST",
+      method: 'POST',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify(request),
     });
@@ -117,11 +117,11 @@ export class ApiClient {
   }
 
   async deleteTodo(request: DeleteTodoRequest): Promise<DeleteTodoResponse> {
-    console.log("Deleting Todo....");
+    console.log('Deleting Todo....');
     const response = await fetch(`${this.baseUrl}/delete-todo`, {
-      method: "POST",
+      method: 'POST',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify(request),
     });
@@ -132,11 +132,11 @@ export class ApiClient {
   }
 
   async searchNotes(request: SearchNotesRequest): Promise<SearchNotesResponse> {
-    console.log("Searching Notes....");
+    console.log('Searching Notes....');
     const response = await fetch(`${this.baseUrl}/search-notes`, {
-      method: "POST",
+      method: 'POST',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify(request),
     });
@@ -147,12 +147,12 @@ export class ApiClient {
   }
 
   async getIncompleteTodos(
-    daysBack?: number,
+    daysBack?: number
   ): Promise<GetIncompleteTodosResponse> {
-    console.log("Getting Incomplete Todos....");
-    const queryParam = daysBack ? `?daysBack=${daysBack}` : "";
+    console.log('Getting Incomplete Todos....');
+    const queryParam = daysBack ? `?daysBack=${daysBack}` : '';
     const response = await fetch(
-      `${this.baseUrl}/incomplete-todos${queryParam}`,
+      `${this.baseUrl}/incomplete-todos${queryParam}`
     );
     if (!response.ok) {
       throw new Error(`Failed to get incomplete todos: ${response.statusText}`);
@@ -161,22 +161,22 @@ export class ApiClient {
   }
 
   async archiveCompletedTodos(): Promise<ArchiveCompletedTodosResponse> {
-    console.log("Archiving Completed Todos....");
+    console.log('Archiving Completed Todos....');
     const response = await fetch(`${this.baseUrl}/archive-completed-todos`, {
-      method: "POST",
+      method: 'POST',
     });
     if (!response.ok) {
       throw new Error(
-        `Failed to archive completed todos: ${response.statusText}`,
+        `Failed to archive completed todos: ${response.statusText}`
       );
     }
     return response.json();
   }
 
   async formatDocument(): Promise<FormatDocumentResponse> {
-    console.log("Formatting Document....");
+    console.log('Formatting Document....');
     const response = await fetch(`${this.baseUrl}/format-document`, {
-      method: "POST",
+      method: 'POST',
     });
     if (!response.ok) {
       throw new Error(`Failed to format document: ${response.statusText}`);
@@ -185,13 +185,13 @@ export class ApiClient {
   }
 
   async formatSection(
-    request: FormatSectionRequest,
+    request: FormatSectionRequest
   ): Promise<FormatSectionResponse> {
     console.log(`Formatting Section: ${request.sectionName}...`);
     const response = await fetch(`${this.baseUrl}/format-section`, {
-      method: "POST",
+      method: 'POST',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify(request),
     });
@@ -202,7 +202,7 @@ export class ApiClient {
   }
 
   async validateFormatting(): Promise<ValidateFormattingResponse> {
-    console.log("Validating Formatting....");
+    console.log('Validating Formatting....');
     const response = await fetch(`${this.baseUrl}/validate-formatting`);
     if (!response.ok) {
       throw new Error(`Failed to validate formatting: ${response.statusText}`);
@@ -211,7 +211,7 @@ export class ApiClient {
   }
 
   async getDailyStatus(): Promise<DailyStatusResponse> {
-    console.log("Getting Daily Status....");
+    console.log('Getting Daily Status....');
     const response = await fetch(`${this.baseUrl}/daily-status`);
     if (!response.ok) {
       throw new Error(`Failed to get daily status: ${response.statusText}`);
@@ -220,11 +220,11 @@ export class ApiClient {
   }
 
   async createDaily(request: CreateDailyRequest): Promise<CreateDailyResponse> {
-    console.log("Creating Daily Section....");
+    console.log('Creating Daily Section....');
     const response = await fetch(`${this.baseUrl}/create-daily`, {
-      method: "POST",
+      method: 'POST',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify(request),
     });
@@ -235,16 +235,17 @@ export class ApiClient {
   }
 
   async aiQuery(request: AIQueryRequest): Promise<AIQueryResponse> {
-    console.log("AI Query requested...");
+    console.log('AI Query requested...');
     const response = await fetch(`${this.baseUrl}/ai/query`, {
-      method: "POST",
+      method: 'POST',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify(request),
     });
     if (!response.ok) {
-      throw new Error(`AI query failed: ${response.statusText}`);
+      const responseJson: AIQueryResponse = await response.json();
+      throw new Error(`Failed to query AI: ${responseJson.response}`);
     }
     return response.json();
   }
@@ -252,9 +253,9 @@ export class ApiClient {
   async viewNotes(request: ViewNotesRequest): Promise<ViewNotesResponse> {
     console.log(`Viewing Notes: ${request.type}...`);
     const response = await fetch(`${this.baseUrl}/view-notes`, {
-      method: "POST",
+      method: 'POST',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify(request),
     });

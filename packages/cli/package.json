@@ -1,6 +1,6 @@
 {
   "name": "@notes-sync/cli",
-  "version": "1.0.17",
+  "version": "1.1.17",
   "description": "CLI for AI-powered note synchronization",
   "bin": {
     "notes-sync": "./dist/cli.js"
@@ -8,16 +8,17 @@
   "scripts": {
     "build": "tsc",
     "dev": "ts-node src/cli.ts",
-    "prepublishOnly": "yarn run build"
+    "prepublishOnly": "yarn run build",
+    "postinstall": "node scripts/postinstall.js"
   },
   "dependencies": {
     "@notes-sync/shared": "^1.0.0",
     "axios": "^1.6.0",
     "commander": "^11.1.0",
-    "inquirer": "^9.2.15"
+    "inquirer": "^8.2.6"
   },
   "devDependencies": {
-    "@types/inquirer": "^9.0.7",
+    "@types/inquirer": "^8.2.10",
     "@types/node": "^20.11.30",
     "ts-node": "^10.9.2",
     "typescript": "^5.4.5"

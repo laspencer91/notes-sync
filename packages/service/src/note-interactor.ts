@@ -1,14 +1,14 @@
-import { getDailyTemplate } from "./config/daily-template.config";
-import path from "path";
-import fs from "fs";
-import { Logger } from "./logger";
-import { AIService } from "./ai/ai-service";
+import { getDailyTemplate } from './config/daily-template.config';
+import path from 'path';
+import fs from 'fs';
+import { Logger } from './logger';
+import { AIService } from './ai/ai-service';
 import {
   AIQueryRequest,
   AIQueryResponse,
   ViewNotesRequest,
   ViewNotesResponse,
-} from "@notes-sync/shared";
+} from '@notes-sync/shared';
 
 // Section constants for parsing
 const TODAY_SECTION = `**Today's Focus**`;
@@ -20,13 +20,13 @@ export class NoteInteractor {
   constructor(
     private notesDir: string,
     private noteFile: string,
-    private aiService?: AIService,
+    private aiService?: AIService
   ) {}
 
   async writeNewDay(): Promise<void> {
     try {
-      let quote = "Progress over perfection";
-      let author = "Unknown";
+      let quote = 'Progress over perfection';
+      let author = 'Unknown';
 
       // Try to generate AI quote if available
       if (this.aiService?.isDailyQuotesEnabled()) {
@@ -43,7 +43,7 @@ export class NoteInteractor {
           }
         } catch (error) {
           Logger.error(
-            `Failed to generate AI quote, using fallback: ${(error as Error).message}`,
+            `Failed to generate AI quote, using fallback: ${(error as Error).message}`
           );
           // Continue with default quote - don't let AI failures break daily creation
         }
@@ -52,17 +52,17 @@ export class NoteInteractor {
       const template = getDailyTemplate(
         new Date().toLocaleDateString(),
         quote,
-        author,
+        author
       );
 
-      this.append("\n\n" + template);
+      this.append('\n\n' + template);
 
       Logger.log(
-        `Daily section created for ${new Date().toLocaleDateString()}`,
+        `Daily section created for ${new Date().toLocaleDateString()}`
       );
     } catch (error) {
       Logger.error(
-        `Failed to write daily section: ${(error as Error).message}`,
+        `Failed to write daily section: ${(error as Error).message}`
       );
     }
   }
@@ -72,23 +72,23 @@ export class NoteInteractor {
     try {
       const recentDays = this.getPreviousDays(3); // Get last 3 days for context
       const context = recentDays
-        .map((day) => this.getNotes(day))
-        .filter((notes) => notes.trim().length > 0)
-        .join(" ")
+        .map(day => this.getNotes(day))
+        .filter(notes => notes.trim().length > 0)
+        .join(' ')
         .substring(0, 300); // Limit context length
 
       return context;
     } catch (error) {
       Logger.error(
-        `Failed to get recent notes context: ${(error as Error).message}`,
+        `Failed to get recent notes context: ${(error as Error).message}`
       );
-      return "";
+      return '';
     }
   }
 
   append(text: string) {
     fs.writeFileSync(path.join(this.notesDir, this.noteFile), text, {
-      flag: "a",
+      flag: 'a',
     });
   }
 
@@ -96,9 +96,9 @@ export class NoteInteractor {
   private readNotesFile(): string {
     const filePath = path.join(this.notesDir, this.noteFile);
     if (!fs.existsSync(filePath)) {
-      return "";
+      return '';
     }
-    return fs.readFileSync(filePath, "utf8");
+    return fs.readFileSync(filePath, 'utf8');
   }
 
   // Helper method to parse days from the notes file
@@ -106,15 +106,15 @@ export class NoteInteractor {
     const days = new Map<string, string>();
 
     // Split by headers that start with #
-    const dayBlocks = content.split(/^# /m).filter((block) => block.trim());
+    const dayBlocks = content.split(/^# /m).filter(block => block.trim());
 
     for (const block of dayBlocks) {
-      const lines = block.split("\n");
+      const lines = block.split('\n');
       const dateMatch = lines[0].match(/^(.+?)$/);
 
       if (dateMatch) {
         const dateStr = dateMatch[1].trim();
-        const dayContent = "# " + block;
+        const dayContent = '# ' + block;
         days.set(dateStr, dayContent);
       }
     }
@@ -126,10 +126,10 @@ export class NoteInteractor {
   private extractSection(
     text: string,
     sectionHeader: string,
-    nextSectionHeader?: string,
+    nextSectionHeader?: string
   ): string {
     const sectionIndex = text.indexOf(sectionHeader);
-    if (sectionIndex === -1) return "";
+    if (sectionIndex === -1) return '';
 
     const startIndex = sectionIndex + sectionHeader.length;
     let endIndex = text.length;
@@ -154,8 +154,8 @@ export class NoteInteractor {
     const todayDate = new Date().toLocaleDateString();
 
     const todayHeaderRegex = new RegExp(
-      `^# ${todayDate.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}`,
-      "m",
+      `^# ${todayDate.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`,
+      'm'
     );
     const todayMatch = content.match(todayHeaderRegex);
 
@@ -192,10 +192,10 @@ export class NoteInteractor {
       // Take the requested number of days (excluding today)
       const today = new Date().toLocaleDateString();
       const previousDates = sortedDates
-        .filter((date) => date !== today)
+        .filter(date => date !== today)
         .slice(0, days);
 
-      return previousDates.map((date) => dayMap.get(date) || "");
+      return previousDates.map(date => dayMap.get(date) || '');
     } catch (error) {
       Logger.error(`Failed to get previous days: ${(error as Error).message}`);
       return [];
@@ -208,12 +208,12 @@ export class NoteInteractor {
       const dayMap = this.parseDays(content);
       const dateStr = date.toLocaleDateString();
 
-      return dayMap.get(dateStr) || "";
+      return dayMap.get(dateStr) || '';
     } catch (error) {
       Logger.error(
-        `Failed to get date ${date.toLocaleDateString()}: ${(error as Error).message}`,
+        `Failed to get date ${date.toLocaleDateString()}: ${(error as Error).message}`
       );
-      return "";
+      return '';
     }
   }
 
@@ -222,7 +222,7 @@ export class NoteInteractor {
       const todosSection = this.extractSection(
         dayText,
         TODAY_SECTION,
-        NOTE_SECTION,
+        NOTE_SECTION
       );
 
       // Extract checkbox items (- [ ] or - [x])
@@ -246,7 +246,7 @@ export class NoteInteractor {
       return this.extractSection(dayText, NOTE_SECTION, DONE_SECTION);
     } catch (error) {
       Logger.error(`Failed to extract notes: ${(error as Error).message}`);
-      return "";
+      return '';
     }
   }
 
@@ -269,17 +269,17 @@ export class NoteInteractor {
       // Find the end of the Today's Focus section
       const notesSectionStart = todaySection.content.indexOf(
         NOTE_SECTION,
-        todayFocusStart,
+        todayFocusStart
       );
       if (notesSectionStart === -1) {
-        Logger.error("Notes section not found");
+        Logger.error('Notes section not found');
         return;
       }
 
       // Find the last todo item in the Today's Focus section
       const focusSection = todaySection.content.substring(
         todayFocusStart,
-        notesSectionStart,
+        notesSectionStart
       );
       const todoRegex = /^- \[[ x]\] .+$/gm;
       let lastTodoEnd = todayFocusStart + TODAY_SECTION.length;
@@ -317,28 +317,28 @@ export class NoteInteractor {
       const content = this.readNotesFile();
       const notesSectionStart = todaySection.content.indexOf(NOTE_SECTION);
       if (notesSectionStart === -1) {
-        Logger.error("Notes section not found");
+        Logger.error('Notes section not found');
         return;
       }
 
       // Find the end of the Notes section (before Done section)
       const doneSectionStart = todaySection.content.indexOf(
         DONE_SECTION,
-        notesSectionStart,
+        notesSectionStart
       );
       if (doneSectionStart === -1) {
-        Logger.error("Done section not found");
+        Logger.error('Done section not found');
         return;
       }
 
       // Find where to insert the note (at the end of the Notes section)
       const notesSection = todaySection.content.substring(
         notesSectionStart + NOTE_SECTION.length,
-        doneSectionStart,
+        doneSectionStart
       );
 
       // Find the last non-empty line in the notes section
-      const noteLines = notesSection.split("\n");
+      const noteLines = notesSection.split('\n');
       let lastContentIndex = -1;
 
       for (let i = noteLines.length - 1; i >= 0; i--) {
@@ -362,7 +362,7 @@ export class NoteInteractor {
         // Insert after existing notes
         const contentUpToLastLine = noteLines
           .slice(0, lastContentIndex + 1)
-          .join("\n");
+          .join('\n');
         insertPosition = basePosition + contentUpToLastLine.length;
         newNoteText = `\n\n${text}`;
       }
@@ -383,8 +383,8 @@ export class NoteInteractor {
     try {
       const content = this.readNotesFile();
       const todoPattern = new RegExp(
-        `^(- \\[ \\] )(${todoText.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")})$`,
-        "gm",
+        `^(- \\[ \\] )(${todoText.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})$`,
+        'gm'
       );
 
       if (!todoPattern.test(content)) {
@@ -392,7 +392,7 @@ export class NoteInteractor {
         return false;
       }
 
-      const updatedContent = content.replace(todoPattern, "- [x] $2");
+      const updatedContent = content.replace(todoPattern, '- [x] $2');
       fs.writeFileSync(path.join(this.notesDir, this.noteFile), updatedContent);
 
       Logger.log(`Marked todo complete: ${todoText}`);
@@ -408,8 +408,8 @@ export class NoteInteractor {
       const content = this.readNotesFile();
       // Match both incomplete and complete todos
       const todoPattern = new RegExp(
-        `^- \\[[x ]\\] ${todoText.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\s*$`,
-        "gm",
+        `^- \\[[x ]\\] ${todoText.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\s*$`,
+        'gm'
       );
 
       if (!todoPattern.test(content)) {
@@ -418,9 +418,9 @@ export class NoteInteractor {
       }
 
       // Remove the entire line including newlines
-      const updatedContent = content.replace(todoPattern, "");
+      const updatedContent = content.replace(todoPattern, '');
       // Clean up any double newlines that might result
-      const cleanedContent = updatedContent.replace(/\n\n\n+/g, "\n\n");
+      const cleanedContent = updatedContent.replace(/\n\n\n+/g, '\n\n');
 
       fs.writeFileSync(path.join(this.notesDir, this.noteFile), cleanedContent);
 
@@ -434,7 +434,7 @@ export class NoteInteractor {
 
   searchNotes(
     query: string,
-    daysBack: number = 30,
+    daysBack: number = 30
   ): Array<{ date: string; context: string }> {
     try {
       const content = this.readNotesFile();
@@ -451,20 +451,20 @@ export class NoteInteractor {
       // Search through the specified number of days
       const searchDates = sortedDates.slice(0, daysBack);
       const searchRegex = new RegExp(
-        query.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"),
-        "gi",
+        query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'),
+        'gi'
       );
 
       for (const date of searchDates) {
-        const dayContent = dayMap.get(date) || "";
-        const lines = dayContent.split("\n");
+        const dayContent = dayMap.get(date) || '';
+        const lines = dayContent.split('\n');
 
         for (let i = 0; i < lines.length; i++) {
           if (searchRegex.test(lines[i])) {
             // Get context: 1 line before and after the match
             const contextStart = Math.max(0, i - 1);
             const contextEnd = Math.min(lines.length, i + 2);
-            const context = lines.slice(contextStart, contextEnd).join("\n");
+            const context = lines.slice(contextStart, contextEnd).join('\n');
 
             results.push({
               date,
@@ -483,7 +483,7 @@ export class NoteInteractor {
   }
 
   getIncompleteTodos(
-    daysBack: number = 7,
+    daysBack: number = 7
   ): Array<{ date: string; todo: string }> {
     try {
       const content = this.readNotesFile();
@@ -501,7 +501,7 @@ export class NoteInteractor {
       const checkDates = sortedDates.slice(0, daysBack);
 
       for (const date of checkDates) {
-        const dayContent = dayMap.get(date) || "";
+        const dayContent = dayMap.get(date) || '';
         const todos = this.getTodos(dayContent);
 
         // Get incomplete todos (those that start with [ ])
@@ -509,7 +509,7 @@ export class NoteInteractor {
         const todayFocusSection = this.extractSection(
           dayContent,
           TODAY_SECTION,
-          NOTE_SECTION,
+          NOTE_SECTION
         );
 
         let match;
@@ -522,12 +522,12 @@ export class NoteInteractor {
       }
 
       Logger.log(
-        `Found ${incompleteTodos.length} incomplete todos from last ${daysBack} days`,
+        `Found ${incompleteTodos.length} incomplete todos from last ${daysBack} days`
       );
       return incompleteTodos;
     } catch (error) {
       Logger.error(
-        `Failed to get incomplete todos: ${(error as Error).message}`,
+        `Failed to get incomplete todos: ${(error as Error).message}`
       );
       return [];
     }
@@ -545,12 +545,12 @@ export class NoteInteractor {
       const todayFocusSection = this.extractSection(
         todaySection.content,
         TODAY_SECTION,
-        NOTE_SECTION,
+        NOTE_SECTION
       );
       const doneSection = this.extractSection(
         todaySection.content,
         DONE_SECTION,
-        TOMORROW_SECTION,
+        TOMORROW_SECTION
       );
 
       // Find completed todos in Today's Focus
@@ -563,7 +563,7 @@ export class NoteInteractor {
       }
 
       if (completedTodos.length === 0) {
-        Logger.log("No completed todos to archive");
+        Logger.log('No completed todos to archive');
         return 0;
       }
 
@@ -571,19 +571,17 @@ export class NoteInteractor {
       let updatedTodayFocus = todayFocusSection;
       for (const todo of completedTodos) {
         const todoPattern = new RegExp(
-          `^- \\[x\\] ${todo.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`,
-          "gm",
+          `^- \\[x\\] ${todo.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`,
+          'gm'
         );
-        updatedTodayFocus = updatedTodayFocus.replace(todoPattern, "");
+        updatedTodayFocus = updatedTodayFocus.replace(todoPattern, '');
       }
 
       // Clean up extra newlines
-      updatedTodayFocus = updatedTodayFocus.replace(/\n\n+/g, "\n\n").trim();
+      updatedTodayFocus = updatedTodayFocus.replace(/\n\n+/g, '\n\n').trim();
 
       // Add completed todos to Done section
-      const archivedTodos = completedTodos
-        .map((todo) => `- ${todo}`)
-        .join("\n");
+      const archivedTodos = completedTodos.map(todo => `- ${todo}`).join('\n');
       const updatedDoneSection = doneSection
         ? `${doneSection}\n${archivedTodos}`
         : archivedTodos;
@@ -597,12 +595,12 @@ export class NoteInteractor {
 
       let newDayContent = todaySection.content.substring(
         0,
-        todayFocusStart + TODAY_SECTION.length,
+        todayFocusStart + TODAY_SECTION.length
       );
       newDayContent += `\n\n${updatedTodayFocus}\n\n`;
       newDayContent += todaySection.content.substring(
         notesSectionStart,
-        doneSectionStart + DONE_SECTION.length,
+        doneSectionStart + DONE_SECTION.length
       );
       newDayContent += `\n\n${updatedDoneSection}\n\n`;
       newDayContent += todaySection.content.substring(tomorrowSectionStart);
@@ -619,7 +617,7 @@ export class NoteInteractor {
       return completedTodos.length;
     } catch (error) {
       Logger.error(
-        `Failed to archive completed todos: ${(error as Error).message}`,
+        `Failed to archive completed todos: ${(error as Error).message}`
       );
       return 0;
     }
@@ -629,7 +627,7 @@ export class NoteInteractor {
     try {
       const content = this.readNotesFile();
       if (!content.trim()) {
-        Logger.log("No content to format");
+        Logger.log('No content to format');
         return { formatted: false, changesMade: [] };
       }
 
@@ -638,16 +636,16 @@ export class NoteInteractor {
 
       // 1. Remove trailing whitespace from all lines
       const beforeTrailing = formattedContent;
-      formattedContent = formattedContent.replace(/[ \t]+$/gm, "");
+      formattedContent = formattedContent.replace(/[ \t]+$/gm, '');
       if (beforeTrailing !== formattedContent) {
-        changes.push("Removed trailing whitespace");
+        changes.push('Removed trailing whitespace');
       }
 
       // 2. Normalize multiple consecutive blank lines (max 2 blank lines) but preserve content integrity
       const beforeBlankLines = formattedContent;
-      formattedContent = formattedContent.replace(/\n{4,}/g, "\n\n\n");
+      formattedContent = formattedContent.replace(/\n{4,}/g, '\n\n\n');
       if (beforeBlankLines !== formattedContent) {
-        changes.push("Normalized excessive blank lines");
+        changes.push('Normalized excessive blank lines');
       }
 
       // 2.5. Fix any accidentally broken quotes and dates
@@ -655,15 +653,15 @@ export class NoteInteractor {
       // Fix broken quotes (rejoin lines that should be together without adding extra spaces)
       formattedContent = formattedContent.replace(
         /(_[^_\n]*)\n([^_\n]*_)/g,
-        "$1$2",
+        '$1$2'
       );
       // Fix broken dates (rejoin date parts)
       formattedContent = formattedContent.replace(
         /(# \d{1,2}\/\d{1,2}\/\d{2,3})\n(\d)/gm,
-        "$1$2",
+        '$1$2'
       );
       if (beforeFixes !== formattedContent) {
-        changes.push("Fixed broken content lines");
+        changes.push('Fixed broken content lines');
       }
 
       // 3. Ensure consistent spacing around headers (but don't break dates)
@@ -671,37 +669,37 @@ export class NoteInteractor {
       // Add blank line before headers (except at start of file) - but only for complete date lines
       formattedContent = formattedContent.replace(
         /(?<!^)(?<!\n\n)(\n)(# \d{1,2}\/\d{1,2}\/\d{4})/gm,
-        "\n\n$2",
+        '\n\n$2'
       );
       // Ensure blank line after complete date headers
       formattedContent = formattedContent.replace(
         /(^# \d{1,2}\/\d{1,2}\/\d{4})(?!\n\n)/gm,
-        "$1\n",
+        '$1\n'
       );
       if (beforeHeaders !== formattedContent) {
-        changes.push("Standardized header spacing");
+        changes.push('Standardized header spacing');
       }
 
       // 4. Standardize todo formatting (ensure space after checkbox)
       const beforeTodos = formattedContent;
       formattedContent = formattedContent.replace(
         /^-\s*\[([x ])\]([^ ])/gm,
-        "- [$1] $2",
+        '- [$1] $2'
       );
       formattedContent = formattedContent.replace(
         /^-\s*\[([x ])\]\s+/gm,
-        "- [$1] ",
+        '- [$1] '
       );
       if (beforeTodos !== formattedContent) {
-        changes.push("Standardized todo formatting");
+        changes.push('Standardized todo formatting');
       }
 
       // 5. Ensure consistent bullet point formatting
       const beforeBullets = formattedContent;
-      formattedContent = formattedContent.replace(/^-([^ ])/gm, "- $1");
-      formattedContent = formattedContent.replace(/^-\s{2,}/gm, "- ");
+      formattedContent = formattedContent.replace(/^-([^ ])/gm, '- $1');
+      formattedContent = formattedContent.replace(/^-\s{2,}/gm, '- ');
       if (beforeBullets !== formattedContent) {
-        changes.push("Standardized bullet points");
+        changes.push('Standardized bullet points');
       }
 
       // 6. Standardize section spacing (ensure double line break after section headers)
@@ -714,67 +712,67 @@ export class NoteInteractor {
       ];
       for (const section of sectionHeaders) {
         const sectionRegex = new RegExp(
-          `(\\*\\*${section.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\*\\*)(?!\\n\\n)`,
-          "g",
+          `(\\*\\*${section.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\*\\*)(?!\\n\\n)`,
+          'g'
         );
-        formattedContent = formattedContent.replace(sectionRegex, "$1\n");
+        formattedContent = formattedContent.replace(sectionRegex, '$1\n');
       }
       if (beforeSections !== formattedContent) {
-        changes.push("Standardized section spacing");
+        changes.push('Standardized section spacing');
       }
 
       // 7. Clean up quote formatting (ensure proper spacing around quotes, but don't break quote content)
       const beforeQuotes = formattedContent;
       // Fix malformed quotes (remove space after opening underscore)
-      formattedContent = formattedContent.replace(/(_ )([^_]*_)/g, "_$2");
+      formattedContent = formattedContent.replace(/(_ )([^_]*_)/g, '_$2');
       // Only add spacing after quotes that are followed by section headers or other content, but preserve quote integrity
       formattedContent = formattedContent.replace(
         /(_[^_\n]+_)(\s*)(\*\*)/gm,
-        "$1\n\n$3",
+        '$1\n\n$3'
       );
       if (beforeQuotes !== formattedContent) {
-        changes.push("Cleaned quote formatting");
+        changes.push('Cleaned quote formatting');
       }
 
       // 8. Ensure file ends with single newline
       const beforeEnding = formattedContent;
-      formattedContent = formattedContent.replace(/\n*$/, "\n");
+      formattedContent = formattedContent.replace(/\n*$/, '\n');
       if (beforeEnding !== formattedContent) {
-        changes.push("Normalized file ending");
+        changes.push('Normalized file ending');
       }
 
       // 9. Remove empty todo items and clean up orphaned formatting
       const beforeEmpty = formattedContent;
-      formattedContent = formattedContent.replace(/^- \[ \]\s*$/gm, "");
-      formattedContent = formattedContent.replace(/^- \[x\]\s*$/gm, "");
+      formattedContent = formattedContent.replace(/^- \[ \]\s*$/gm, '');
+      formattedContent = formattedContent.replace(/^- \[x\]\s*$/gm, '');
       if (beforeEmpty !== formattedContent) {
-        changes.push("Removed empty todo items");
+        changes.push('Removed empty todo items');
       }
 
       // 10. Final cleanup - remove any triple+ newlines and fix any remaining broken content
-      formattedContent = formattedContent.replace(/\n{4,}/g, "\n\n\n");
+      formattedContent = formattedContent.replace(/\n{4,}/g, '\n\n\n');
 
       // Final pass: ensure quotes and dates weren't accidentally broken by any of the above rules
       formattedContent = formattedContent.replace(
         /(_[^_\n]*)\n([^_\n]*_)/g,
-        "$1$2",
+        '$1$2'
       );
       formattedContent = formattedContent.replace(
         /(# \d{1,2}\/\d{1,2}\/\d{2,3})\n(\d)/gm,
-        "$1$2",
+        '$1$2'
       );
 
       if (changes.length > 0) {
         fs.writeFileSync(
           path.join(this.notesDir, this.noteFile),
-          formattedContent,
+          formattedContent
         );
         Logger.log(
-          `Document formatted with ${changes.length} changes: ${changes.join(", ")}`,
+          `Document formatted with ${changes.length} changes: ${changes.join(', ')}`
         );
         return { formatted: true, changesMade: changes };
       } else {
-        Logger.log("Document already properly formatted");
+        Logger.log('Document already properly formatted');
         return { formatted: false, changesMade: [] };
       }
     } catch (error) {
@@ -797,45 +795,45 @@ export class NoteInteractor {
 
       // Format specific section based on name
       switch (sectionName) {
-        case "todos":
+        case 'todos':
           // Clean up Today's Focus section
           const focusSection = this.extractSection(
             updatedSection,
             TODAY_SECTION,
-            NOTE_SECTION,
+            NOTE_SECTION
           );
           let cleanFocus = focusSection
-            .replace(/^- \[ \]\s*$/gm, "") // Remove empty todos
-            .replace(/^-\s*\[([x ])\]\s+/gm, "- [$1] ") // Standardize formatting
-            .replace(/\n{3,}/g, "\n\n"); // Remove excessive blank lines
+            .replace(/^- \[ \]\s*$/gm, '') // Remove empty todos
+            .replace(/^-\s*\[([x ])\]\s+/gm, '- [$1] ') // Standardize formatting
+            .replace(/\n{3,}/g, '\n\n'); // Remove excessive blank lines
 
           // Replace the section
           updatedSection = updatedSection.replace(
             new RegExp(
-              `(${TODAY_SECTION.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")})([\\s\\S]*?)(?=${NOTE_SECTION.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")})`,
+              `(${TODAY_SECTION.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})([\\s\\S]*?)(?=${NOTE_SECTION.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`
             ),
-            `$1\n\n${cleanFocus.trim()}\n\n`,
+            `$1\n\n${cleanFocus.trim()}\n\n`
           );
           break;
 
-        case "notes":
+        case 'notes':
           // Clean up Notes section
           const notesSection = this.extractSection(
             updatedSection,
             NOTE_SECTION,
-            DONE_SECTION,
+            DONE_SECTION
           );
           let cleanNotes = notesSection
-            .replace(/[ \t]+$/gm, "") // Remove trailing whitespace
-            .replace(/\n{4,}/g, "\n\n\n") // Limit consecutive blank lines
+            .replace(/[ \t]+$/gm, '') // Remove trailing whitespace
+            .replace(/\n{4,}/g, '\n\n\n') // Limit consecutive blank lines
             .trim();
 
           // Replace the section
           updatedSection = updatedSection.replace(
             new RegExp(
-              `(${NOTE_SECTION.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")})([\\s\\S]*?)(?=${DONE_SECTION.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")})`,
+              `(${NOTE_SECTION.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})([\\s\\S]*?)(?=${DONE_SECTION.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`
             ),
-            `$1\n\n${cleanNotes}\n\n`,
+            `$1\n\n${cleanNotes}\n\n`
           );
           break;
 
@@ -855,7 +853,7 @@ export class NoteInteractor {
       return true;
     } catch (error) {
       Logger.error(
-        `Failed to format section ${sectionName}: ${(error as Error).message}`,
+        `Failed to format section ${sectionName}: ${(error as Error).message}`
       );
       return false;
     }
@@ -870,43 +868,43 @@ export class NoteInteractor {
       // Check for broken dates
       const brokenDatePattern = /(# \d{1,2}\/\d{1,2}\/\d{2,3})\n(\d)/gm;
       if (brokenDatePattern.test(content)) {
-        issues.push("Found broken date headers");
+        issues.push('Found broken date headers');
       }
 
       // Check for broken quotes
       const brokenQuotePattern = /(_[^_\n]*)\n([^_\n]*_)/g;
       if (brokenQuotePattern.test(content)) {
-        issues.push("Found broken quote formatting");
+        issues.push('Found broken quote formatting');
       }
 
       // Check for malformed quotes (space after opening underscore)
       const malformedQuotePattern = /(_ [^_]*_)/g;
       if (malformedQuotePattern.test(content)) {
-        issues.push("Found quotes with incorrect spacing");
+        issues.push('Found quotes with incorrect spacing');
       }
 
       // Check for excessive blank lines
       if (/\n{4,}/.test(content)) {
-        issues.push("Found excessive blank lines (4+)");
+        issues.push('Found excessive blank lines (4+)');
       }
 
       // Check for trailing whitespace
       if (/[ \t]+$/m.test(content)) {
-        issues.push("Found trailing whitespace");
+        issues.push('Found trailing whitespace');
       }
 
       // Check for inconsistent todo formatting
       if (/^-\s*\[([x ])\]([^ ])/m.test(content)) {
-        issues.push("Found inconsistent todo formatting");
+        issues.push('Found inconsistent todo formatting');
       }
 
       Logger.log(`Formatting validation: ${issues.length} issues found`);
       return { isValid: issues.length === 0, issues };
     } catch (error) {
       Logger.error(
-        `Failed to validate formatting: ${(error as Error).message}`,
+        `Failed to validate formatting: ${(error as Error).message}`
       );
-      return { isValid: false, issues: ["Validation failed"] };
+      return { isValid: false, issues: ['Validation failed'] };
     }
   }
 
@@ -936,7 +934,7 @@ export class NoteInteractor {
       return missingDays;
     } catch (error) {
       Logger.error(
-        `Failed to check for missing days: ${(error as Error).message}`,
+        `Failed to check for missing days: ${(error as Error).message}`
       );
       return [];
     }
@@ -944,7 +942,7 @@ export class NoteInteractor {
 
   // Auto-create daily section if needed (enhanced version)
   async autoCreateDailySection(
-    force: boolean = false,
+    force: boolean = false
   ): Promise<{ created: boolean; reason: string }> {
     try {
       // Check if today already exists (unless forced)
@@ -956,7 +954,7 @@ export class NoteInteractor {
       const missingDays = this.checkForMissingDays();
 
       if (missingDays.length === 0 && !force) {
-        return { created: false, reason: "No missing days detected" };
+        return { created: false, reason: 'No missing days detected' };
       }
 
       // Create today's section (or force create)
@@ -970,7 +968,7 @@ export class NoteInteractor {
       return { created: false, reason: "Today's section not needed" };
     } catch (error) {
       Logger.error(
-        `Failed to auto-create daily section: ${(error as Error).message}`,
+        `Failed to auto-create daily section: ${(error as Error).message}`
       );
       return { created: false, reason: `Error: ${(error as Error).message}` };
     }
@@ -998,7 +996,7 @@ export class NoteInteractor {
       return now.getTime() - lastDate.getTime();
     } catch (error) {
       Logger.error(
-        `Failed to get time since last entry: ${(error as Error).message}`,
+        `Failed to get time since last entry: ${(error as Error).message}`
       );
       return 0;
     }
@@ -1010,12 +1008,12 @@ export class NoteInteractor {
     const { content, metadata } = this.extractFullDayContext(request.timeRange);
 
     Logger.log(
-      `AI Query context: ${metadata.daysCovered} days, ${metadata.charactersUsed} chars${metadata.truncated ? " (truncated)" : ""}`,
+      `AI Query context: ${metadata.daysCovered} days, ${metadata.charactersUsed} chars${metadata.truncated ? ' (truncated)' : ''}`
     );
 
     // Debug: Log first 100 chars of content to see what's being sent
     const contentPreview =
-      content.length > 100 ? content.substring(0, 100) + "..." : content;
+      content.length > 100 ? content.substring(0, 100) + '...' : content;
     Logger.log(`Content preview: "${contentPreview}"`);
 
     // Simple, concise prompt
@@ -1026,7 +1024,7 @@ Please provide a concise, actionable response (2 paragraphs max). Prefer one to 
 ${content}`;
 
     if (!this.aiService?.isEnabled()) {
-      throw new Error("AI service is not available");
+      throw new Error('AI service is not available');
     }
 
     const response = await this.aiService.processQuery(prompt);
@@ -1040,7 +1038,7 @@ ${content}`;
     };
   }
 
-  private extractFullDayContext(timeRange: AIQueryRequest["timeRange"]): {
+  private extractFullDayContext(timeRange: AIQueryRequest['timeRange']): {
     content: string;
     metadata: {
       daysCovered: number;
@@ -1058,16 +1056,16 @@ ${content}`;
     let targetDays = 3; // Default
 
     switch (timeRange.type) {
-      case "today":
+      case 'today':
         targetDays = 1;
         break;
-      case "week":
+      case 'week':
         targetDays = 7;
         break;
-      case "month":
+      case 'month':
         targetDays = Math.min(14, 30);
         break; // Cap at 2 weeks
-      case "custom":
+      case 'custom':
         targetDays = Math.min(timeRange.days || 3, 14);
         break;
     }
@@ -1113,7 +1111,7 @@ Then try your AI query again!`,
       let daysIncluded = 0;
 
       for (const date of selectedDates) {
-        const fullDayContent = dayMap.get(date) || "";
+        const fullDayContent = dayMap.get(date) || '';
 
         // Skip days with no meaningful content
         if (!fullDayContent.trim()) {
@@ -1144,7 +1142,7 @@ Then try your AI query again!`,
             // Only truncate if we have reasonable space
             const truncatedDay = this.truncateDayContent(
               daySection,
-              availableSpace,
+              availableSpace
             );
             sections.push(truncatedDay);
             totalCharacters += truncatedDay.length;
@@ -1155,7 +1153,7 @@ Then try your AI query again!`,
         }
       }
 
-      const content = sections.join("\n\n---\n\n");
+      const content = sections.join('\n\n---\n\n');
 
       if (!content.trim()) {
         return {
@@ -1207,36 +1205,36 @@ Error details: ${(error as Error).message}`,
   private truncateDayContent(daySection: string, maxLength: number): string {
     if (daySection.length <= maxLength) return daySection;
 
-    const lines = daySection.split("\n");
+    const lines = daySection.split('\n');
     const header = lines[0]; // Keep the date header
-    let truncatedContent = header + "\n\n";
+    let truncatedContent = header + '\n\n';
 
     // Try to keep structure by preserving section headers
     for (const line of lines.slice(2)) {
       if (truncatedContent.length + line.length + 1 < maxLength - 50) {
-        truncatedContent += line + "\n";
-      } else if (line.startsWith("**") || line.startsWith("#")) {
+        truncatedContent += line + '\n';
+      } else if (line.startsWith('**') || line.startsWith('#')) {
         // Always try to include section headers
         if (truncatedContent.length + line.length + 1 < maxLength - 20) {
-          truncatedContent += line + "\n";
+          truncatedContent += line + '\n';
         }
         break;
       }
     }
 
-    return truncatedContent + "\n[... content truncated for length ...]";
+    return truncatedContent + '\n[... content truncated for length ...]';
   }
 
   private extractActionableItems(response: string): string[] {
     // Simple extraction of bullet points or numbered items
-    const lines = response.split("\n");
+    const lines = response.split('\n');
     const actionItems: string[] = [];
 
     for (const line of lines) {
       const trimmed = line.trim();
       // Look for bullet points or numbered items that seem actionable
       if (trimmed.match(/^[\d\-\*]\s+/) && trimmed.length > 10) {
-        const cleaned = trimmed.replace(/^[\d\-\*\.\)]\s*/, "").trim();
+        const cleaned = trimmed.replace(/^[\d\-\*\.\)]\s*/, '').trim();
         if (cleaned) {
           actionItems.push(cleaned);
         }
@@ -1251,7 +1249,7 @@ Error details: ${(error as Error).message}`,
       const content = this.readNotesFile();
 
       switch (request.type) {
-        case "today": {
+        case 'today': {
           const today = new Date();
           const todaySection = this.getDate(today);
 
@@ -1259,7 +1257,7 @@ Error details: ${(error as Error).message}`,
             return {
               content: `No notes found for today (${today.toLocaleDateString()})`,
               metadata: {
-                type: "today",
+                type: 'today',
                 totalLines: 1,
               },
             };
@@ -1268,8 +1266,8 @@ Error details: ${(error as Error).message}`,
           return {
             content: todaySection,
             metadata: {
-              type: "today",
-              totalLines: todaySection.split("\n").length,
+              type: 'today',
+              totalLines: todaySection.split('\n').length,
               dateRange: {
                 start: today.toLocaleDateString(),
                 end: today.toLocaleDateString(),
@@ -1278,7 +1276,7 @@ Error details: ${(error as Error).message}`,
           };
         }
 
-        case "recent": {
+        case 'recent': {
           const days = request.days || 7;
           const dayMap = this.parseDays(content);
           const sortedDates = Array.from(dayMap.keys())
@@ -1289,7 +1287,7 @@ Error details: ${(error as Error).message}`,
             return {
               content: `No notes found in the last ${days} days`,
               metadata: {
-                type: "recent",
+                type: 'recent',
                 daysCovered: 0,
                 totalLines: 1,
               },
@@ -1297,16 +1295,16 @@ Error details: ${(error as Error).message}`,
           }
 
           const recentContent = sortedDates
-            .map((date) => dayMap.get(date))
+            .map(date => dayMap.get(date))
             .filter(Boolean)
-            .join("\n\n");
+            .join('\n\n');
 
           return {
             content: recentContent,
             metadata: {
-              type: "recent",
+              type: 'recent',
               daysCovered: sortedDates.length,
-              totalLines: recentContent.split("\n").length,
+              totalLines: recentContent.split('\n').length,
               dateRange: {
                 start: sortedDates[sortedDates.length - 1],
                 end: sortedDates[0],
@@ -1315,12 +1313,12 @@ Error details: ${(error as Error).message}`,
           };
         }
 
-        case "all": {
+        case 'all': {
           return {
             content: content,
             metadata: {
-              type: "all",
-              totalLines: content.split("\n").length,
+              type: 'all',
+              totalLines: content.split('\n').length,
             },
           };
         }

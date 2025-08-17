@@ -9,7 +9,7 @@ class WakeDetectorClass {
       const now = Date.now();
       const diff = now - this.previousTime;
       if (diff > wakeInterval) {
-        console.log("wake");
+        console.log('wake');
         for (const cb of this.onWakeCallbacks) {
           try {
             cb();
@@ -33,7 +33,7 @@ class WakeDetectorClass {
   }
 
   offWake(callback: () => void) {
-    this.onWakeCallbacks = this.onWakeCallbacks.filter((cb) => cb !== callback);
+    this.onWakeCallbacks = this.onWakeCallbacks.filter(cb => cb !== callback);
   }
 
   isRunning() {
