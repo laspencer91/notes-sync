@@ -4,7 +4,7 @@
 
 Hey, developer! Cozy up with your favorite editor and let Notes Sync transform your note-taking into a seamless, AI-enhanced adventure. Your notes live in **one simple Markdown file**—embracing simplicity. Everything in one place, synced effortlessly to Git by a background process with AI-powered insights. Ready to make note-taking a joy? Let’s dive in!
 
-> 💡 Now get AI Power on your notes with [AiQ Terminal Assistant](github.com/laspencer91/aiq)!
+> 💡 Now get AI Power on your notes with [AiQ Terminal Assistant](https://github.com/laspencer91/aiq)!
 >
 > `notes-sync view --recent | aiq summarize`
 
